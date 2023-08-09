@@ -1,8 +1,19 @@
 {
   "name": "demos",
-  "version": "1.0.0",
-  "description": "This is a mock wallet, based on Nami created to speed up the creation of the Voltaire Voting App.",
-  "main": "babel.config.js",
+  "version": "1.3.0",
+  "description": "This is a mock wallet, based on Nami.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ryun1/cip95-demos-wallet"
+  },
+  "scripts": {
+    "build": "node utils/build.js",
+    "lint": "eslint . --ext .js,.jsx",
+    "start": "node utils/webserver.js",
+    "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
+    "test": "NODE_ENV=test jest"
+  },
   "dependencies": {
     "@cardano-foundation/ledgerjs-hw-app-cardano": "^5.1.0",
     "@chakra-ui/css-reset": "^1.0.0",
@@ -17,6 +28,7 @@
     "@fontsource/ubuntu": "^4.4.5",
     "@hot-loader/react-dom": "^17.0.1",
     "@ledgerhq/hw-transport-webusb": "^6.11.2",
+    "@trezor/connect-web": "^9.0.11",
     "@types/chrome": "0.0.132",
     "@types/jest": "^27.0.1",
     "@types/react": "^17.0.2",
@@ -27,18 +39,18 @@
     "crc": "^4.1.1",
     "crypto-random-string": "^4.0.0",
     "easy-peasy": "^5.0.3",
-    "file-type": "^16.5.4",
+    "file-type": "^16.5.2",
     "focus-visible": "^5.2.0",
     "framer-motion": "^4.1.16",
     "i": "^0.3.7",
-    "ipfs": "^0.66.0",
+    "ipfs": "^0.56.0",
     "is-svg": "^4.3.1",
     "javascript-time-ago": "^2.3.7",
     "jest-chrome": "^0.7.2",
     "match-sorter": "^6.1.0",
-    "node-fetch": "^2.6.11",
+    "node-fetch": "^2.6.1",
     "node-polyfill-webpack-plugin": "^1.1.2",
-    "npm": "^8.19.4",
+    "npm": "^8.3.0",
     "qr-code-styling": "^1.6.0-rc.0",
     "randomcolor": "^0.6.2",
     "react": "^17.0.1",
@@ -47,7 +59,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^17.0.1",
     "react-dropzone": "^11.4.2",
-    "react-hot-loader": "^4.13.1",
+    "react-hot-loader": "^4.13.0",
     "react-icons": "^4.2.0",
     "react-json-pretty": "^2.2.0",
     "react-kawaii": "^0.17.0",
@@ -65,7 +77,6 @@
     "styled-components": "^5.3.0",
     "trezor-connect": "^8.2.1",
     "use-constant": "^1.1.0",
-    "web-pack": "^1.0.0",
     "web3-utils": "^1.6.1"
   },
   "devDependencies": {
@@ -79,7 +90,7 @@
     "babel-preset-react-app": "^10.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^7.0.0",
-    "css-loader": "^5.2.7",
+    "css-loader": "^5.0.2",
     "eslint": "^7.20.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-flowtype": "^5.2.2",
@@ -93,22 +104,20 @@
     "html-loader": "^2.1.0",
     "html-webpack-plugin": "^5.2.0",
     "jest": "^27.0.6",
-    "node-sass": "^6.0.1",
+    "sass": "1.63.6",
     "prettier": "^2.2.1",
-    "sass-loader": "^11.1.1",
+    "sass-loader": "^11.0.1",
     "source-map-loader": "^2.0.1",
     "style-loader": "^2.0.0",
     "terser-webpack-plugin": "^5.1.1",
     "ts-loader": "^8.0.17",
     "typescript": "^4.1.5",
-    "webpack": "^5.82.0",
+    "webpack": "^5.88.1",
     "webpack-cli": "^4.5.0",
-    "webpack-dev-server": "^3.11.3"
+    "webpack-dev-server": "^3.11.2"
   },
-  "scripts": {
-    "build": "node utils/build.js",
-    "start": "node utils/webserver.js",
-    "prettier": "prettier --write '**/*.{js,jsx,css,html}'",
-    "test": "NODE_ENV=test jest"
+  "engineStrict": true,
+  "engines": {
+    "node": "14"
   }
 }
