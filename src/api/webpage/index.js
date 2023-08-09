@@ -20,7 +20,6 @@ export const signTxCIP95 = async (tx, partialSign = false) => {
   return result.data;
 };
 
-
 export const signDataCIP95 = async (address, payload) => {
   const result = await Messaging.sendToContent({
     method: METHOD.signData,

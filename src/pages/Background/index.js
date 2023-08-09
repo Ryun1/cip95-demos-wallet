@@ -25,7 +25,6 @@ import {
   TARGET,
 } from '../../config/config';
 
-
 const app = Messaging.createBackgroundController();
 
 // CIP-95 -----------------------------
@@ -67,9 +66,7 @@ app.add(METHOD.getStakeKey, async (request, sendResponse) => {
   }
 });
 
-
 // CIP-95 -----------------------------
-
 
 /**
  * listens to requests from the web context

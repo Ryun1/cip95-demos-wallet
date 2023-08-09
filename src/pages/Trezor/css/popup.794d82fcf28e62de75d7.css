@@ -12,7 +12,7 @@
   margin-bottom: 10px;
   font-size: 14px;
   color: #ffffff;
-  background: #01B757;
+  background: #01b757;
 }
 .extension-permissions .buttons .cancel {
   font-size: 14px;
@@ -24,8 +24,8 @@ aside {
   flex-flow: column;
   width: 50%;
   height: 100%;
-  border-right: 1px solid #E3E3E3;
-  background-color: #F9F9F9;
+  border-right: 1px solid #e3e3e3;
+  background-color: #f9f9f9;
 }
 aside .wrapper {
   height: 100%;
@@ -124,7 +124,8 @@ body {
   position: relative;
   min-height: 500px;
   min-width: 328px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Helvetica Neue', Arial, sans-serif;
   font-weight: 400;
   font-size: 14px;
   color: #494949;
@@ -190,9 +191,10 @@ a:not(.button),
 a:visited {
   cursor: pointer;
   position: relative;
-  color: #01B757;
+  color: #01b757;
   text-decoration: none;
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out,
+    border-color 0.3s ease-in-out;
   /* &:hover,
     &:active {
         &:after {
@@ -205,7 +207,7 @@ a:visited:after {
   content: '';
   position: absolute;
   width: 100%;
-  border-top: 1px solid #01B757;
+  border-top: 1px solid #01b757;
   line-height: 1px;
   left: 0px;
   bottom: -1px;
@@ -213,7 +215,7 @@ a:visited:after {
 }
 a:not(.button):hover,
 a:visited:hover {
-  color: #00AB51;
+  color: #00ab51;
 }
 a:not(.button):active,
 a:visited:active {
@@ -233,14 +235,15 @@ button {
   font-size: 14px;
   font-weight: 300;
   cursor: pointer;
-  background: #01B757;
+  background: #01b757;
   color: #ffffff;
   border: 0px;
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out,
+    border-color 0.3s ease-in-out;
 }
 a.button:hover,
 button:hover {
-  background: #00AB51;
+  background: #00ab51;
 }
 a.button:active,
 button:active {
@@ -254,21 +257,22 @@ button:disabled {
 a.button.blue,
 button.blue {
   background: transparent;
-  border: 1px solid #1E7FF0;
-  color: #1E7FF0;
+  border: 1px solid #1e7ff0;
+  color: #1e7ff0;
   padding: 12px 58px;
 }
 a.button.blue:hover,
 button.blue:hover {
   color: #ffffff;
-  background: #1E7FF0;
+  background: #1e7ff0;
 }
 a.button.transparent,
 button.transparent {
   background: transparent;
   border: 0px;
   color: #757575;
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out,
+    border-color 0.3s ease-in-out;
 }
 a.button.transparent:hover,
 button.transparent:hover,
@@ -283,7 +287,7 @@ button.confirm {
   padding: 12px;
   font-size: 14px;
   color: #ffffff;
-  background-color: #01B757;
+  background-color: #01b757;
 }
 a.button.cancel,
 button.cancel {
@@ -309,12 +313,12 @@ button.check-devices {
   margin-bottom: 15px;
   line-height: 1;
   background-color: transparent;
-  border: 1px solid #00AB51;
+  border: 1px solid #00ab51;
 }
 a.button.check-devices .plus,
 button.check-devices .plus {
   margin-right: 10px;
-  color: #00AB51;
+  color: #00ab51;
 }
 a.button.check-devices .plus::after,
 button.check-devices .plus::after {
@@ -327,16 +331,16 @@ button.check-devices .plus::after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e90d";
+  content: '\e90d';
 }
 a.button.check-devices .text,
 button.check-devices .text {
   font-size: 14px;
-  color: #00AB51;
+  color: #00ab51;
 }
 a.button.check-devices:hover,
 button.check-devices:hover {
-  background-color: #00AB51;
+  background-color: #00ab51;
 }
 a.button.check-devices:hover .plus,
 button.check-devices:hover .plus,
@@ -349,7 +353,7 @@ button.list {
   width: 100%;
   height: 50px;
   padding: 0 15px;
-  border: 1px solid #E3E3E3;
+  border: 1px solid #e3e3e3;
   border-radius: 0px;
   border-top-width: 0px;
   text-align: left;
@@ -376,7 +380,7 @@ button.list:not(:disabled).active {
   border-left: 1px solid #009546;
   box-shadow: 2px 0 0 #009546 inset;
   border-radius: 0px;
-  background: #F9F9F9;
+  background: #f9f9f9;
 }
 a.button.list.disabled:hover,
 button.list.disabled:hover {
@@ -385,16 +389,16 @@ button.list.disabled:hover {
 a.button.notification-button,
 button.notification-button {
   width: 100%;
-  border: 1px solid #EB8A00;
+  border: 1px solid #eb8a00;
   background-color: transparent;
   text-align: center;
-  color: #EB8A00;
+  color: #eb8a00;
   transition: all 0.15s;
 }
 a.button.notification-button:hover,
 button.notification-button:hover {
   color: white;
-  background-color: #EB8A00;
+  background-color: #eb8a00;
 }
 @media screen and (min-width: 768px) {
   a.button,
@@ -458,22 +462,22 @@ header aside .description .origin {
   color: #757575;
   margin-top: 2px;
 }
-input[type="text"],
-input[type="password"] {
+input[type='text'],
+input[type='password'] {
   font-size: 14px;
   font-weight: 300;
   line-height: 1.42857143;
-  font-family: "Roboto Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: 'Roboto Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
   color: #494949;
   background-color: #ffffff;
-  border: 1px solid #E3E3E3;
+  border: 1px solid #e3e3e3;
   border-radius: 2px;
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   padding: 6px 12px;
   width: 260px;
 }
-input[type="text"]:focus,
-input[type="password"]:focus {
+input[type='text']:focus,
+input[type='password']:focus {
   outline: 0;
   box-shadow: 0 1px 2px 0 rgba(169, 169, 169, 0.25);
 }
@@ -495,8 +499,8 @@ input[type="password"]:focus {
   opacity: 0;
 }
 .custom-checkbox input:checked + .indicator:after {
-  background-color: #01B757;
-  border-color: #01B757;
+  background-color: #01b757;
+  border-color: #01b757;
 }
 .custom-checkbox input:disabled + .indicator:after {
   background-color: #757575;
@@ -517,8 +521,9 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91c";
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  content: '\e91c';
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out,
+    border-color 0.3s ease-in-out;
   position: absolute;
   top: 0;
   left: 0;
@@ -527,7 +532,7 @@ input[type="password"]:focus {
   font-size: 20px;
   color: #ffffff;
   background-color: #ffffff;
-  border: 1px solid #E3E3E3;
+  border: 1px solid #e3e3e3;
   border-radius: 2px;
 }
 .custom-checkbox .indicator:hover {
@@ -539,7 +544,7 @@ input[type="password"]:focus {
 .custom-checkbox.radio input:checked + .indicator:after {
   content: '';
   background: #ffffff;
-  border: 4px solid #01B757;
+  border: 4px solid #01b757;
 }
 .custom-checkbox.align-left {
   padding-left: 20px;
@@ -584,7 +589,7 @@ input[type="password"]:focus {
   position: absolute;
 }
 .loader .circular .route {
-  stroke: #F2F2F2;
+  stroke: #f2f2f2;
 }
 .loader .circular .path {
   stroke-dasharray: 1, 200;
@@ -604,22 +609,55 @@ input[type="password"]:focus {
 }
 @font-face {
   font-family: 'Roboto Zero';
-  src: url(.././fonts/RobotoZeroc19ef375e09c0446ee38.eot) format('embedded-opentype'), url(.././fonts/RobotoZeroc19ef375e09c0446ee38.eot?#iefix) format('embedded-opentype'), url(.././fonts/RobotoZero29cc77529672c0fd144d.woff) format('woff'), url(.././fonts/RobotoZerof20cf957fc6f55b6b98b.ttf) format('truetype');
+  src: url(.././fonts/RobotoZeroc19ef375e09c0446ee38.eot)
+      format('embedded-opentype'),
+    url(.././fonts/RobotoZeroc19ef375e09c0446ee38.eot?#iefix)
+      format('embedded-opentype'),
+    url(.././fonts/RobotoZero29cc77529672c0fd144d.woff) format('woff'),
+    url(.././fonts/RobotoZerof20cf957fc6f55b6b98b.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Roboto Mono';
   font-style: normal;
-  src: url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regularc3820318b20a155142f6.eot) format('embedded-opentype'), /* IE9 Compat Modes */ url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regularc3820318b20a155142f6.eot?#iefix) format('embedded-opentype'), /* IE6-IE8 */ url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regularefbb4ef30d70fd89fac7.woff2) format('woff2'), /* Super Modern Browsers */ url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regulara5ab933c07fbd808bd71.woff) format('woff'), /* Modern Browsers */ url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regular473137234b890954c09c.ttf) format('truetype'), /* Safari, Android, iOS */ url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regularf4b415c9d03e71af8a4d.svg#RobotoMono) format('svg');
+  src: url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regularc3820318b20a155142f6.eot)
+      format('embedded-opentype'),
+    /* IE9 Compat Modes */
+      url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regularc3820318b20a155142f6.eot?#iefix)
+      format('embedded-opentype'),
+    /* IE6-IE8 */
+      url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regularefbb4ef30d70fd89fac7.woff2)
+      format('woff2'),
+    /* Super Modern Browsers */
+      url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regulara5ab933c07fbd808bd71.woff)
+      format('woff'),
+    /* Modern Browsers */
+      url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regular473137234b890954c09c.ttf)
+      format('truetype'),
+    /* Safari, Android, iOS */
+      url(.././fonts/roboto-mono-v4-greek_cyrillic-ext_greek-ext_latin_cyrillic_vietnamese_latin-ext-regularf4b415c9d03e71af8a4d.svg#RobotoMono)
+      format('svg');
   /* Legacy iOS */
 }
 @font-face {
   font-family: 'icomoon';
-  src: url(.././fonts/icomoon78a0524c3a8df054cd5c.eot) format('embedded-opentype'), url(.././fonts/icomoon78a0524c3a8df054cd5c.eot?#iefix) format('embedded-opentype'), url(.././fonts/icomoon70a5709371d24d38b885.woff) format('woff'), url(.././fonts/icomoone0e510584c12e6d42fe0.ttf) format('truetype'), url(.././fonts/icomoon996a234fc5fd2ff7d183.svg#icomoon) format('svg');
+  src: url(.././fonts/icomoon78a0524c3a8df054cd5c.eot)
+      format('embedded-opentype'),
+    url(.././fonts/icomoon78a0524c3a8df054cd5c.eot?#iefix)
+      format('embedded-opentype'),
+    url(.././fonts/icomoon70a5709371d24d38b885.woff) format('woff'),
+    url(.././fonts/icomoone0e510584c12e6d42fe0.ttf) format('truetype'),
+    url(.././fonts/icomoon996a234fc5fd2ff7d183.svg#icomoon) format('svg');
 }
 @font-face {
   font-family: 'text-security-disc';
   src: url(.././fonts/text-security-discd3995fb5c90f4436a47a.eot);
-  src: url(.././fonts/text-security-discd3995fb5c90f4436a47a.eot?#iefix) format('embedded-opentype'), url(.././fonts/text-security-disc0020690534bc05d23144.woff) format('woff'), url(.././fonts/text-security-disc5bd8137c2cc18e31a4a6.ttf) format('truetype'), url(.././fonts/text-security-disc086a4dc87cc229bdfdff.svg#text-security) format('svg');
+  src: url(.././fonts/text-security-discd3995fb5c90f4436a47a.eot?#iefix)
+      format('embedded-opentype'),
+    url(.././fonts/text-security-disc0020690534bc05d23144.woff) format('woff'),
+    url(.././fonts/text-security-disc5bd8137c2cc18e31a4a6.ttf)
+      format('truetype'),
+    url(.././fonts/text-security-disc086a4dc87cc229bdfdff.svg#text-security)
+      format('svg');
 }
 .icomoon-eject {
   display: inline-block;
@@ -631,7 +669,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e902";
+  content: '\e902';
 }
 .icomoon-refresh {
   display: inline-block;
@@ -643,7 +681,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e903";
+  content: '\e903';
 }
 .icomoon-info {
   display: inline-block;
@@ -655,7 +693,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e904";
+  content: '\e904';
 }
 .icomoon-chat {
   display: inline-block;
@@ -667,7 +705,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e905";
+  content: '\e905';
 }
 .icomoon-redirect {
   display: inline-block;
@@ -679,7 +717,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e906";
+  content: '\e906';
 }
 .icomoon-settings {
   display: inline-block;
@@ -691,7 +729,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e907";
+  content: '\e907';
 }
 .icomoon-warning {
   display: inline-block;
@@ -703,7 +741,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e908";
+  content: '\e908';
 }
 .icomoon-arrow-down {
   display: inline-block;
@@ -715,7 +753,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e909";
+  content: '\e909';
 }
 .icomoon-close {
   display: inline-block;
@@ -727,7 +765,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e90a";
+  content: '\e90a';
 }
 .icomoon-arrow-up {
   display: inline-block;
@@ -739,7 +777,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e90b";
+  content: '\e90b';
 }
 .icomoon-arrow-right2 {
   display: inline-block;
@@ -751,7 +789,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e90c";
+  content: '\e90c';
 }
 .icomoon-plus {
   display: inline-block;
@@ -763,7 +801,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e90d";
+  content: '\e90d';
 }
 .icomoon-arrow-right {
   display: inline-block;
@@ -775,7 +813,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e90e";
+  content: '\e90e';
 }
 .icomoon-help {
   display: inline-block;
@@ -787,7 +825,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e90f";
+  content: '\e90f';
 }
 .icomoon-eye-error {
   display: inline-block;
@@ -799,7 +837,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e911";
+  content: '\e911';
 }
 .icomoon-T1 {
   display: inline-block;
@@ -811,7 +849,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e912";
+  content: '\e912';
 }
 .icomoon-arrow-left {
   display: inline-block;
@@ -823,7 +861,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91a";
+  content: '\e91a';
 }
 .icomoon-setmax {
   display: inline-block;
@@ -835,7 +873,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91b";
+  content: '\e91b';
 }
 .icomoon-checked {
   display: inline-block;
@@ -847,7 +885,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91c";
+  content: '\e91c';
 }
 .icomoon-error {
   display: inline-block;
@@ -859,7 +897,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91d";
+  content: '\e91d';
 }
 .icomoon-eye {
   display: inline-block;
@@ -871,7 +909,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91e";
+  content: '\e91e';
 }
 .icomoon-back {
   display: inline-block;
@@ -883,7 +921,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91f";
+  content: '\e91f';
 }
 .icomoon-exit {
   display: inline-block;
@@ -895,7 +933,7 @@ input[type="password"]:focus {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e920";
+  content: '\e920';
 }
 footer {
   position: fixed;
@@ -906,7 +944,7 @@ footer {
 }
 footer a,
 footer a:visited {
-  color: #01B757;
+  color: #01b757;
 }
 footer a:hover,
 footer a:visited:hover {
@@ -952,13 +990,13 @@ footer a:visited:hover {
 @keyframes color {
   100%,
   0% {
-    stroke: #01B757;
+    stroke: #01b757;
   }
   40% {
-    stroke: #01B757;
+    stroke: #01b757;
   }
   66% {
-    stroke: #00AB51;
+    stroke: #00ab51;
   }
   80%,
   90% {
@@ -1068,12 +1106,12 @@ section > div .divider span {
 }
 section > div .divider span:before,
 section > div .divider span:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 50%;
   width: 9999px;
   height: 1px;
-  background: #E3E3E3;
+  background: #e3e3e3;
 }
 section > div .divider span:before {
   right: 100%;
@@ -1091,11 +1129,11 @@ section > div .divider span:after {
 }
 .notification {
   width: 100%;
-  background-color: #FFEFD9;
+  background-color: #ffefd9;
 }
 .notification .notification-item {
   padding: 20px;
-  border-top: 1px solid #EB8A00;
+  border-top: 1px solid #eb8a00;
 }
 .notification .notification-item:first-child {
   border: 0px;
@@ -1113,13 +1151,13 @@ section > div .divider span:after {
 .notification h3 {
   font-weight: 600;
   font-size: 14px;
-  color: #EB8A00;
+  color: #eb8a00;
 }
 .notification p {
   padding-left: 30px;
   font-weight: 300;
   font-size: 14px;
-  color: #EB8A00;
+  color: #eb8a00;
 }
 .notification .warning-icon {
   width: 30px;
@@ -1135,13 +1173,13 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e908";
+  content: '\e908';
   position: relative;
   top: 2px;
   right: 5px;
   width: 30px;
   height: 30px;
-  color: #EB8A00;
+  color: #eb8a00;
   font-size: 30px;
 }
 .notification .close-icon {
@@ -1158,13 +1196,13 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e90a";
+  content: '\e90a';
   position: relative;
   top: 1px;
   left: 5px;
   width: 20px;
   height: 20px;
-  color: #EB8A00;
+  color: #eb8a00;
   font-size: 20px;
 }
 .notification .close-icon:hover {
@@ -1268,7 +1306,7 @@ section > div .divider span:after {
   position: relative;
   width: 50%;
   padding: 16px 0px;
-  border-bottom: 2px solid #E3E3E3;
+  border-bottom: 2px solid #e3e3e3;
 }
 .select-account .tab-selection:after {
   content: '';
@@ -1284,20 +1322,20 @@ section > div .divider span:after {
 .select-account .tab-selection:active,
 .select-account .tab-selection.active {
   cursor: pointer;
-  color: #01B757;
+  color: #01b757;
 }
 .select-account .tab-selection:hover:after,
 .select-account .tab-selection:active:after,
 .select-account .tab-selection.active:after {
-  border-color: #01B757;
+  border-color: #01b757;
 }
 .select-account .tab-selection:not(.active) {
   color: #757575;
 }
 .select-account .bech32-warning {
   display: block;
-  background-color: #FFEFD9;
-  color: #EB8A00;
+  background-color: #ffefd9;
+  color: #eb8a00;
   padding: 20px;
   width: 90%;
   margin: 0 auto 20px auto;
@@ -1307,20 +1345,20 @@ section > div .divider span:after {
 }
 .select-account.p2wpkh .tab-selection.p2wpkh {
   cursor: pointer;
-  color: #01B757;
+  color: #01b757;
 }
 .select-account.p2wpkh .tab-selection.p2wpkh:after {
-  border-color: #01B757;
+  border-color: #01b757;
 }
 .select-account.p2tr .select-account-list.p2tr {
   display: block;
 }
 .select-account.p2tr .tab-selection.p2tr {
   cursor: pointer;
-  color: #01B757;
+  color: #01b757;
 }
 .select-account.p2tr .tab-selection.p2tr:after {
-  border-color: #01B757;
+  border-color: #01b757;
 }
 .select-account.p2sh .select-account-list.p2sh {
   display: block;
@@ -1330,10 +1368,10 @@ section > div .divider span:after {
 }
 .select-account.p2sh .tab-selection.p2sh {
   cursor: pointer;
-  color: #01B757;
+  color: #01b757;
 }
 .select-account.p2sh .tab-selection.p2sh:after {
-  border-color: #01B757;
+  border-color: #01b757;
 }
 .select-account.p2pkh .select-account-list.p2pkh {
   display: block;
@@ -1343,18 +1381,18 @@ section > div .divider span:after {
 }
 .select-account.p2pkh .tab-selection.p2pkh {
   cursor: pointer;
-  color: #01B757;
+  color: #01b757;
 }
 .select-account.p2pkh .tab-selection.p2pkh:after {
-  border-color: #01B757;
+  border-color: #01b757;
 }
 .select-account .select-account-list {
   margin: 0 30px 30px;
   position: relative;
   overflow-y: auto;
   display: none;
-  border-top: 1px solid #E3E3E3;
-  border-bottom: 1px solid #E3E3E3;
+  border-top: 1px solid #e3e3e3;
+  border-bottom: 1px solid #e3e3e3;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
   border-bottom-left-radius: 2px;
@@ -1411,8 +1449,8 @@ section > div .divider span:after {
 .select-account .select-account-list:hover p,
 .select-account .select-account-list:active p,
 .select-account .select-account-list.active p {
-  color: #1E7FF0;
-  fill: #1E7FF0;
+  color: #1e7ff0;
+  fill: #1e7ff0;
 }
 .select-account .enable-labeling {
   padding: 0;
@@ -1440,8 +1478,8 @@ section > div .divider span:after {
 .select-account .enable-labeling:hover p,
 .select-account .enable-labeling:active p,
 .select-account .enable-labeling.active p {
-  color: #1E7FF0;
-  fill: #1E7FF0;
+  color: #1e7ff0;
+  fill: #1e7ff0;
 }
 @media screen and (min-width: 768px) {
   .select-account {
@@ -1501,7 +1539,7 @@ section > div .divider span:after {
 .not-in-bootloader .wrapper p {
   margin: 15px 0 0 0;
   font-weight: 600;
-  color: #01B757;
+  color: #01b757;
   animation: pulsate 1.3s ease-out infinite;
 }
 .browser-not-supported {
@@ -1552,7 +1590,7 @@ section > div .divider span:after {
 .check-address p {
   margin: 8px 0px 0px 0px;
   font-weight: 600;
-  color: #01B757;
+  color: #01b757;
   animation: pulsate 1.3s ease-out infinite;
 }
 .check-address .button-request-data {
@@ -1563,7 +1601,7 @@ section > div .divider span:after {
   animation: none;
 }
 .check-address .button-request-data .path-value {
-  color: #E3E3E3;
+  color: #e3e3e3;
   font-weight: 400;
 }
 .check-address .button-request-data .address-value-container {
@@ -1594,14 +1632,22 @@ section > div .divider span:after {
   margin-left: 8px;
   cursor: pointer;
 }
-.check-address .button-request-data .address-value-container .clipboard-button svg {
+.check-address
+  .button-request-data
+  .address-value-container
+  .clipboard-button
+  svg {
   padding: 0px !important;
   width: 24px !important;
   height: 100% !important;
   fill: #757575;
   transition: fill 0.3s;
 }
-.check-address .button-request-data .address-value-container .clipboard-button:hover svg {
+.check-address
+  .button-request-data
+  .address-value-container
+  .clipboard-button:hover
+  svg {
   fill: #494949;
 }
 @media screen and (min-width: 768px) {
@@ -1630,7 +1676,7 @@ section > div .divider span:after {
 .connect p {
   margin: 8px 0px 0px 0px;
   font-weight: 600;
-  color: #01B757;
+  color: #01b757;
   animation: pulsate 1.3s ease-out infinite;
 }
 .connect .connect-usb-pin,
@@ -1664,7 +1710,7 @@ section > div .divider span:after {
   margin-bottom: 10px;
 }
 .device-management .buttons .confirm.wipe {
-  background-color: #ED1212;
+  background-color: #ed1212;
 }
 .export-account-info {
   display: flex;
@@ -1740,7 +1786,7 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91a";
+  content: '\e91a';
   position: relative;
   font-size: 18px;
   left: -4px;
@@ -1801,7 +1847,7 @@ section > div .divider span:after {
   width: 100%;
   height: 50px;
   padding: 0 15px;
-  border: 1px solid #E3E3E3;
+  border: 1px solid #e3e3e3;
   border-radius: 0px;
   border-top-width: 0px;
   text-align: left;
@@ -1824,7 +1870,7 @@ section > div .divider span:after {
   border-left: 1px solid #009546;
   box-shadow: 2px 0 0 #009546 inset;
   border-radius: 0px;
-  background: #F9F9F9;
+  background: #f9f9f9;
 }
 .select-fee .select-fee-list .custom-fee.disabled:hover {
   background: white;
@@ -1863,13 +1909,19 @@ section > div .divider span:after {
 }
 .select-fee .select-fee-list .custom-fee.active .fee-input {
   line-height: 30px;
-  border: 1px solid #E3E3E3;
+  border: 1px solid #e3e3e3;
   border-radius: 2px;
   font-size: 14px;
   padding-left: 9px;
 }
-.select-fee .select-fee-list .custom-fee.active .fee-input::-webkit-outer-spin-button,
-.select-fee .select-fee-list .custom-fee.active .fee-input::-webkit-inner-spin-button {
+.select-fee
+  .select-fee-list
+  .custom-fee.active
+  .fee-input::-webkit-outer-spin-button,
+.select-fee
+  .select-fee-list
+  .custom-fee.active
+  .fee-input::-webkit-inner-spin-button {
   /* display: none; <- Crashes Chrome on hover */
   -webkit-appearance: none;
   margin: 0;
@@ -1976,7 +2028,7 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e920";
+  content: '\e920';
 }
 .firmware-not-compatible {
   height: 500px;
@@ -1992,8 +2044,8 @@ section > div .divider span:after {
 .firmware-not-compatible .buttons .confirm {
   margin-bottom: 10px;
   margin-right: 0px;
-  border: 1px solid #1E7FF0;
-  background-color: #1E7FF0;
+  border: 1px solid #1e7ff0;
+  background-color: #1e7ff0;
 }
 .follow-device {
   display: flex;
@@ -2007,7 +2059,7 @@ section > div .divider span:after {
 .follow-device p {
   margin: 0 auto;
   font-weight: 600;
-  color: #01B757;
+  color: #01b757;
   animation: pulsate 1.3s ease-out infinite;
 }
 @media screen and (min-width: 768px) {
@@ -2081,7 +2133,7 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e920";
+  content: '\e920';
 }
 .passphrase {
   display: flex;
@@ -2122,7 +2174,7 @@ section > div .divider span:after {
 }
 .passphrase .row input {
   width: 100%;
-  font-family: "Roboto Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: 'Roboto Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
   font-size: 18px;
   letter-spacing: normal;
   line-height: 30px;
@@ -2133,10 +2185,10 @@ section > div .divider span:after {
 }
 .passphrase .row input[disabled] {
   cursor: not-allowed;
-  background: #F9F9F9;
+  background: #f9f9f9;
 }
 .passphrase .row input.text {
-  font-family: "Roboto Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: 'Roboto Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
   font-size: 18px;
   letter-spacing: normal;
 }
@@ -2150,7 +2202,7 @@ section > div .divider span:after {
 .passphrase .error {
   display: none;
   font-weight: 400;
-  color: #ED1212;
+  color: #ed1212;
 }
 .passphrase .confirm {
   margin-bottom: 10px;
@@ -2194,7 +2246,7 @@ section > div .divider span:after {
   padding: 10px 0;
   margin: 24px 0 20px;
   border-radius: 4px;
-  background-color: #E1EFFF;
+  background-color: #e1efff;
   text-align: left;
 }
 .permissions .permissions-list [tooltip] {
@@ -2212,7 +2264,7 @@ section > div .divider span:after {
   right: 28px;
   display: flex;
   align-items: center;
-  color: #1E7FF0;
+  color: #1e7ff0;
   font-weight: 300;
   font-size: 12px;
 }
@@ -2230,15 +2282,15 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e904";
+  content: '\e904';
   width: 28px;
   height: 28px;
-  color: #1E7FF0;
+  color: #1e7ff0;
   font-size: 28px;
 }
 .permissions input:checked + .indicator:after {
-  background-color: #1E7FF0;
-  border-color: #1E7FF0;
+  background-color: #1e7ff0;
+  border-color: #1e7ff0;
 }
 .permissions .buttons {
   margin-top: 18px;
@@ -2248,8 +2300,8 @@ section > div .divider span:after {
 .permissions .buttons .confirm {
   margin-bottom: 10px;
   margin-right: 0px;
-  border: 1px solid #1E7FF0;
-  background-color: #1E7FF0;
+  border: 1px solid #1e7ff0;
+  background-color: #1e7ff0;
 }
 @media screen and (min-width: 768px) {
   .permissions {
@@ -2306,7 +2358,7 @@ section > div .divider span:after {
   font-size: 22px;
   font-weight: 600;
   color: #494949;
-  border: 1px solid #E3E3E3;
+  border: 1px solid #e3e3e3;
   background: #ffffff;
   transition: all 0.3s;
 }
@@ -2319,8 +2371,8 @@ section > div .divider span:after {
 }
 .pin .pin-row button:active {
   color: #494949;
-  background: #E3E3E3;
-  border-color: #E3E3E3;
+  background: #e3e3e3;
+  border-color: #e3e3e3;
 }
 .pin .pin-input-row {
   margin-top: 24px;
@@ -2357,7 +2409,7 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e91f";
+  content: '\e91f';
 }
 .invalid-pin {
   display: flex;
@@ -2424,7 +2476,7 @@ section > div .divider span:after {
   font-size: 22px;
   font-weight: 600;
   color: #494949;
-  border: 1px solid #E3E3E3;
+  border: 1px solid #e3e3e3;
   background: #ffffff;
   transition: all 0.3s;
 }
@@ -2437,8 +2489,8 @@ section > div .divider span:after {
 }
 .word .word-row button:active {
   color: #494949;
-  background: #E3E3E3;
-  border-color: #E3E3E3;
+  background: #e3e3e3;
+  border-color: #e3e3e3;
 }
 @media screen and (min-width: 768px) {
   .word .input-row input {
@@ -2454,8 +2506,8 @@ section > div .divider span:after {
 .select-device .wrapper .select-device-list {
   margin: 17px 0 15px;
   overflow-y: auto;
-  border-top: 1px solid #E3E3E3;
-  border-bottom: 1px solid #E3E3E3;
+  border-top: 1px solid #e3e3e3;
+  border-bottom: 1px solid #e3e3e3;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
   border-bottom-left-radius: 2px;
@@ -2475,7 +2527,10 @@ section > div .divider span:after {
   height: auto;
   pointer-events: auto;
 }
-.select-device .wrapper .select-device-list button.device-explain:hover:not(.unacquired) {
+.select-device
+  .wrapper
+  .select-device-list
+  button.device-explain:hover:not(.unacquired) {
   cursor: default;
 }
 .select-device .wrapper .select-device-list button .wrapper {
@@ -2504,13 +2559,13 @@ section > div .divider span:after {
   padding: 15px 10px;
   font-weight: 400;
   font-size: 12px;
-  color: #EB8A00;
-  background-color: #FFEFD9;
+  color: #eb8a00;
+  background-color: #ffefd9;
 }
 .select-device .wrapper .select-device-list button .explain.unacquired {
   box-shadow: inherit;
-  color: #1E7FF0;
-  background-color: #E1EFFF;
+  color: #1e7ff0;
+  background-color: #e1efff;
 }
 .select-device .wrapper .select-device-list button .device-name {
   text-overflow: ellipsis;
@@ -2525,8 +2580,8 @@ section > div .divider span:after {
   margin-top: 18px;
 }
 .select-device .wrapper input:checked + .indicator:after {
-  background-color: #01B757;
-  border-color: #01B757;
+  background-color: #01b757;
+  border-color: #01b757;
 }
 .select-device .webusb {
   display: none;
@@ -2578,7 +2633,7 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e920";
+  content: '\e920';
 }
 .invalid-passphrase {
   display: flex;
@@ -2597,11 +2652,11 @@ section > div .divider span:after {
   justify-content: space-between;
 }
 .no-backup h3 {
-  color: #EB8A00;
+  color: #eb8a00;
 }
 .no-backup p {
-  background-color: #FFEFD9;
-  color: #EB8A00;
+  background-color: #ffefd9;
+  color: #eb8a00;
   padding: 14px;
 }
 .no-backup .wrapper {
@@ -2622,8 +2677,8 @@ section > div .divider span:after {
   line-height: 1;
   margin-bottom: 10px;
   margin-right: 0px;
-  border: 1px solid #01B757;
-  background-color: #01B757;
+  border: 1px solid #01b757;
+  background-color: #01b757;
   color: #ffffff;
 }
 .no-backup .buttons .cancel .exit {
@@ -2640,15 +2695,15 @@ section > div .divider span:after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-  content: "\e920";
+  content: '\e920';
 }
 .no-backup .buttons .cancel:hover {
-  background-color: #01B757;
+  background-color: #01b757;
   color: #ffffff;
 }
 .no-backup .buttons .confirm {
-  border: 1px solid #EB8A00;
-  color: #EB8A00;
+  border: 1px solid #eb8a00;
+  color: #eb8a00;
   background: #ffffff;
 }
 .iframe-failure {
@@ -2664,4 +2719,3 @@ section > div .divider span:after {
 .iframe-failure .cancel {
   margin-top: 16px;
 }
-

@@ -103,7 +103,9 @@ export const generateDRepKey = async (password) => {
   } catch (e) {
     throw ERROR.wrongPassword;
   }
-  const pubDRepKey = Buffer.from(privDRepKey.to_raw_key().to_public().as_bytes()).toString('hex');
+  const pubDRepKey = Buffer.from(
+    privDRepKey.to_raw_key().to_public().as_bytes()
+  ).toString('hex');
 
   return pubDRepKey;
 };
@@ -1284,7 +1286,6 @@ export const requestAccountKey = async (password, accountIndex) => {
   };
 };
 
-
 export const resetStorage = async (password) => {
   await requestAccountKey(password, 0);
   await new Promise((res, rej) => chrome.storage.local.clear(() => res()));
@@ -1719,12 +1720,11 @@ export const createWallet = async (name, seedPhrase, password) => {
     [STORAGE.pubDRepKey]: dRepKey,
   });
 
-  let { paymentKey, stakeKey } = await requestAccountKey(
-    password,
-    index
+  let { paymentKey, stakeKey } = await requestAccountKey(password, index);
+
+  const pubStakeKey = Buffer.from(stakeKey.to_public().as_bytes()).toString(
+    'hex'
   );
-  
-  const pubStakeKey = Buffer.from(stakeKey.to_public().as_bytes()).toString('hex');
 
   await setStorage({
     [STORAGE.pubStakeKey]: pubStakeKey,
