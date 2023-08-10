@@ -40,7 +40,7 @@ import {
   TiArrowShuffle,
   TiArrowLoop,
   GiAnvilImpact,
-} from 'react-icons';
+} from 'react-icons/all';
 
 TimeAgo.addDefaultLocale(en);
 

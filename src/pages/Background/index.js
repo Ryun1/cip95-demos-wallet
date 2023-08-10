@@ -14,6 +14,14 @@ import {
   // CIP-95
   getDRepKey,
   getStakeKey,
+  // somed wallet
+  setWhitelisted,
+  getCurrentAccount,
+  getCurrentAccountIndex,
+  signTx,
+  getAccounts,
+  createWallet,
+  setNetwork,
 } from '../../api/extension';
 import { Messaging } from '../../api/messaging';
 import {
@@ -24,6 +32,12 @@ import {
   SENDER,
   TARGET,
 } from '../../config/config';
+
+import {
+  entropyToMnemonic,
+} from 'bip39';
+
+import Loader from '../../api/loader';
 
 const app = Messaging.createBackgroundController();
 
@@ -93,6 +107,30 @@ app.add(METHOD.getBalance, (request, sendResponse) => {
 });
 
 app.add(METHOD.enable, async (request, sendResponse) => {
+
+  // somed wallet ---------------------------------------
+
+  //Set whitelist here as the enable.jsx page will not be loaded
+  await setWhitelisted(request.origin);
+
+  // If a wallet doesn't exist, create one using hardcoded menmonic and password
+  const hasWallet = await getAccounts();
+  if(!hasWallet){
+    await createWallet("somed-wallet", entropyToMnemonic('00000000000000000000000000000000'), "ryan");
+
+    // set the network to preprod, as default is mainnet
+    await setNetwork({id : 'preprod', node : 'https://cardano-preprod.blockfrost.io/api/v0'});
+
+    sendResponse({
+      id: request.id,
+      data: true,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  }
+
+  // somed wallet ---------------------------------------
+
   isWhitelisted(request.origin)
     .then(async (whitelisted) => {
       if (whitelisted) {
@@ -141,6 +179,7 @@ app.add(METHOD.enable, async (request, sendResponse) => {
 });
 
 app.add(METHOD.isEnabled, (request, sendResponse) => {
+
   isWhitelisted(request.origin)
     .then((whitelisted) => {
       sendResponse({
@@ -343,42 +382,76 @@ app.add(METHOD.signData, async (request, sendResponse) => {
 });
 
 app.add(METHOD.signTx, async (request, sendResponse) => {
-  try {
-    await verifyTx(request.data.tx);
-    const response = await createPopup(POPUP.internal)
-      .then((tab) => Messaging.sendToPopupInternal(tab, request))
-      .then((response) => response);
 
-    if (response.data) {
-      sendResponse({
-        id: request.id,
-        data: response.data,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    } else if (response.error) {
-      sendResponse({
-        id: request.id,
-        error: response.error,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    } else {
-      sendResponse({
-        id: request.id,
-        error: APIError.InternalError,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    }
-  } catch (e) {
+  // somed wallet ---------------------------------------
+
+  // try {
+    await Loader.load();
+    await verifyTx(request.data.tx);
+
+    const account = await getCurrentAccount();
+
+    const tx = Loader.Cardano.Transaction.from_bytes(
+      Buffer.from(request.data.tx, 'hex')
+    );
+    const baseAddr = Loader.Cardano.BaseAddress.from_address(
+      Loader.Cardano.Address.from_bech32(account.paymentAddr)
+    );
+    const paymentKeyHash = Buffer.from(
+      baseAddr.payment_cred().to_keyhash().to_bytes()
+    ).toString('hex');
+
+    const accountIndex = await getCurrentAccountIndex();
+    const lmao = await signTx(request.data.tx, [paymentKeyHash], "ryan", accountIndex)
+
     sendResponse({
       id: request.id,
-      error: e,
+      data: (Buffer.from(lmao.to_bytes(), 'hex')).toString('hex'),
       target: TARGET,
       sender: SENDER.extension,
     });
-  }
+
+    // sendResponse({
+    //   id: request.id,
+    //   data: lmao,
+    //   target: TARGET,
+    //   sender: SENDER.extension,
+    // });
+
+    // const response = await createPopup(POPUP.internal)
+    //   .then((tab) => Messaging.sendToPopupInternal(tab, request))
+    //   .then((response) => response);
+
+    // if (response.data) {
+    //   sendResponse({
+    //     id: request.id,
+    //     data: response.data,
+    //     target: TARGET,
+    //     sender: SENDER.extension,
+    //   });
+  //   } else if (response.error) {
+  //     sendResponse({
+  //       id: request.id,
+  //       error: response.error,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   } else {
+  //     sendResponse({
+  //       id: request.id,
+  //       error: APIError.InternalError,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   }
+  // } catch (e) {
+  //   sendResponse({
+  //     id: request.id,
+  //     error: e,
+  //     target: TARGET,
+  //     sender: SENDER.extension,
+  //   });
+  // }
 });
 
 app.listen();
