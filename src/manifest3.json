@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "manifest_version": 3,
     "name": "demos wallet",
     "version": "1.5.0",
@@ -36,3 +37,41 @@
     "permissions": ["storage", "unlimitedStorage", "favicon"]
   }
   
+=======
+  "manifest_version": 3,
+  "name": "somed wallet",
+  "version": "0.1.0",
+  "description": "This is a mock wallet, based on Nami with no authentication. ⚠ DO NOT use for real funds ⚠",
+  "background": { "service_worker": "background.bundle.js" },
+  "action": {
+    "default_popup": "mainPopup.html",
+    "default_icon": "icon-34.png"
+  },
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+      "js": ["contentScript.bundle.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icon-128.png",
+        "icon-34.png",
+        "injected.bundle.js",
+        "internalPopup.html",
+        "Trezor/*"
+      ],
+      "matches": ["http://*/*", "https://*/*", "file://*/*"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "permissions": ["storage", "unlimitedStorage", "favicon"]
+}
+>>>>>>> f6f5dfa (chore:rebase demos)
