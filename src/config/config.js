@@ -62,6 +62,7 @@ export const STORAGE = {
   migration: 'migration',
   pubDRepKey: 'pubDRepKey',
   pubStakeKey: 'pubStakeKey',
+  password: 'password',
 };
 
 export const LOCAL_STORAGE = {

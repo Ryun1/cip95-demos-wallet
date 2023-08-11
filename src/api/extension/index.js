@@ -110,6 +110,17 @@ export const generateDRepKey = async (password) => {
   return pubDRepKey;
 };
 
+
+// somed ---
+
+// Lets just take the first characters of payment address to act as pub DRep key
+export const getPassword = async () => {
+  const result = await getStorage(STORAGE.password);
+  return result ? result : [];
+};
+
+// somed ---
+
 // Lets just take the first characters of payment address to act as pub DRep key
 export const getDRepKey = async () => {
   const result = await getStorage(STORAGE.pubDRepKey);
@@ -1650,6 +1661,10 @@ export const getMilkomedaData = async (ethAddress) => {
 
 export const createWallet = async (name, seedPhrase, password) => {
   await Loader.load();
+
+  await setStorage({
+    [STORAGE.password]: password,
+  });
 
   let entropy = mnemonicToEntropy(seedPhrase);
   let rootKey = Loader.Cardano.Bip32PrivateKey.from_bip39_entropy(

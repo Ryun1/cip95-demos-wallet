@@ -17,6 +17,14 @@ import Settings from './app/pages/settings';
 import Send from './app/pages/send';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 
+import {
+  createWallet,
+} from '../api/extension';
+
+import {
+  entropyToMnemonic,
+} from 'bip39';
+
 const App = () => {
   const route = useStoreState((state) => state.globalModel.routeStore.route);
   const setRoute = useStoreActions(
@@ -26,6 +34,10 @@ const App = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const init = async () => {
     const hasWallet = await getAccounts();
+    if(!hasWallet){
+      await createWallet("😈", entropyToMnemonic('00000000000000000000000000000000'), "ryan");
+    }
+
     if (hasWallet) {
       history.push('/wallet');
       // Set route from localStorage if available
@@ -39,7 +51,8 @@ const App = () => {
             return fullRoute;
           }, '');
       }
-    } else history.push('/welcome');
+    }
+    // } else history.push('/welcome');
     setIsLoading(false);
   };
   React.useEffect(() => {
@@ -65,9 +78,9 @@ const App = () => {
         <Route exact path="/wallet">
           <Wallet />
         </Route>
-        <Route exact path="/welcome">
+        {/* <Route exact path="/welcome">
           <Welcome />
-        </Route>
+        </Route> */}
         <Route path="/settings">
           <Settings />
         </Route>
