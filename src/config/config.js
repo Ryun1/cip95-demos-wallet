@@ -60,8 +60,6 @@ export const STORAGE = {
   network: 'network',
   currency: 'currency',
   migration: 'migration',
-  pubDRepKey: 'pubDRepKey',
-  pubStakeKey: 'pubStakeKey',
 };
 
 export const LOCAL_STORAGE = {
