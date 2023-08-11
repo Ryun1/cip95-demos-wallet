@@ -110,16 +110,18 @@ export const generateDRepKey = async (password) => {
   return pubDRepKey;
 };
 
-// Lets just take the first characters of payment address to act as pub DRep key
+// Get the account's pub DRep key
 export const getDRepKey = async () => {
-  const result = await getStorage(STORAGE.pubDRepKey);
-  return result ? result : [];
+  await Loader.load();
+  const currentAccount = await getCurrentAccount();
+  return currentAccount.dRepKeyPub;
 };
 
-// Lets just take some chars from rewards address to act as a pub stake key
+// Get the account's pub stake key
 export const getStakeKey = async () => {
-  const result = [await getStorage(STORAGE.pubStakeKey)];
-  return result ? result : [];
+  await Loader.load();
+  const currentAccount = await getCurrentAccount();
+  return [currentAccount.stakeKeyPub];
 };
 
 // CIP-95 -----------------------------
@@ -1283,6 +1285,8 @@ export const requestAccountKey = async (password, accountIndex) => {
     accountKey,
     paymentKey: accountKey.derive(0).derive(0).to_raw_key(),
     stakeKey: accountKey.derive(2).derive(0).to_raw_key(),
+    // cip-95 -----------------------------
+    dRepKey: accountKey.derive(3).derive(0).to_raw_key(),
   };
 };
 
@@ -1303,7 +1307,7 @@ export const createAccount = async (name, password, accountIndex = null) => {
     ? Object.keys(getNativeAccounts(existingAccounts)).length
     : 0;
 
-  let { accountKey, paymentKey, stakeKey } = await requestAccountKey(
+  let { accountKey, paymentKey, stakeKey, dRepKey } = await requestAccountKey(
     password,
     index
   );
@@ -1313,13 +1317,23 @@ export const createAccount = async (name, password, accountIndex = null) => {
   ); // BIP32 Public key
   const paymentKeyPub = paymentKey.to_public();
   const stakeKeyPub = stakeKey.to_public();
+  // cip-95 -----------------------------
+  const dRepKeyPub = Buffer.from(dRepKey.to_public().as_bytes()).toString(
+    'hex'
+  );
+  const stakeKeyPubHex = Buffer.from(stakeKeyPub.as_bytes()).toString(
+    'hex'
+  );
+  // cip-95 -----------------------------
 
   accountKey.free();
   paymentKey.free();
   stakeKey.free();
+  dRepKey.free();
   accountKey = null;
   paymentKey = null;
   stakeKey = null;
+  dRepKey = null;
 
   const paymentKeyHash = Buffer.from(
     paymentKeyPub.hash().to_bytes(),
@@ -1399,6 +1413,8 @@ export const createAccount = async (name, password, accountIndex = null) => {
         rewardAddr: rewardAddrTestnet,
       },
       avatar: Math.random().toString(),
+      dRepKeyPub,
+      stakeKeyPub: stakeKeyPubHex,
     },
   };
 
@@ -1712,24 +1728,6 @@ export const createWallet = async (name, seedPhrase, password) => {
   }
 
   await switchAccount(index);
-
-  // cip-95 -----------------------------
-  const dRepKey = await generateDRepKey(password);
-
-  await setStorage({
-    [STORAGE.pubDRepKey]: dRepKey,
-  });
-
-  let { paymentKey, stakeKey } = await requestAccountKey(password, index);
-
-  const pubStakeKey = Buffer.from(stakeKey.to_public().as_bytes()).toString(
-    'hex'
-  );
-
-  await setStorage({
-    [STORAGE.pubStakeKey]: pubStakeKey,
-  });
-  // cip-95 -----------------------------
 
   password = null;
 
