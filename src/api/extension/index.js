@@ -86,29 +86,6 @@ export const decryptWithPassword = async (password, encryptedKeyHex) => {
 };
 
 // CIP-95 -----------------------------
-export const generateDRepKey = async (password) => {
-  await Loader.load();
-  const encryptedRootKey = await getStorage(STORAGE.encryptedKey);
-  let privDRepKey;
-  const currentAccountIndex = await getCurrentAccountIndex();
-  try {
-    privDRepKey = Loader.Cardano.Bip32PrivateKey.from_bytes(
-      Buffer.from(await decryptWithPassword(password, encryptedRootKey), 'hex')
-    )
-      .derive(harden(1694)) // purpose
-      .derive(harden(1815)) // coin type;
-      .derive(harden(parseInt(currentAccountIndex)))
-      .derive(1718)
-      .derive(0);
-  } catch (e) {
-    throw ERROR.wrongPassword;
-  }
-  const pubDRepKey = Buffer.from(
-    privDRepKey.to_raw_key().to_public().as_bytes()
-  ).toString('hex');
-
-  return pubDRepKey;
-};
 
 // Get the account's pub DRep key
 export const getDRepKey = async () => {
@@ -1008,7 +985,7 @@ export const signTx = async (
   partialSign = false
 ) => {
   await Loader.load();
-  let { paymentKey, stakeKey } = await requestAccountKey(
+  let { paymentKey, stakeKey, dRepKey } = await requestAccountKey(
     password,
     accountIndex
   );
@@ -1021,6 +998,11 @@ export const signTx = async (
     'hex'
   ).toString('hex');
 
+  const dRepKeyHash = Buffer.from(
+    dRepKey.to_public().hash().to_bytes(),
+    'hex'
+  ).toString('hex');
+  
   const rawTx = Loader.Cardano.Transaction.from_bytes(Buffer.from(tx, 'hex'));
 
   const txWitnessSet = Loader.Cardano.TransactionWitnessSet.new();
@@ -1030,6 +1012,7 @@ export const signTx = async (
     let signingKey;
     if (keyHash === paymentKeyHash) signingKey = paymentKey;
     else if (keyHash === stakeKeyHash) signingKey = stakeKey;
+    else if (keyHash === dRepKeyHash) signingKey = dRepKey;
     else if (!partialSign) throw TxSignError.ProofGeneration;
     else return;
     const vkey = Loader.Cardano.make_vkey_witness(txHash, signingKey);
@@ -1040,6 +1023,8 @@ export const signTx = async (
   stakeKey = null;
   paymentKey.free();
   paymentKey = null;
+  dRepKey.free();
+  dRepKey = null;
 
   txWitnessSet.set_vkeys(vkeyWitnesses);
   return txWitnessSet;
