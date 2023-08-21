@@ -19,9 +19,9 @@ import {
   signTxCIP95,
   signDataCIP95,
 } from '../../api/webpage';
-import { EVENT } from '../../config/config';
 
-// CIP-30 + CIP-95
+
+// CIP-30
 window.cardano = {
   ...(window.cardano || {}),
   demos: {
@@ -30,9 +30,9 @@ window.cardano = {
       try {
         extension = obj['cip'];
       } catch (err) {
-        console.log('Wallet: No extension passed to wallet');
+        console.log('demos: No extension passed to wallet');
       }
-
+      // CIP-95 extension
       if (extension == '95') {
         if (await enable()) {
           return {

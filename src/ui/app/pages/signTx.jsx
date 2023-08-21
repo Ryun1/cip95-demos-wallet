@@ -55,6 +55,9 @@ const SignTx = ({ request, controller }) => {
     script: false,
     contract: false,
     datum: false,
+    // cip-95
+    vote: false,
+    proposal: false,
   });
   const [tx, setTx] = React.useState('');
   // key kind can be payment and stake
@@ -90,6 +93,8 @@ const SignTx = ({ request, controller }) => {
     const withdrawal = tx.body().withdrawals();
     const minting = tx.body().mint();
     const script = tx.witness_set().native_scripts();
+    // cip-95
+    // when available
     let datum;
     let contract = tx.body().script_data_hash();
     const outputs = tx.body().outputs();
@@ -290,6 +295,9 @@ const SignTx = ({ request, controller }) => {
       baseAddr.stake_cred().to_keyhash().to_bytes()
     ).toString('hex');
 
+    // CIP-95
+    const dRepKeyHash = (Loader.Cardano.PublicKey.from_bytes(Buffer.from(account.dRepKeyPub, 'hex'))).hash()
+  
     //get key hashes from inputs
     const inputs = tx.body().inputs();
     for (let i = 0; i < inputs.len(); i++) {
@@ -313,6 +321,9 @@ const SignTx = ({ request, controller }) => {
     }
 
     //get key hashes from certificates
+
+    // CIP-95 TODO: check for DRep Certs or votes
+
     const txBody = tx.body();
     const keyHashFromCert = (txBody) => {
       for (let i = 0; i < txBody.certs().len(); i++) {
@@ -440,6 +451,7 @@ const SignTx = ({ request, controller }) => {
     requiredKeyHashes = [...new Set(requiredKeyHashes)];
     if (requiredKeyHashes.includes(paymentKeyHash)) keyKind.push('payment');
     if (requiredKeyHashes.includes(stakeKeyHash)) keyKind.push('stake');
+    if (requiredKeyHashes.includes(dRepKeyHash)) keyKind.push('DRep');
     if (keyKind.length <= 0) {
       setIsLoading((l) => ({
         ...l,
