@@ -296,7 +296,8 @@ const SignTx = ({ request, controller }) => {
     ).toString('hex');
 
     // CIP-95
-    const dRepKeyHash = (Loader.Cardano.PublicKey.from_bytes(Buffer.from(account.dRepKeyPub, 'hex'))).hash()
+    const dRepKeyHashObj = (Loader.Cardano.PublicKey.from_bytes(Buffer.from(account.dRepKeyPub, 'hex'))).hash()
+    const dRepKeyHash = Buffer.from(dRepKeyHashObj.to_bytes()).toString('hex');
   
     //get key hashes from inputs
     const inputs = tx.body().inputs();
