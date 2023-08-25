@@ -4,6 +4,7 @@
 
 #### ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠
 
++ I have added password and mnemonic to secrets files 
 
 # CIP-95 Demos Mock wallet 
 

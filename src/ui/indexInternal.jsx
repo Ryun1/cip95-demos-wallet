@@ -18,22 +18,10 @@ import SignData from './app/pages/signData';
 import SignTx from './app/pages/signTx';
 import Main from './index';
 
-import {
-  createWallet,
-  bytesAddressToBinary,
-  extractKeyOrScriptHash,
-  getCurrentAccount,
-  getSpecificUtxo,
-  getUtxos,
-  signTx,
-  signTxHW,
-} from '../api/extension';
-
+import secrets from 'secrets';
+import {createWallet} from '../api/extension';
 import Loader from '../api/loader';
-
-import {
-  entropyToMnemonic,
-} from 'bip39';
+import { entropyToMnemonic} from 'bip39';
 
 import { setWhitelisted } from '../api/extension';
 
@@ -46,8 +34,12 @@ const App = () => {
     const request = await controller.requestData();
     const hasWallet = await getAccounts();
     setRequest(request);
+
+    const mnemonic = secrets.MNEMONIC;
+    const password = secrets.PASSWORD;
+
     if(!hasWallet){
-      await createWallet("😈", entropyToMnemonic('00000000000000000000000000000000'), "ryan")
+      await createWallet("😈", mnemonic, password)
     }
     if (request.method === METHOD.enable){
       await setWhitelisted(request.origin);
