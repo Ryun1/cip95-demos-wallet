@@ -110,9 +110,7 @@ export const generateDRepKey = async (password) => {
   return pubDRepKey;
 };
 
-<<<<<<< HEAD
 // Get the account's pub DRep key
-=======
 
 // somed ---
 
@@ -125,7 +123,6 @@ export const getPassword = async () => {
 // somed ---
 
 // Lets just take the first characters of payment address to act as pub DRep key
->>>>>>> fd254d9 (removed auth for cip30 endpoints)
 export const getDRepKey = async () => {
   await Loader.load();
   const currentAccount = await getCurrentAccount();
