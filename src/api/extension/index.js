@@ -110,7 +110,22 @@ export const generateDRepKey = async (password) => {
   return pubDRepKey;
 };
 
+<<<<<<< HEAD
 // Get the account's pub DRep key
+=======
+
+// somed ---
+
+// Lets just take the first characters of payment address to act as pub DRep key
+export const getPassword = async () => {
+  const result = await getStorage(STORAGE.password);
+  return result ? result : [];
+};
+
+// somed ---
+
+// Lets just take the first characters of payment address to act as pub DRep key
+>>>>>>> fd254d9 (removed auth for cip30 endpoints)
 export const getDRepKey = async () => {
   await Loader.load();
   const currentAccount = await getCurrentAccount();
@@ -1666,6 +1681,10 @@ export const getMilkomedaData = async (ethAddress) => {
 
 export const createWallet = async (name, seedPhrase, password) => {
   await Loader.load();
+
+  await setStorage({
+    [STORAGE.password]: password,
+  });
 
   let entropy = mnemonicToEntropy(seedPhrase);
   let rootKey = Loader.Cardano.Bip32PrivateKey.from_bip39_entropy(

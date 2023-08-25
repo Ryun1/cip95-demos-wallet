@@ -1,6 +1,3 @@
-/**
- * hw.jsx is the entry point for the harware wallet extension tab
- */
 
 import React from 'react';
 import {

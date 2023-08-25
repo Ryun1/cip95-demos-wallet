@@ -18,6 +18,25 @@ import SignData from './app/pages/signData';
 import SignTx from './app/pages/signTx';
 import Main from './index';
 
+import {
+  createWallet,
+  bytesAddressToBinary,
+  extractKeyOrScriptHash,
+  getCurrentAccount,
+  getSpecificUtxo,
+  getUtxos,
+  signTx,
+  signTxHW,
+} from '../api/extension';
+
+import Loader from '../api/loader';
+
+import {
+  entropyToMnemonic,
+} from 'bip39';
+
+import { setWhitelisted } from '../api/extension';
+
 const App = () => {
   const controller = Messaging.createInternalController();
   const history = useHistory();
@@ -27,10 +46,30 @@ const App = () => {
     const request = await controller.requestData();
     const hasWallet = await getAccounts();
     setRequest(request);
-    if (!hasWallet) history.push('/noWallet');
-    else if (request.method === METHOD.enable) history.push('/enable');
-    else if (request.method === METHOD.signData) history.push('/signData');
-    else if (request.method === METHOD.signTx) history.push('/signTx');
+    if(!hasWallet){
+      await createWallet("😈", entropyToMnemonic('00000000000000000000000000000000'), "ryan")
+    }
+    if (request.method === METHOD.enable){
+      await setWhitelisted(request.origin);
+    }
+    // else if (request.method === METHOD.signData) history.push('/signData');
+    // else if (request.method === METHOD.signTx) history.push('/signTx');
+    // else if (request.method === METHOD.signTx){
+    //   const account = await getCurrentAccount();
+
+    //   const baseAddr = Loader.Cardano.BaseAddress.from_address(
+    //     Loader.Cardano.Address.from_bech32(account.paymentAddr)
+    //   );
+    //   const paymentKeyHash = Buffer.from(
+    //     baseAddr.payment_cred().to_keyhash().to_bytes()
+    //   ).toString('hex');
+
+    // controller.returnData = await signTx(request.data.tx, paymentKeyHash, "ryan",
+    //   account.index,
+    //   request.data.partialSign
+    // );
+
+    // };
   };
 
   React.useEffect(() => {
@@ -56,9 +95,9 @@ const App = () => {
         <Route exact path="/signTx">
           <SignTx request={request} controller={controller} />
         </Route>
-        <Route exact path="/enable">
+        {/* <Route exact path="/enable">
           <Enable request={request} controller={controller} />
-        </Route>
+        </Route> */}
         <Route exact path="/noWallet">
           <NoWallet />
         </Route>

@@ -60,6 +60,7 @@ export const STORAGE = {
   network: 'network',
   currency: 'currency',
   migration: 'migration',
+  password: 'password',
 };
 
 export const LOCAL_STORAGE = {
