@@ -55,6 +55,7 @@ window.cardano = {
             getActivePubStakeKeys: () => getStakeKey(),
             signTx: (tx, partialSign) => signTxCIP95(tx, partialSign),
             signData: (address, payload) => signDataCIP95(address, payload),
+            getExtensions: () => [{ cip: 95 }],
           };
         }
       } else if (obj == null) {
@@ -75,6 +76,7 @@ window.cardano = {
               off: (eventName, callback) => off(eventName, callback),
               getCollateral: () => getCollateral(),
             },
+            getExtensions: () => [],
           };
         }
       }
