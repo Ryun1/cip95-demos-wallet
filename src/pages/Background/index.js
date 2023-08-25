@@ -384,11 +384,12 @@ app.add(METHOD.signTx, async (request, sendResponse) => {
     ).toString('hex');
 
     const accountIndex = await getCurrentAccountIndex();
-    const lmao = await signTx(request.data.tx, [paymentKeyHash], "ryan", accountIndex)
+    const password = await getPassword();
+    const witnessSet = await signTx(request.data.tx, [paymentKeyHash], password, accountIndex)
 
     sendResponse({
       id: request.id,
-      data: (Buffer.from(lmao.to_bytes(), 'hex')).toString('hex'),
+      data: (Buffer.from(witnessSet.to_bytes(), 'hex')).toString('hex'),
       target: TARGET,
       sender: SENDER.extension,
     });
