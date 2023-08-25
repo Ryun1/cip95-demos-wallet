@@ -114,7 +114,7 @@ export const generateDRepKey = async (password) => {
 
 // somed ---
 
-// Lets just take the first characters of payment address to act as pub DRep key
+// Get the password
 export const getPassword = async () => {
   const result = await getStorage(STORAGE.password);
   return result ? result : [];
@@ -122,7 +122,7 @@ export const getPassword = async () => {
 
 // somed ---
 
-// Lets just take the first characters of payment address to act as pub DRep key
+// Get the account's pub DRep key
 export const getDRepKey = async () => {
   await Loader.load();
   const currentAccount = await getCurrentAccount();
