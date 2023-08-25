@@ -35,12 +35,16 @@ const App = () => {
     const hasWallet = await getAccounts();
     setRequest(request);
 
+    // Import the mnemonic and password from secrets files
     const mnemonic = secrets.MNEMONIC;
     const password = secrets.PASSWORD;
 
+    // If a wallet doesn't exist, create one
     if(!hasWallet){
-      await createWallet("😈", mnemonic, password)
+      await createWallet("😈", mnemonic, password);
     }
+
+    // If we are enabling the extension, whitelist the connection
     if (request.method === METHOD.enable){
       await setWhitelisted(request.origin);
     }

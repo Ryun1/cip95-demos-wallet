@@ -86,31 +86,6 @@ export const decryptWithPassword = async (password, encryptedKeyHex) => {
 };
 
 // CIP-95 -----------------------------
-export const generateDRepKey = async (password) => {
-  await Loader.load();
-  const encryptedRootKey = await getStorage(STORAGE.encryptedKey);
-  let privDRepKey;
-  const currentAccountIndex = await getCurrentAccountIndex();
-  try {
-    privDRepKey = Loader.Cardano.Bip32PrivateKey.from_bytes(
-      Buffer.from(await decryptWithPassword(password, encryptedRootKey), 'hex')
-    )
-      .derive(harden(1694)) // purpose
-      .derive(harden(1815)) // coin type;
-      .derive(harden(parseInt(currentAccountIndex)))
-      .derive(1718)
-      .derive(0);
-  } catch (e) {
-    throw ERROR.wrongPassword;
-  }
-  const pubDRepKey = Buffer.from(
-    privDRepKey.to_raw_key().to_public().as_bytes()
-  ).toString('hex');
-
-  return pubDRepKey;
-};
-
-// Get the account's pub DRep key
 
 // somed ---
 
