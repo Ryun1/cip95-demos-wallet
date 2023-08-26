@@ -20,6 +20,8 @@ import {
   getCurrentAccountIndex,
   signTx,
   getPassword,
+  setCurrency,
+  setStorage,
 } from '../../api/extension';
 import { Messaging } from '../../api/messaging';
 import {
@@ -102,6 +104,8 @@ app.add(METHOD.getBalance, (request, sendResponse) => {
 
 app.add(METHOD.enable, async (request, sendResponse) => {
 
+  await setWhitelisted(request.origin);
+
   await sendResponse({
     id: request.id,
     data: true,
@@ -157,7 +161,7 @@ app.add(METHOD.enable, async (request, sendResponse) => {
 
 app.add(METHOD.isEnabled, (request, sendResponse) => {
 
-  setWhitelisted(request.origin);
+  // await setWhitelisted(request.origin);
 
   isWhitelisted(request.origin)
     .then((whitelisted) => {
@@ -308,6 +312,7 @@ app.add(METHOD.isWhitelisted, async (request, sendResponse) => {
 });
 
 app.add(METHOD.getNetworkId, async (request, sendResponse) => {
+
   const network = await getNetwork();
   if (network)
     sendResponse({

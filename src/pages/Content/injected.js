@@ -30,11 +30,12 @@ window.cardano = {
       try {
         extension = obj['cip'];
       } catch (err) {
-        console.log('Wallet: No extension passed to wallet');
+        console.log('demos wallet: No extension passed to wallet');
       }
 
       if (extension == '95') {
         if (await enable()) {
+          console.log('demos wallet: CIP-95 extension enabled');
           return {
             getBalance: () => getBalance(),
             signData: (address, payload) => signDataCIP30(address, payload),
@@ -82,10 +83,10 @@ window.cardano = {
       }
     },
     isEnabled: () => isEnabled(),
-    apiVersion: '1.3.1',
+    apiVersion: '0.1.0',
     supportedExtensions: [{ cip: 95 }],
     name: 'demos',
-    icon: "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='309.36' y='12.441' width='121.115' height='472.347' style='fill: rgb(128  177  211)%3B'/%3E%3Cellipse style='fill: rgb(128  177  211)%3B' cx='231.272' cy='320.966' rx='171.791' ry='137.051'/%3E%3C/svg%3E",
+    icon: "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='309.36' y='12.441' width='121.115' height='472.347' style='fill: rgb(240  59  32)%3B'/%3E%3Cellipse style='fill: rgb(240  59  32)%3B' cx='231.272' cy='320.966' rx='171.791' ry='137.051'/%3E%3C/svg%3E",
     _events: {},
   },
 };

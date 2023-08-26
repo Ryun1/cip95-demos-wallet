@@ -19,7 +19,7 @@ import SignTx from './app/pages/signTx';
 import Main from './index';
 
 import secrets from 'secrets';
-import {createWallet} from '../api/extension';
+import {createWallet, setNetwork} from '../api/extension';
 import Loader from '../api/loader';
 import { entropyToMnemonic} from 'bip39';
 

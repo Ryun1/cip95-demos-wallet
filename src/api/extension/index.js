@@ -1654,9 +1654,9 @@ export const getMilkomedaData = async (ethAddress) => {
 export const createWallet = async (name, seedPhrase, password) => {
   await Loader.load();
 
-  await setStorage({
-    [STORAGE.password]: password,
-  });
+  // await setStorage({
+  //   [STORAGE.password]: password,
+  // });
 
   let entropy = mnemonicToEntropy(seedPhrase);
   let rootKey = Loader.Cardano.Bip32PrivateKey.from_bip39_entropy(

@@ -34,24 +34,29 @@ const App = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const init = async () => {
     const hasWallet = await getAccounts();
-    if(!hasWallet){
-      await createWallet("😈", entropyToMnemonic('00000000000000000000000000000000'), "ryan");
-    }
 
-    if (hasWallet) {
-      history.push('/wallet');
-      // Set route from localStorage if available
-      if (route && route !== '/wallet') {
-        route
-          .slice(1)
-          .split('/')
-          .reduce((acc, r) => {
-            const fullRoute = acc + `/${r}`;
-            history.push(fullRoute);
-            return fullRoute;
-          }, '');
-      }
+    // Import the mnemonic and password from secrets files
+    const mnemonic = secrets.MNEMONIC;
+    const password = secrets.PASSWORD;
+
+    // If a wallet doesn't exist, create one, don't open any UI
+    if(!hasWallet){
+      await createWallet("😈", mnemonic, password);
     }
+    // if (hasWallet) {
+    //   history.push('/wallet');
+    //   // Set route from localStorage if available
+    //   if (route && route !== '/wallet') {
+    //     route
+    //       .slice(1)
+    //       .split('/')
+    //       .reduce((acc, r) => {
+    //         const fullRoute = acc + `/${r}`;
+    //         history.push(fullRoute);
+    //         return fullRoute;
+    //       }, '');
+    //   }
+    // }
     // } else history.push('/welcome');
     setIsLoading(false);
   };
