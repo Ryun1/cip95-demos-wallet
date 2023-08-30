@@ -20,20 +20,22 @@ import {
   signDataCIP95,
 } from '../../api/webpage';
 
-
+// todo: improve extension handelling
 // CIP-30
 window.cardano = {
   ...(window.cardano || {}),
   demos: {
     enable: async (obj) => {
-      let extension = undefined;
+      let enableCIP95 = undefined;
       try {
-        extension = obj['cip'];
+        // Check if CIP-95 extension has been requested
+        enableCIP95 = (obj.extensions).some(item => item.cip === 95);
       } catch (err) {
-        console.log('demos: No extension passed to wallet');
+        console.log('demos: No extensions passed to wallet');
       }
       // CIP-95 extension
-      if (extension == '95') {
+      if (enableCIP95 == true) {
+        // console.log('demos: extension enabled: ', extension)
         if (await enable()) {
           return {
             getBalance: () => getBalance(),
@@ -58,7 +60,7 @@ window.cardano = {
             getExtensions: () => [{ cip: 95 }],
           };
         }
-      } else if (obj == null) {
+      } else if (enableCIP95 == null) {
         if (await enable()) {
           return {
             getBalance: () => getBalance(),
