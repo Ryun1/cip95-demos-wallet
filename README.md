@@ -9,6 +9,13 @@
 
 This is a *mock* wallet, based on [Nami](https://github.com/berry-pool/nami).
 
+
+Currently corresponding CIP-95 commit: [fbc5fcb](https://github.com/cardano-foundation/CIPs/pull/509/commits/fbc5fcbb127313ccfd2a30376145f63627f3afd9).
+
+| Tag | CIP-95 Commit | demos dApp Tag |
+| ---- | ---- | ---- |
+| [1.4.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.4.0) | [fbc5fcb](https://github.com/cardano-foundation/CIPs/pull/509/commits/fbc5fcbb127313ccfd2a30376145f63627f3afd9) | [1.4.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.4.0) |
+
 ## To Develop
 
 ### Create secret files
