@@ -4,7 +4,7 @@
 
 class Loader {
   async load() {
-    if (this._wasm && this._wasm2) return;
+    if (this._wasm && this._wasm2 && this._wasm3) return;
     /**
      * @private
      */
@@ -17,6 +17,12 @@ class Loader {
     this._wasm2 = await import(
       '../../temporary_modules/@emurgo/cardano-message-signing-browser/emurgo_message_signing'
     );
+    /**
+     * @private
+     */
+    this._wasm3 = await import(
+      '../../temporary_modules/@emurgo/cardano-serialization-lib-browser'
+    );
   }
 
   get Cardano() {
@@ -25,6 +31,10 @@ class Loader {
 
   get Message() {
     return this._wasm2;
+  }
+
+  get CSL() {
+    return this._wasm3;
   }
 }
 

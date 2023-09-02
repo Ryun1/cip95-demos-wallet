@@ -5,7 +5,9 @@ import {
   getCurrentAccount,
   getSpecificUtxo,
   getUtxos,
+  getUtxosCSL,
   signTx,
+  signTxCSL,
   signTxHW,
 } from '../../../api/extension';
 import { Box, Stack, Text } from '@chakra-ui/layout';
@@ -77,17 +79,17 @@ const SignTx = ({ request, controller }) => {
 
   const getProperties = (tx) => {
     let metadata = tx.auxiliary_data() && tx.auxiliary_data().metadata();
-    if (metadata) {
-      const json = {};
-      const keys = metadata.keys();
-      for (let i = 0; i < keys.len(); i++) {
-        const key = keys.get(i);
-        json[key.to_str()] = JSON.parse(
-          Loader.Cardano.decode_metadatum_to_json_str(metadata.get(key), 1)
-        );
-      }
-      metadata = json;
-    }
+    // if (metadata) {
+    //   const json = {};
+    //   const keys = metadata.keys();
+    //   for (let i = 0; i < keys.len(); i++) {
+    //     const key = keys.get(i);
+    //     json[key.to_str()] = JSON.parse(
+    //       Loader.CSL.decode_metadatum_to_json_str(metadata.get(key), 1)
+    //     );
+    //   }
+    //   metadata = json;
+    // }
 
     const certificate = tx.body().certs();
     const withdrawal = tx.body().withdrawals();
@@ -98,26 +100,26 @@ const SignTx = ({ request, controller }) => {
     let datum;
     let contract = tx.body().script_data_hash();
     const outputs = tx.body().outputs();
-    for (let i = 0; i < outputs.len(); i++) {
-      const output = outputs.get(i);
-      if (output.datum()) {
-        datum = true;
-        const prefix = bytesAddressToBinary(output.address().to_bytes()).slice(
-          0,
-          4
-        );
-        // from cardano ledger specs; if any of these prefixes match then it means the payment credential is a script hash, so it's a contract address
-        if (
-          prefix == '0111' ||
-          prefix == '0011' ||
-          prefix == '0001' ||
-          prefix == '0101'
-        ) {
-          contract = true;
-        }
-        break;
-      }
-    }
+    // for (let i = 0; i < outputs.len(); i++) {
+    //   const output = outputs.get(i);
+    //   if (output.datum()) {
+    //     datum = true;
+    //     const prefix = bytesAddressToBinary(output.address().to_bytes()).slice(
+    //       0,
+    //       4
+    //     );
+    //     // from cardano ledger specs; if any of these prefixes match then it means the payment credential is a script hash, so it's a contract address
+    //     if (
+    //       prefix == '0111' ||
+    //       prefix == '0011' ||
+    //       prefix == '0001' ||
+    //       prefix == '0101'
+    //     ) {
+    //       contract = true;
+    //     }
+    //     break;
+    //   }
+    // }
 
     setProperty({
       metadata,
@@ -131,8 +133,8 @@ const SignTx = ({ request, controller }) => {
   };
 
   const getValue = async (tx, utxos, account) => {
-    let inputValue = Loader.Cardano.Value.new(
-      Loader.Cardano.BigNum.from_str('0')
+    let inputValue = Loader.CSL.Value.new(
+      Loader.CSL.BigNum.from_str('0')
     );
     const inputs = tx.body().inputs();
     for (let i = 0; i < inputs.len(); i++) {
@@ -140,12 +142,14 @@ const SignTx = ({ request, controller }) => {
       const inputTxHash = Buffer.from(
         input.transaction_id().to_bytes()
       ).toString('hex');
-      const inputTxId = parseInt(input.index().to_str());
+      //const inputTxId = parseInt(input.index().to_str());
+      const inputTxId = parseInt(input.index());
       const utxo = utxos.find((utxo) => {
         const utxoTxHash = Buffer.from(
           utxo.input().transaction_id().to_bytes()
         ).toString('hex');
-        const utxoTxId = parseInt(utxo.input().index().to_str());
+        //const utxoTxId = parseInt(utxo.input().index().to_str());
+        const utxoTxId = parseInt(utxo.input().index());
         return inputTxHash === utxoTxHash && inputTxId === utxoTxId;
       });
       if (utxo) {
@@ -153,8 +157,8 @@ const SignTx = ({ request, controller }) => {
       }
     }
     const outputs = tx.body().outputs();
-    let ownOutputValue = Loader.Cardano.Value.new(
-      Loader.Cardano.BigNum.from_str('0')
+    let ownOutputValue = Loader.CSL.Value.new(
+      Loader.CSL.BigNum.from_str('0')
     );
     const externalOutputs = {};
     if (!outputs) return;
@@ -171,7 +175,7 @@ const SignTx = ({ request, controller }) => {
       } else {
         //external
         if (!externalOutputs[address]) {
-          const value = Loader.Cardano.Value.new(output.amount().coin());
+          const value = Loader.CSL.Value.new(output.amount().coin());
           if (output.amount().multiasset())
             value.set_multiasset(output.amount().multiasset());
           externalOutputs[address] = { value };
@@ -197,7 +201,7 @@ const SignTx = ({ request, controller }) => {
           externalOutputs[address].datumHash = Buffer.from(
             datum.kind() === 0
               ? datum.as_data_hash().to_bytes()
-              : Loader.Cardano.hash_plutus_data(
+              : Loader.CSL.hash_plutus_data(
                   datum.as_data().get()
                 ).to_bytes()
           ).toString('hex');
@@ -252,8 +256,8 @@ const SignTx = ({ request, controller }) => {
   const getPaymentKeyHash = async (address) => {
     try {
       return Buffer.from(
-        Loader.Cardano.BaseAddress.from_address(
-          Loader.Cardano.Address.from_bytes(address.to_bytes())
+        Loader.CSL.BaseAddress.from_address(
+          Loader.CSL.Address.from_bytes(address.to_bytes())
         )
           .payment_cred()
           .to_keyhash()
@@ -262,8 +266,8 @@ const SignTx = ({ request, controller }) => {
     } catch (e) {}
     try {
       return Buffer.from(
-        Loader.Cardano.EnterpriseAddress.from_address(
-          Loader.Cardano.Address.from_bytes(address.to_bytes())
+        Loader.CSL.EnterpriseAddress.from_address(
+          Loader.CSL.Address.from_bytes(address.to_bytes())
         )
           .payment_cred()
           .to_keyhash()
@@ -272,8 +276,8 @@ const SignTx = ({ request, controller }) => {
     } catch (e) {}
     try {
       return Buffer.from(
-        Loader.Cardano.PointerAddress.from_address(
-          Loader.Cardano.Address.from_bytes(address.to_bytes())
+        Loader.CSL.PointerAddress.from_address(
+          Loader.CSL.Address.from_bytes(address.to_bytes())
         )
           .payment_cred()
           .to_keyhash()
@@ -285,8 +289,8 @@ const SignTx = ({ request, controller }) => {
 
   const getKeyHashes = async (tx, utxos, account) => {
     let requiredKeyHashes = [];
-    const baseAddr = Loader.Cardano.BaseAddress.from_address(
-      Loader.Cardano.Address.from_bech32(account.paymentAddr)
+    const baseAddr = Loader.CSL.BaseAddress.from_address(
+      Loader.CSL.Address.from_bech32(account.paymentAddr)
     );
     const paymentKeyHash = Buffer.from(
       baseAddr.payment_cred().to_keyhash().to_bytes()
@@ -296,7 +300,7 @@ const SignTx = ({ request, controller }) => {
     ).toString('hex');
 
     // CIP-95
-    const dRepKeyHashObj = Loader.Cardano.PublicKey.from_bytes(
+    const dRepKeyHashObj = Loader.CSL.PublicKey.from_bytes(
       Buffer.from(account.dRepKeyPub, 'hex')
     ).hash();
     const dRepKeyHash = Buffer.from(dRepKeyHashObj.to_bytes()).toString('hex');
@@ -308,13 +312,15 @@ const SignTx = ({ request, controller }) => {
       const txHash = Buffer.from(input.transaction_id().to_bytes()).toString(
         'hex'
       );
-      const index = parseInt(input.index().to_str());
+      const index = (input.index());
+      // const index = parseInt(input.index().to_str());
       if (
         utxos.some(
           (utxo) =>
             Buffer.from(utxo.input().transaction_id().to_bytes()).toString(
               'hex'
-            ) === txHash && parseInt(utxo.input().index().to_str()) === index
+            ) === txHash && (utxo.input().index()) === index
+            //) === txHash && parseInt(utxo.input().index().to_str()) === index
         )
       ) {
         requiredKeyHashes.push(paymentKeyHash);
@@ -322,6 +328,8 @@ const SignTx = ({ request, controller }) => {
         requiredKeyHashes.push('<not_owned_key_hash>');
       }
     }
+
+    requiredKeyHashes.push(paymentKeyHash);
 
     //get key hashes from certificates
 
@@ -366,21 +374,29 @@ const SignTx = ({ request, controller }) => {
         } else if (cert.kind() === 4) {
           const operator = cert.as_pool_retirement().pool_keyhash().to_hex();
           requiredKeyHashes.push(operator);
-        } else if (cert.kind() === 6) {
-          const instant_reward = cert
-            .as_move_instantaneous_rewards_cert()
-            .move_instantaneous_reward()
-            .as_to_stake_creds()
-            .keys();
-          for (let i = 0; i < instant_reward.len(); i++) {
-            const credential = instant_reward.get(i);
+        // } else if (cert.kind() === 6) {
+        //   const instant_reward = cert
+        //     .as_move_instantaneous_rewards_cert()
+        //     .move_instantaneous_reward()
+        //     .as_to_stake_creds()
+        //     .keys();
+        //   for (let i = 0; i < instant_reward.len(); i++) {
+        //     const credential = instant_reward.get(i);
 
-            if (credential.kind() === 0) {
-              const keyHash = Buffer.from(
-                credential.to_keyhash().to_bytes()
-              ).toString('hex');
-              requiredKeyHashes.push(keyHash);
-            }
+        //     if (credential.kind() === 0) {
+        //       const keyHash = Buffer.from(
+        //         credential.to_keyhash().to_bytes()
+        //       ).toString('hex');
+        //       requiredKeyHashes.push(keyHash);
+        //     }
+        //   }
+        } else if (cert.kind() === 15) {
+          const credential = cert.as_vote_delegation().stake_credential();
+          if (credential.kind() === 0) {
+            const keyHash = Buffer.from(
+              credential.to_keyhash().to_bytes()
+            ).toString('hex');
+            requiredKeyHashes.push(keyHash);
           }
         }
       }
@@ -444,7 +460,7 @@ const SignTx = ({ request, controller }) => {
           c.index()
         );
         if (utxo) {
-          const address = Loader.Cardano.Address.from_bech32(utxo.address);
+          const address = Loader.CSL.Address.from_bech32(utxo.address);
           requiredKeyHashes.push(await getPaymentKeyHash(address));
         }
       }
@@ -487,7 +503,7 @@ const SignTx = ({ request, controller }) => {
               .output()
               .amount()
               .coin()
-              .compare(Loader.Cardano.BigNum.from_str('50000000')) <= 0
+              .compare(Loader.CSL.BigNum.from_str('50000000')) <= 0
           )
             return;
 
@@ -516,14 +532,14 @@ const SignTx = ({ request, controller }) => {
     await Loader.load();
     const currentAccount = await getCurrentAccount();
     setAccount(currentAccount);
-    let utxos = await getUtxos();
-    const tx = Loader.Cardano.Transaction.from_bytes(
+    let utxos = await getUtxosCSL();
+    const tx = Loader.CSL.Transaction.from_bytes(
       Buffer.from(request.data.tx, 'hex')
     );
     setTx(request.data.tx);
     getFee(tx);
     await getValue(tx, utxos, currentAccount);
-    checkCollateral(tx, utxos, currentAccount);
+    // checkCollateral(tx, utxos, currentAccount);
     await getKeyHashes(tx, utxos, currentAccount);
     getProperties(tx);
     setIsLoading((l) => ({ ...l, loading: false }));
@@ -817,7 +833,7 @@ const SignTx = ({ request, controller }) => {
               request.data.partialSign
             );
           }
-          return await signTx(
+          return await signTxCSL(
             request.data.tx,
             keyHashes.key,
             password,
