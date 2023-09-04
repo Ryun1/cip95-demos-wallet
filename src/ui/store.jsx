@@ -175,8 +175,6 @@ const StoreInit = ({ children }) => {
                       return 'Preview';
                     case NETWORK_ID.preprod:
                       return 'Preprod';
-                    case NETWORK_ID.sanchonet:
-                      return 'SanchoNet🤠';
                   }
                 })()}
               </Text>

@@ -331,8 +331,6 @@ const TxDetail = ({ displayInfo, network }) => {
                       return 'https://testnet.cardanoscan.io/transaction/';
                     case NETWORK_ID.preview:
                       return 'https://preview.cexplorer.io/tx/';
-                    case NETWORK_ID.sanchonet:
-                      return 'https://sanchonet.cexplorer.io/tx/';
                     case NETWORK_ID.testnet:
                       return 'https://testnet.cexplorer.io/tx/';
                   }
