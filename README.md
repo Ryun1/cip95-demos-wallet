@@ -5,12 +5,11 @@
 #### ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠ WARNING ⚠
 
 
-# CIP-95 Demos Mock wallet 
+# CIP-95 demos Mock wallet 
 
 This is a *mock* wallet, based on [Nami](https://github.com/berry-pool/nami).
 
-
-Currently corresponding CIP-95 commit: [fbc5fcb](https://github.com/cardano-foundation/CIPs/pull/509/commits/fbc5fcbb127313ccfd2a30376145f63627f3afd9).
+Currently corresponding CIP-95 commit: [1f75f99](https://github.com/cardano-foundation/CIPs/pull/509/commits/1f75f990c4e8fdf308c3ed209bac723a84822931).
 
 | Tag  | CIP-95 Commit | demos dApp Tag |
 | ---- | ------------- | -------------- |
@@ -40,6 +39,8 @@ Currently corresponding CIP-95 commit: [fbc5fcb](https://github.com/cardano-foun
   - No conway items supported properly (waiting for Sancho + CML/CSL).
 
 ### 1.5.XX (In progress)
+
+Check pull requests to see this work.
 
 #### SanchoNet:
 - Can connect using sancho Blockfrost.
@@ -94,7 +95,7 @@ code secrets.development.js secrets.production.js
 
 ### Start Dev Env
 
-1. Install modules
+1. Install modules, youll probably have to fight with node here due to conflicts.
 
 ```bash
 sudo npm install
@@ -107,29 +108,17 @@ sudo npm install
 sudo npm start
 ```
 
-2. Fight with node and install any missing packages :)
-
-I had to do:
-
-```bash
-sudo npm install --save-dev webpack-dev-server
-
-sudo npm audit fix
-
-sudo npm rebuild node-sass
-```
-
 ## To Test Wallet
 
 ### Build wallet
 
-Build a chrome extension from the `/src` code.
+If you are running from `npm start` you'll already have a build otherwise:
 
 ```bash
 sudo npm run build
 ```
 
-### Load into Chrome (for first time)
+### Load extension into Chrome (for first time)
 
 1. In chrome go to `chrome://extensions/`, in the top right enable developer mode.
 
@@ -137,4 +126,8 @@ sudo npm run build
 
 ### Load into Chrome (refresh for new build)
 
-1. In chrome go to `chrome://extensions/`, and on the mock-wallet press the reload button to refresh it.
+1. In chrome go to `chrome://extensions/`, and on the wallet press the reload button to refresh it.
+
+## demos Etymology
+
+The common people of an ancient Greek state. The populace of a democracy as a political unit.
