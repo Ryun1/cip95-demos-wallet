@@ -12,9 +12,59 @@ This is a *mock* wallet, based on [Nami](https://github.com/berry-pool/nami).
 
 Currently corresponding CIP-95 commit: [fbc5fcb](https://github.com/cardano-foundation/CIPs/pull/509/commits/fbc5fcbb127313ccfd2a30376145f63627f3afd9).
 
-| Tag | CIP-95 Commit | demos dApp Tag |
-| ---- | ---- | ---- |
+| Tag  | CIP-95 Commit | demos dApp Tag |
+| ---- | ------------- | -------------- |
 | [1.4.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.4.0) | [fbc5fcb](https://github.com/cardano-foundation/CIPs/pull/509/commits/fbc5fcbb127313ccfd2a30376145f63627f3afd9) | [1.4.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.4.0) |
+| [1.4.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.4.0) | [1f75f99](https://github.com/cardano-foundation/CIPs/pull/509/commits/1f75f990c4e8fdf308c3ed209bac723a84822931) | [1.4.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.4.0) |
+
+## CIP-95/Conway Features Supported Notes
+
+### 1.4.0
+
+#### SanchoNet:
+- Cannot connect.
+  
+#### Cardano Serialization Library Conway Alpha:
+- Does not use any Conway alpha builds.
+
+#### CIP-95:
+- `.getPubDRepKey()`
+  - Should work correctly as expected.
+- `.getPubActiveStakeKeys()`
+  - Since this is a one stake key wallet, only one is ever returned.
+  - Currently there is no `active` check currently because it is easier for testing.
+- `.signTx()`
+  - No conway items supported properly (waiting for Sancho + CML/CSL).
+  - Supports signing transactions with DRep key, if DRep key in required signers field only.
+- `.signData()`
+  - No conway items supported properly (waiting for Sancho + CML/CSL).
+
+### 1.5.XX (In progress)
+
+#### SanchoNet:
+- Can connect using sancho Blockfrost.
+- Can view correct balance etc.
+- Some things might be broke.
+- May not be able to submit to Sancho
+  
+#### Cardano Serialization Library Conway Alpha:
+- Uses Alpha build to support connecting to Sancho and CIP-95.
+- Probably import using temporary modules.
+
+#### CIP-95:
+- `.getPubDRepKey()`
+  - Should work correctly as expected.
+- `.getPubActiveStakeKeys()`
+  - Since this is a one stake key wallet, only one is ever returned.
+  - Currently there is no `active` check currently because it is easier for testing.
+- `.signTx()`
+  - Supports inspection and signature of all Conway items.
+- `.signData()`
+  - Supports properly signing with DRep Key.
+
+#### Misc
+- Rebase against Nami
+- Fix chrome extension errors
 
 ## To Develop
 

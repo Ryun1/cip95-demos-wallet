@@ -29,7 +29,7 @@ window.cardano = {
       let enableCIP95 = undefined;
       try {
         // Check if CIP-95 extension has been requested
-        enableCIP95 = (obj.extensions).some(item => item.cip === 95);
+        enableCIP95 = obj.extensions.some((item) => item.cip === 95);
       } catch (err) {
         console.log('demos: No extensions passed to wallet');
       }
