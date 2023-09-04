@@ -7,7 +7,6 @@ const networkToProjectId = {
   testnet: secrets.PROJECT_ID_TESTNET,
   preprod: secrets.PROJECT_ID_PREPROD,
   preview: secrets.PROJECT_ID_PREVIEW,
-  sanchonet: secrets.PROJECT_ID_SANCHONET,
 };
 
 export default {
