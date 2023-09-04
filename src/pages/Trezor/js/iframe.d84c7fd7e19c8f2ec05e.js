@@ -73528,17 +73528,15 @@
                   n = e.multisig,
                   i = e.script_type,
                   o = e.coinInfo;
-                return this.device
-                  .getCommands()
-                  .getAddress(
-                    {
-                      address_n: t,
-                      show_display: r,
-                      multisig: n,
-                      script_type: i,
-                    },
-                    o
-                  );
+                return this.device.getCommands().getAddress(
+                  {
+                    address_n: t,
+                    show_display: r,
+                    multisig: n,
+                    script_type: i,
+                  },
+                  o
+                );
               }),
               (i.run = (function () {
                 var e = n(

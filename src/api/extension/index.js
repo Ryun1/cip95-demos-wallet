@@ -1002,7 +1002,7 @@ export const signTx = async (
     dRepKey.to_public().hash().to_bytes(),
     'hex'
   ).toString('hex');
-  
+
   const rawTx = Loader.Cardano.Transaction.from_bytes(Buffer.from(tx, 'hex'));
 
   const txWitnessSet = Loader.Cardano.TransactionWitnessSet.new();
@@ -1306,9 +1306,7 @@ export const createAccount = async (name, password, accountIndex = null) => {
   const dRepKeyPub = Buffer.from(dRepKey.to_public().as_bytes()).toString(
     'hex'
   );
-  const stakeKeyPubHex = Buffer.from(stakeKeyPub.as_bytes()).toString(
-    'hex'
-  );
+  const stakeKeyPubHex = Buffer.from(stakeKeyPub.as_bytes()).toString('hex');
   // cip-95 -----------------------------
 
   accountKey.free();
