@@ -390,6 +390,8 @@ const SignTx = ({ request, controller }) => {
         //       requiredKeyHashes.push(keyHash);
         //     }
         //   }
+
+        // conway vote delegation
         } else if (cert.kind() === 15) {
           const credential = cert.as_vote_delegation().stake_credential();
           if (credential.kind() === 0) {
