@@ -1,11 +1,11 @@
 {
   "name": "somed",
-  "version": "0.1.0",
+  "version": "1.4.0",
   "description": "This is a mock wallet, based on Nami.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ryun1/cip95-demos-wallet"
+    "url": "https://github.com/Ryun1/cip95-demos-wallet/pull/17"
   },
   "scripts": {
     "build": "node utils/build.js",
