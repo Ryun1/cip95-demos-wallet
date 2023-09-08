@@ -20,7 +20,8 @@ export const METHOD = {
   returnData: 'returnData',
   // CIP-95
   getDRepKey: 'getDRepKey',
-  getStakeKey: 'getStakeKey',
+  getRegisteredPubStakeKeys: 'getRegisteredPubStakeKeys',
+  getUnregisteredPubStakeKeys: 'getUnregisteredPubStakeKeys',
 };
 
 /*

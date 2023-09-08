@@ -98,8 +98,43 @@ export const getDRepKey = async () => {
 export const getStakeKey = async () => {
   await Loader.load();
   const currentAccount = await getCurrentAccount();
-  return [currentAccount.stakeKeyPub];
+  return currentAccount.stakeKeyPub;
 };
+
+// check stake key is active or not
+export const isStakeKeyRegistered = async () => {
+  const currentAccount = await getCurrentAccount();
+  let registrations = await blockfrostRequest(
+    `/accounts/${currentAccount.rewardAddr}/registrations`
+  );
+  
+  // if error return false
+  if (!registrations || registrations.error){
+    return false;
+  }
+  // if the most recent action was to register
+  if((registrations.reverse())[0].action == "registered"){
+    return true;
+  }
+
+  return false;
+};
+
+export const getRegisteredPubStakeKeys = async () => {
+  if (await isStakeKeyRegistered()){
+    return [(await getStakeKey())];
+  } else {
+    return [];
+  }
+}
+
+export const getUnregisteredPubStakeKeys = async () => {
+  if (await isStakeKeyRegistered()){
+    return [];
+  } else {
+    return [(await getStakeKey())];
+  }
+}
 
 // CIP-95 -----------------------------
 

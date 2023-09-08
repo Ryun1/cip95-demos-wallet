@@ -13,7 +13,8 @@ import {
   verifyTx,
   // CIP-95
   getDRepKey,
-  getStakeKey,
+  getRegisteredPubStakeKeys,
+  getUnregisteredPubStakeKeys
 } from '../../api/extension';
 import { Messaging } from '../../api/messaging';
 import {
@@ -47,8 +48,27 @@ app.add(METHOD.getDRepKey, async (request, sendResponse) => {
   }
 });
 
-app.add(METHOD.getStakeKey, async (request, sendResponse) => {
-  const key = await getStakeKey();
+app.add(METHOD.getRegisteredPubStakeKeys, async (request, sendResponse) => {
+  const key = await getRegisteredPubStakeKeys();
+  if (key) {
+    sendResponse({
+      id: request.id,
+      data: key,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  } else {
+    sendResponse({
+      id: request.id,
+      error: APIError.InternalError,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  }
+});
+
+app.add(METHOD.getUnregisteredPubStakeKeys, async (request, sendResponse) => {
+  const key = await getUnregisteredPubStakeKeys();
   if (key) {
     sendResponse({
       id: request.id,
