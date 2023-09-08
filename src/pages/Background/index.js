@@ -86,6 +86,86 @@ app.add(METHOD.getUnregisteredPubStakeKeys, async (request, sendResponse) => {
   }
 });
 
+app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
+  try {
+    await verifyTx(request.data.tx);
+    const response = await createPopup(POPUP.internal)
+      .then((tab) => Messaging.sendToPopupInternal(tab, request))
+      .then((response) => response);
+
+    if (response.data) {
+      sendResponse({
+        id: request.id,
+        data: response.data,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    } else if (response.error) {
+      sendResponse({
+        id: request.id,
+        error: response.error,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    } else {
+      sendResponse({
+        id: request.id,
+        error: APIError.InternalError,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    }
+  } catch (e) {
+    sendResponse({
+      id: request.id,
+      error: e,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  }
+});
+
+app.add(METHOD.signDataCIP95, async (request, sendResponse) => {
+  try {
+    verifyPayload(request.data.payload);
+    await extractKeyHash(request.data.address);
+
+    const response = await createPopup(POPUP.internal)
+      .then((tab) => Messaging.sendToPopupInternal(tab, request))
+      .then((response) => response);
+
+    if (response.data) {
+      sendResponse({
+        id: request.id,
+        data: response.data,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    } else if (response.error) {
+      sendResponse({
+        id: request.id,
+        error: response.error,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    } else {
+      sendResponse({
+        id: request.id,
+        error: APIError.InternalError,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    }
+  } catch (e) {
+    sendResponse({
+      id: request.id,
+      error: e,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  }
+});
+
 // CIP-95 -----------------------------
 
 /**
