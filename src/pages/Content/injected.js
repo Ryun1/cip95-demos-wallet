@@ -15,7 +15,8 @@ import {
   submitTx,
   //CIP-95
   getDRepKey,
-  getStakeKey,
+  getRegisteredPubStakeKeys,
+  getUnregisteredPubStakeKeys,
   signTxCIP95,
   signDataCIP95,
 } from '../../api/webpage';
@@ -54,7 +55,8 @@ window.cardano = {
             },
             // CIP-95 -----------------------------
             getPubDRepKey: () => getDRepKey(),
-            getActivePubStakeKeys: () => getStakeKey(),
+            getRegisteredPubStakeKeys: () => getRegisteredPubStakeKeys(),
+            getUnregisteredPubStakeKeys: () => getUnregisteredPubStakeKeys(),
             signTx: (tx, partialSign) => signTxCIP95(tx, partialSign),
             signData: (address, payload) => signDataCIP95(address, payload),
             getExtensions: () => [{ cip: 95 }],

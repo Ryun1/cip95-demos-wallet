@@ -7,8 +7,13 @@ export const getDRepKey = async () => {
   return result.data;
 };
 
-export const getStakeKey = async () => {
-  const result = await Messaging.sendToContent({ method: METHOD.getStakeKey });
+export const getRegisteredPubStakeKeys = async () => {
+  const result = await Messaging.sendToContent({ method: METHOD.getRegisteredPubStakeKeys });
+  return result.data;
+};
+
+export const getUnregisteredPubStakeKeys = async () => {
+  const result = await Messaging.sendToContent({ method: METHOD.getUnregisteredPubStakeKeys });
   return result.data;
 };
 
