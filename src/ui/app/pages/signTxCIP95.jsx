@@ -399,14 +399,31 @@ const SignTx = ({ request, controller }) => {
           const credential = cert.as_vote_delegation().stake_credential();
           // if credential is a key hash
           if (credential.kind() === 0) {
+              const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+              requiredKeyHashes.push(keyHash);
+          }
+        // conway drep registration, add drep credential
+        } else if (cert.kind() === 10) {
+          const credential = cert.as_drep_registration().voting_credential();
+          // if credential is a key hash
+          if (credential.kind() === 0) {
+            // DRep registration doesn't required key hash
+          }
+        // conway drep update, add drep credential
+        } else if (cert.kind() === 11) {
+          const credential = cert.as_drep_update().voting_credential();
+          // if credential is a key hash
+          if (credential.kind() === 0) {
             const keyHash = Buffer.from(
               credential.to_keyhash().to_bytes()
             ).toString('hex');
             requiredKeyHashes.push(keyHash);
           }
-        // conway drep registration, add drep credential
-        } else if (cert.kind() === 10) {
-          const credential = cert.as_drep_registration().voting_credential();
+        // conway drep retirement, add drep credential
+        } else if (cert.kind() === 9) {
+          const credential = cert.as_drep_deregistration().voting_credential();
           // if credential is a key hash
           if (credential.kind() === 0) {
             const keyHash = Buffer.from(
@@ -1112,8 +1129,8 @@ const DetailsModal = React.forwardRef(
                                 {p == 'contract' && 'Contract'}
                                 {p == 'script' && 'Script'}
                                 {p == 'datum' && 'Datum'}
-                                {p == 'vote' && 'Vote'}
-                                {p == 'proposal' && 'Governance Action'}
+                                {p == 'vote' && '🗳 Vote'}
+                                {p == 'proposal' && '💡 Governance Action'}
                               </Box>
                             </Box>
                           ))}
