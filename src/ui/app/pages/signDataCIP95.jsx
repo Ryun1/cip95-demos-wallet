@@ -130,6 +130,9 @@ const SignData = ({ request, controller }) => {
               {request.origin.split('//')[1]}
             </Text>
           </Box>
+          <Box h="4" />
+          <Box> 🌟 This is a CIP-95 .signData() request 🌟 </Box>
+          <Box h="4" />
           <Box h="8" />
           <Box>This app requests a signature for:</Box>
           <Box h="4" />

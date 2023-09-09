@@ -89,14 +89,12 @@ export const decryptWithPassword = async (password, encryptedKeyHex) => {
 
 // Get the account's pub DRep key
 export const getDRepKey = async () => {
-  await Loader.load();
   const currentAccount = await getCurrentAccount();
   return currentAccount.dRepKeyPub;
 };
 
 // Get the account's pub stake key
 export const getStakeKey = async () => {
-  await Loader.load();
   const currentAccount = await getCurrentAccount();
   return currentAccount.stakeKeyPub;
 };
@@ -109,7 +107,7 @@ export const isStakeKeyRegistered = async () => {
   );
   
   // if error return false
-  if (!registrations || registrations.error){
+  if (!registrations || registrations.error || registrations.length == 0){
     return false;
   }
   // if the most recent action was to register
@@ -118,6 +116,59 @@ export const isStakeKeyRegistered = async () => {
   }
 
   return false;
+};
+
+export const signTxCIP95 = async (
+  tx,
+  keyHashes,
+  password,
+  accountIndex,
+  partialSign = false
+) => {
+  await Loader.load();
+  let { paymentKey, stakeKey, dRepKey } = await requestAccountKey(
+    password,
+    accountIndex
+  );
+  const paymentKeyHash = Buffer.from(
+    paymentKey.to_public().hash().to_bytes(),
+    'hex'
+  ).toString('hex');
+  const stakeKeyHash = Buffer.from(
+    stakeKey.to_public().hash().to_bytes(),
+    'hex'
+  ).toString('hex');
+
+  const dRepKeyHash = Buffer.from(
+    dRepKey.to_public().hash().to_bytes(),
+    'hex'
+  ).toString('hex');
+
+  const rawTx = Loader.Cardano.Transaction.from_bytes(Buffer.from(tx, 'hex'));
+
+  const txWitnessSet = Loader.Cardano.TransactionWitnessSet.new();
+  const vkeyWitnesses = Loader.Cardano.Vkeywitnesses.new();
+  const txHash = Loader.Cardano.hash_transaction(rawTx.body());
+  keyHashes.forEach((keyHash) => {
+    let signingKey;
+    if (keyHash === paymentKeyHash) signingKey = paymentKey;
+    else if (keyHash === stakeKeyHash) signingKey = stakeKey;
+    else if (keyHash === dRepKeyHash) signingKey = dRepKey;
+    else if (!partialSign) throw TxSignError.ProofGeneration;
+    else return;
+    const vkey = Loader.Cardano.make_vkey_witness(txHash, signingKey);
+    vkeyWitnesses.add(vkey);
+  });
+
+  stakeKey.free();
+  stakeKey = null;
+  paymentKey.free();
+  paymentKey = null;
+  dRepKey.free();
+  dRepKey = null;
+
+  txWitnessSet.set_vkeys(vkeyWitnesses);
+  return txWitnessSet;
 };
 
 export const getRegisteredPubStakeKeys = async () => {
@@ -135,6 +186,110 @@ export const getUnregisteredPubStakeKeys = async () => {
     return [(await getStakeKey())];
   }
 }
+
+//conway
+export const getUtxosCSL = async (amount = undefined, paginate = undefined) => {
+  const currentAccount = await getCurrentAccount();
+  let result = [];
+  let page = paginate && paginate.page ? paginate.page + 1 : 1;
+  const limit = paginate && paginate.limit ? `&count=${paginate.limit}` : '';
+  while (true) {
+    let pageResult = await blockfrostRequest(
+      `/addresses/${currentAccount.paymentKeyHashBech32}/utxos?page=${page}${limit}`
+    );
+    if (pageResult.error) {
+      if (result.status_code === 400) throw APIError.InvalidRequest;
+      else if (result.status_code === 500) throw APIError.InternalError;
+      else {
+        pageResult = [];
+      }
+    }
+    result = result.concat(pageResult);
+    if (pageResult.length <= 0 || paginate) break;
+    page++;
+  }
+
+  // exclude collateral input from overall utxo set
+  if (currentAccount.collateral) {
+    result = result.filter(
+      (utxo) =>
+        !(
+          utxo.tx_hash === currentAccount.collateral.txHash &&
+          utxo.output_index === currentAccount.collateral.txId
+        )
+    );
+  }
+
+  const address = await getAddress();
+  let converted = await Promise.all(
+    result.map(async (utxo) => await utxoFromJson(utxo, address))
+  );
+  // filter utxos
+  if (amount) {
+    await Loader.load();
+    let filterValue;
+    try {
+      filterValue = Loader.CSL.Value.from_bytes(Buffer.from(amount, 'hex'));
+    } catch (e) {
+      throw APIError.InvalidRequest;
+    }
+
+    converted = converted.filter(
+      (unspent) =>
+        !unspent.output().amount().compare(filterValue) ||
+        unspent.output().amount().compare(filterValue) !== -1
+    );
+  }
+  if ((amount || paginate) && converted.length <= 0) {
+    return null;
+  }
+  return converted;
+};
+
+//conway csl
+export const verifyTxCSL = async (tx) => {
+  await Loader.load();
+  const network = await getNetwork();
+  try {
+    const parseTx = Loader.CSL.Transaction.from_bytes(
+      Buffer.from(tx, 'hex')
+    );
+    let networkId = parseTx.body().network_id()
+      ? parseTx.body().network_id().kind()
+      : null;
+    if (!networkId && networkId != 0) {
+      networkId = parseTx.body().outputs().get(0).address().network_id();
+    }
+    if (networkId != networkNameToId(network.id)) throw Error('Wrong network');
+  } catch (e) {
+    throw APIError.InvalidRequest;
+  }
+};
+
+// conway csl
+export const requestAccountKeyCSL = async (password, accountIndex) => {
+  await Loader.load();
+  const encryptedRootKey = await getStorage(STORAGE.encryptedKey);
+  let accountKey;
+  try {
+    accountKey = Loader.CSL.Bip32PrivateKey.from_bytes(
+      Buffer.from(await decryptWithPassword(password, encryptedRootKey), 'hex')
+    )
+      .derive(harden(1852)) // purpose
+      .derive(harden(1815)) // coin type;
+      .derive(harden(parseInt(accountIndex)));
+  } catch (e) {
+    throw ERROR.wrongPassword;
+  }
+
+  return {
+    accountKey,
+    paymentKey: accountKey.derive(0).derive(0).to_raw_key(),
+    stakeKey: accountKey.derive(2).derive(0).to_raw_key(),
+    // cip-95 -----------------------------
+    dRepKey: accountKey.derive(3).derive(0).to_raw_key(),
+  };
+};
 
 // CIP-95 -----------------------------
 
@@ -1040,11 +1195,6 @@ export const signTx = async (
     'hex'
   ).toString('hex');
 
-  const dRepKeyHash = Buffer.from(
-    dRepKey.to_public().hash().to_bytes(),
-    'hex'
-  ).toString('hex');
-
   const rawTx = Loader.Cardano.Transaction.from_bytes(Buffer.from(tx, 'hex'));
 
   const txWitnessSet = Loader.Cardano.TransactionWitnessSet.new();
@@ -1054,7 +1204,6 @@ export const signTx = async (
     let signingKey;
     if (keyHash === paymentKeyHash) signingKey = paymentKey;
     else if (keyHash === stakeKeyHash) signingKey = stakeKey;
-    else if (keyHash === dRepKeyHash) signingKey = dRepKey;
     else if (!partialSign) throw TxSignError.ProofGeneration;
     else return;
     const vkey = Loader.Cardano.make_vkey_witness(txHash, signingKey);
@@ -1065,8 +1214,6 @@ export const signTx = async (
   stakeKey = null;
   paymentKey.free();
   paymentKey = null;
-  dRepKey.free();
-  dRepKey = null;
 
   txWitnessSet.set_vkeys(vkeyWitnesses);
   return txWitnessSet;

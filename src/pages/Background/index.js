@@ -11,6 +11,8 @@ import {
   submitTx,
   verifyPayload,
   verifyTx,
+  // CSL Alpha
+  verifyTxCSL,
   // CIP-95
   getDRepKey,
   getRegisteredPubStakeKeys,
@@ -88,7 +90,7 @@ app.add(METHOD.getUnregisteredPubStakeKeys, async (request, sendResponse) => {
 
 app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
   try {
-    await verifyTx(request.data.tx);
+    await verifyTxCSL(request.data.tx);
     const response = await createPopup(POPUP.internal)
       .then((tab) => Messaging.sendToPopupInternal(tab, request))
       .then((response) => response);
