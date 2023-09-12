@@ -5,6 +5,7 @@ import {
   getCurrentAccount,
   getSpecificUtxo,
   getUtxosCSL,
+  signTx,
   signTxCIP95,
   signTxHW,
 } from '../../../api/extension';
@@ -95,7 +96,7 @@ const SignTx = ({ request, controller }) => {
     const script = tx.witness_set().native_scripts();
     // cip-95
     const vote = tx.body().voting_procedures();
-    //const proposal = tx.body().proposal_procedures();
+    //const proposal = tx.body().voting_proposals();
     const proposal = false;
     // when available
     let datum;

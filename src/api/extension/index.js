@@ -144,11 +144,11 @@ export const signTxCIP95 = async (
     'hex'
   ).toString('hex');
 
-  const rawTx = Loader.Cardano.Transaction.from_bytes(Buffer.from(tx, 'hex'));
+  const rawTx = Loader.CSL.Transaction.from_bytes(Buffer.from(tx, 'hex'));
 
-  const txWitnessSet = Loader.Cardano.TransactionWitnessSet.new();
-  const vkeyWitnesses = Loader.Cardano.Vkeywitnesses.new();
-  const txHash = Loader.Cardano.hash_transaction(rawTx.body());
+  const txWitnessSet = Loader.CSL.TransactionWitnessSet.new();
+  const vkeyWitnesses = Loader.CSL.Vkeywitnesses.new();
+  const txHash = Loader.CSL.hash_transaction(rawTx.body());
   keyHashes.forEach((keyHash) => {
     let signingKey;
     if (keyHash === paymentKeyHash) signingKey = paymentKey;
@@ -156,7 +156,7 @@ export const signTxCIP95 = async (
     else if (keyHash === dRepKeyHash) signingKey = dRepKey;
     else if (!partialSign) throw TxSignError.ProofGeneration;
     else return;
-    const vkey = Loader.Cardano.make_vkey_witness(txHash, signingKey);
+    const vkey = Loader.CSL.make_vkey_witness(txHash, signingKey);
     vkeyWitnesses.add(vkey);
   });
 
@@ -1182,7 +1182,7 @@ export const signTx = async (
   partialSign = false
 ) => {
   await Loader.load();
-  let { paymentKey, stakeKey, dRepKey } = await requestAccountKey(
+  let { paymentKey, stakeKey } = await requestAccountKey(
     password,
     accountIndex
   );
