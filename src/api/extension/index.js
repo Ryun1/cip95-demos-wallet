@@ -98,7 +98,7 @@ export const getDRepKey = async () => {
 export const getStakeKey = async () => {
   await Loader.load();
   const currentAccount = await getCurrentAccount();
-  return [currentAccount.stakeKeyPub];
+  return [currentAccount.stakeKeyPub, '6542342eae344f1c7e98a05136363f8cd378786773527c0df4a35afb550fa549'];
 };
 
 // CIP-95 -----------------------------
