@@ -89,14 +89,12 @@ export const decryptWithPassword = async (password, encryptedKeyHex) => {
 
 // Get the account's pub DRep key
 export const getDRepKey = async () => {
-  await Loader.load();
   const currentAccount = await getCurrentAccount();
   return currentAccount.dRepKeyPub;
 };
 
 // Get the account's pub stake key
 export const getStakeKey = async () => {
-  await Loader.load();
   const currentAccount = await getCurrentAccount();
   return currentAccount.stakeKeyPub;
 };
@@ -109,7 +107,7 @@ export const isStakeKeyRegistered = async () => {
   );
   
   // if error return false
-  if (!registrations || registrations.error){
+  if (!registrations || registrations.error || registrations.length == 0){
     return false;
   }
   // if the most recent action was to register
