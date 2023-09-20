@@ -1943,6 +1943,9 @@ export const updateBalance = async (currentAccount, network) => {
     currentAccount[network.id].lovelace = 0;
     currentAccount[network.id].assets = [];
     currentAccount[network.id].minAda = 0;
+
+   // TEMPORARY FIX FOR UNTIL BLOCKFROST /transactions is fixed
+    currentAccount[network.id].lovelace = await getBalance();
   }
   return true;
 };
@@ -2006,7 +2009,8 @@ export const updateAccount = async (forceUpdate = false) => {
   const currentAccount = accounts[currentIndex];
   const network = await getNetwork();
 
-  // await updateTransactions(currentAccount, network);
+  // TEMPORARY FIX FOR UNTIL BLOCKFROST /transactions IS FIXED
+  //await updateTransactions(currentAccount, network);
 
   if (
     currentAccount[network.id].history.confirmed[0] ==
