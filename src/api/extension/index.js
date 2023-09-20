@@ -2006,7 +2006,7 @@ export const updateAccount = async (forceUpdate = false) => {
   const currentAccount = accounts[currentIndex];
   const network = await getNetwork();
 
-  await updateTransactions(currentAccount, network);
+  // await updateTransactions(currentAccount, network);
 
   if (
     currentAccount[network.id].history.confirmed[0] ==
