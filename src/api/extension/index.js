@@ -126,7 +126,7 @@ export const signTxCIP95 = async (
   partialSign = false
 ) => {
   await Loader.load();
-  let { paymentKey, stakeKey, dRepKey } = await requestAccountKey(
+  let { paymentKey, stakeKey, dRepKey } = await requestAccountKeyCSL(
     password,
     accountIndex
   );

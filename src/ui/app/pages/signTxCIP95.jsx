@@ -35,6 +35,10 @@ import {
 import JSONPretty from 'react-json-pretty';
 import AssetsModal from '../components/assetsModal';
 
+// weird changes
+// - to_str() -> toString()
+// - output.datum() -> output.plutus_data()
+
 const abs = (big) => {
   return big < 0 ? big * BigInt(-1) : big;
 };
@@ -78,17 +82,17 @@ const SignTx = ({ request, controller }) => {
 
   const getProperties = (tx) => {
     let metadata = tx.auxiliary_data() && tx.auxiliary_data().metadata();
-    // if (metadata) {
-    //   const json = {};
-    //   const keys = metadata.keys();
-    //   for (let i = 0; i < keys.len(); i++) {
-    //     const key = keys.get(i);
-    //     json[key.to_str()] = JSON.parse(
-    //       Loader.CSL.decode_metadatum_to_json_str(metadata.get(key), 1)
-    //     );
-    //   }
-    //   metadata = json;
-    // }
+    if (metadata) {
+      const json = {};
+      const keys = metadata.keys();
+      for (let i = 0; i < keys.len(); i++) {
+        const key = keys.get(i);
+        json[key.to_str()] = JSON.parse(
+          Loader.CSL.decode_metadatum_to_json_str(metadata.get(key), 1)
+        );
+      }
+      metadata = json;
+    }
 
     const certificate = tx.body().certs();
     const withdrawal = tx.body().withdrawals();
@@ -98,30 +102,30 @@ const SignTx = ({ request, controller }) => {
     const vote = tx.body().voting_procedures();
     //const proposal = tx.body().voting_proposals();
     const proposal = false;
-    // when available
     let datum;
     let contract = tx.body().script_data_hash();
     const outputs = tx.body().outputs();
-    // for (let i = 0; i < outputs.len(); i++) {
-    //   const output = outputs.get(i);
-    //   if (output.datum()) {
-    //     datum = true;
-    //     const prefix = bytesAddressToBinary(output.address().to_bytes()).slice(
-    //       0,
-    //       4
-    //     );
-    //     // from cardano ledger specs; if any of these prefixes match then it means the payment credential is a script hash, so it's a contract address
-    //     if (
-    //       prefix == '0111' ||
-    //       prefix == '0011' ||
-    //       prefix == '0001' ||
-    //       prefix == '0101'
-    //     ) {
-    //       contract = true;
-    //     }
-    //     break;
-    //   }
-    // }
+    for (let i = 0; i < outputs.len(); i++) {
+      const output = outputs.get(i);
+      // CSL Alpha change
+      if (output.plutus_data()) {
+        datum = true;
+        const prefix = bytesAddressToBinary(output.address().to_bytes()).slice(
+          0,
+          4
+        );
+        // from cardano ledger specs; if any of these prefixes match then it means the payment credential is a script hash, so it's a contract address
+        if (
+          prefix == '0111' ||
+          prefix == '0011' ||
+          prefix == '0001' ||
+          prefix == '0101'
+        ) {
+          contract = true;
+        }
+        break;
+      }
+    }
 
     setProperty({
       metadata,
@@ -147,13 +151,13 @@ const SignTx = ({ request, controller }) => {
         input.transaction_id().to_bytes()
       ).toString('hex');
       //const inputTxId = parseInt(input.index().to_str());
-      const inputTxId = parseInt(input.index());
+      const inputTxId = (input.index()).toString();
       const utxo = utxos.find((utxo) => {
         const utxoTxHash = Buffer.from(
           utxo.input().transaction_id().to_bytes()
         ).toString('hex');
         //const utxoTxId = parseInt(utxo.input().index().to_str());
-        const utxoTxId = parseInt(utxo.input().index());
+        const utxoTxId = (utxo.input().index()).toString();
         return inputTxHash === utxoTxHash && inputTxId === utxoTxId;
       });
       if (utxo) {
@@ -200,7 +204,7 @@ const SignTx = ({ request, controller }) => {
         ) {
           externalOutputs[address].script = true;
         }
-        const datum = output.datum();
+        const datum = output.plutus_data(); // CSL Alpha change
         if (datum)
           externalOutputs[address].datumHash = Buffer.from(
             datum.kind() === 0
@@ -316,14 +320,14 @@ const SignTx = ({ request, controller }) => {
       const txHash = Buffer.from(input.transaction_id().to_bytes()).toString(
         'hex'
       );
-      const index = (input.index());
+      const index = parseInt(input.index().toString());
       // const index = parseInt(input.index().to_str());
       if (
         utxos.some(
           (utxo) =>
             Buffer.from(utxo.input().transaction_id().to_bytes()).toString(
               'hex'
-            ) === txHash && (utxo.input().index()) === index
+            ) === txHash && parseInt((utxo.input().index()).toString()) === index
             //) === txHash && parseInt(utxo.input().index().to_str()) === index
         )
       ) {
@@ -336,8 +340,6 @@ const SignTx = ({ request, controller }) => {
     requiredKeyHashes.push(paymentKeyHash);
 
     //get key hashes from certificates
-
-    // CIP-95 TODO: check for DRep Certs or votes
 
     const txBody = tx.body();
     const keyHashFromCert = (txBody) => {
@@ -436,6 +438,18 @@ const SignTx = ({ request, controller }) => {
       }
     };
     if (txBody.certs()) keyHashFromCert(txBody);
+
+    // TODO key hashes from votes
+    // const votes = txBody.voting_procedures();
+    // const keyHashFromVote = (votes) => {
+    //   const voters = votes.get_voters();
+    //   let voterKeyhash;
+    //   for (let i = 0; i < voters.len(); i++) {
+    //     voterKeyhash = (voters.get(i)).to_drep_cred();
+    //     requiredKeyHashes.push(voterKeyhash.to_keyhash().to_hex());
+    //   }
+    // };
+    // if (votes) keyHashFromVote(votes);
 
     // key hashes from withdrawals
     const withdrawals = txBody.withdrawals();
@@ -573,7 +587,7 @@ const SignTx = ({ request, controller }) => {
     setTx(request.data.tx);
     getFee(tx);
     await getValue(tx, utxos, currentAccount);
-    // checkCollateral(tx, utxos, currentAccount);
+    checkCollateral(tx, utxos, currentAccount);
     await getKeyHashes(tx, utxos, currentAccount);
     getProperties(tx);
     setIsLoading((l) => ({ ...l, loading: false }));
@@ -1144,7 +1158,7 @@ const DetailsModal = React.forwardRef(
                   </Box>
                   <Box height="4" />
                   <Box width={'full'} display={'flex'} flexWrap={'wrap'}>
-                        {"todo certs"}
+                        {"certs"}
                   </Box>
                   <Box h={5} />
                   <Text width={'full'} fontSize="md" fontWeight={'bold'}>
