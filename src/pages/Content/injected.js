@@ -15,7 +15,8 @@ import {
   submitTx,
   //CIP-95
   getDRepKey,
-  getStakeKey,
+  getRegisteredPubStakeKeys,
+  getUnregisteredPubStakeKeys,
   signTxCIP95,
   signDataCIP95,
 } from '../../api/webpage';
@@ -40,6 +41,8 @@ window.cardano = {
           return {
             getBalance: () => getBalance(),
             signData: (address, payload) => signDataCIP30(address, payload),
+            // disabled as CIP-95 replacement is used
+            // signTx: (tx, partialSign) => signTx(tx, partialSign),
             submitTx: (tx) => submitTx(tx),
             getUtxos: (amount, paginate) => getUtxos(amount, paginate),
             getUsedAddresses: async () => [await getAddress()],
@@ -53,11 +56,15 @@ window.cardano = {
               getCollateral: () => getCollateral(),
             },
             // CIP-95 -----------------------------
-            getPubDRepKey: () => getDRepKey(),
-            getActivePubStakeKeys: () => getStakeKey(),
-            signTx: (tx, partialSign) => signTxCIP95(tx, partialSign),
-            signData: (address, payload) => signDataCIP95(address, payload),
             getExtensions: () => [{ cip: 95 }],
+            signTx: (tx, partialSign) => signTxCIP95(tx, partialSign),
+            // Namespaced endpoints
+            cip95: {
+              getPubDRepKey: () => getDRepKey(),
+              getRegisteredPubStakeKeys: () => getRegisteredPubStakeKeys(),
+              getUnregisteredPubStakeKeys: () => getUnregisteredPubStakeKeys(),
+              signData: (address, payload) => signDataCIP95(address, payload),
+            },
           };
         }
       } else if (enableCIP95 == null) {
@@ -84,7 +91,7 @@ window.cardano = {
       }
     },
     isEnabled: () => isEnabled(),
-    apiVersion: '1.4.0',
+    apiVersion: '1.5.0',
     supportedExtensions: [{ cip: 95 }],
     name: 'demos',
     icon: "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='309.36' y='12.441' width='121.115' height='472.347' style='fill: rgb(128  177  211)%3B'/%3E%3Cellipse style='fill: rgb(128  177  211)%3B' cx='231.272' cy='320.966' rx='171.791' ry='137.051'/%3E%3C/svg%3E",

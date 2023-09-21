@@ -20,7 +20,10 @@ export const METHOD = {
   returnData: 'returnData',
   // CIP-95
   getDRepKey: 'getDRepKey',
-  getStakeKey: 'getStakeKey',
+  getRegisteredPubStakeKeys: 'getRegisteredPubStakeKeys',
+  getUnregisteredPubStakeKeys: 'getUnregisteredPubStakeKeys',
+  signDataCIP95: 'signDataCIP95',
+  signTxCIP95: 'signTxCIP95',
 };
 
 /*
@@ -71,6 +74,7 @@ export const NODE = {
   testnet: 'https://cardano-testnet.blockfrost.io/api/v0',
   preview: 'https://cardano-preview.blockfrost.io/api/v0',
   preprod: 'https://cardano-preprod.blockfrost.io/api/v0',
+  sancho: 'https://cardano-sanchonet.blockfrost.io/api/v0',
 };
 
 export const NETWORK_ID = {
@@ -78,13 +82,15 @@ export const NETWORK_ID = {
   testnet: 'testnet',
   preview: 'preview',
   preprod: 'preprod',
+  sancho: 'sancho',
 };
 
-export const NETWORKD_ID_NUMBER = {
+export const NETWORK_ID_NUMBER = {
   mainnet: 1,
   testnet: 0,
   preview: 0,
   preprod: 0,
+  sancho: 0,
 };
 
 export const POPUP = {

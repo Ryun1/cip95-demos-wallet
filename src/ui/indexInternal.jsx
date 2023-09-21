@@ -16,6 +16,8 @@ import Enable from './app/pages/enable';
 import NoWallet from './app/pages/noWallet';
 import SignData from './app/pages/signData';
 import SignTx from './app/pages/signTx';
+import SignDataCIP95 from './app/pages/signDataCIP95';
+import SignTxCIP95 from './app/pages/signTxCIP95';
 import Main from './index';
 
 const App = () => {
@@ -31,6 +33,9 @@ const App = () => {
     else if (request.method === METHOD.enable) history.push('/enable');
     else if (request.method === METHOD.signData) history.push('/signData');
     else if (request.method === METHOD.signTx) history.push('/signTx');
+    // CIP-95
+    else if (request.method === METHOD.signDataCIP95) history.push('/signDataCIP95');
+    else if (request.method === METHOD.signTxCIP95) history.push('/signTxCIP95');
   };
 
   React.useEffect(() => {
@@ -55,6 +60,12 @@ const App = () => {
         </Route>
         <Route exact path="/signTx">
           <SignTx request={request} controller={controller} />
+        </Route>
+        <Route exact path="/signDataCIP95">
+          <SignDataCIP95 request={request} controller={controller} />
+        </Route>
+        <Route exact path="/signTxCIP95">
+          <SignTxCIP95 request={request} controller={controller} />
         </Route>
         <Route exact path="/enable">
           <Enable request={request} controller={controller} />

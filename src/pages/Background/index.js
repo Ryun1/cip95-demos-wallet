@@ -11,15 +11,18 @@ import {
   submitTx,
   verifyPayload,
   verifyTx,
+  // CSL Alpha
+  verifyTxCSL,
   // CIP-95
   getDRepKey,
-  getStakeKey,
+  getRegisteredPubStakeKeys,
+  getUnregisteredPubStakeKeys
 } from '../../api/extension';
 import { Messaging } from '../../api/messaging';
 import {
   APIError,
   METHOD,
-  NETWORKD_ID_NUMBER,
+  NETWORK_ID_NUMBER,
   POPUP,
   SENDER,
   TARGET,
@@ -47,8 +50,8 @@ app.add(METHOD.getDRepKey, async (request, sendResponse) => {
   }
 });
 
-app.add(METHOD.getStakeKey, async (request, sendResponse) => {
-  const key = await getStakeKey();
+app.add(METHOD.getRegisteredPubStakeKeys, async (request, sendResponse) => {
+  const key = await getRegisteredPubStakeKeys();
   if (key) {
     sendResponse({
       id: request.id,
@@ -60,6 +63,105 @@ app.add(METHOD.getStakeKey, async (request, sendResponse) => {
     sendResponse({
       id: request.id,
       error: APIError.InternalError,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  }
+});
+
+app.add(METHOD.getUnregisteredPubStakeKeys, async (request, sendResponse) => {
+  const key = await getUnregisteredPubStakeKeys();
+  if (key) {
+    sendResponse({
+      id: request.id,
+      data: key,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  } else {
+    sendResponse({
+      id: request.id,
+      error: APIError.InternalError,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  }
+});
+
+app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
+  try {
+    await verifyTxCSL(request.data.tx);
+    const response = await createPopup(POPUP.internal)
+      .then((tab) => Messaging.sendToPopupInternal(tab, request))
+      .then((response) => response);
+
+    if (response.data) {
+      sendResponse({
+        id: request.id,
+        data: response.data,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    } else if (response.error) {
+      sendResponse({
+        id: request.id,
+        error: response.error,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    } else {
+      sendResponse({
+        id: request.id,
+        error: APIError.InternalError,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    }
+  } catch (e) {
+    sendResponse({
+      id: request.id,
+      error: e,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  }
+});
+
+app.add(METHOD.signDataCIP95, async (request, sendResponse) => {
+  try {
+    verifyPayload(request.data.payload);
+    await extractKeyHash(request.data.address);
+
+    const response = await createPopup(POPUP.internal)
+      .then((tab) => Messaging.sendToPopupInternal(tab, request))
+      .then((response) => response);
+
+    if (response.data) {
+      sendResponse({
+        id: request.id,
+        data: response.data,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    } else if (response.error) {
+      sendResponse({
+        id: request.id,
+        error: response.error,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    } else {
+      sendResponse({
+        id: request.id,
+        error: APIError.InternalError,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    }
+  } catch (e) {
+    sendResponse({
+      id: request.id,
+      error: e,
       target: TARGET,
       sender: SENDER.extension,
     });
@@ -288,7 +390,7 @@ app.add(METHOD.getNetworkId, async (request, sendResponse) => {
   if (network)
     sendResponse({
       id: request.id,
-      data: NETWORKD_ID_NUMBER[network.id],
+      data: NETWORK_ID_NUMBER[network.id],
       target: TARGET,
       sender: SENDER.extension,
     });
