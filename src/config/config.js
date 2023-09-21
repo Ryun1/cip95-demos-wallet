@@ -22,6 +22,8 @@ export const METHOD = {
   getDRepKey: 'getDRepKey',
   getRegisteredPubStakeKeys: 'getRegisteredPubStakeKeys',
   getUnregisteredPubStakeKeys: 'getUnregisteredPubStakeKeys',
+  signDataCIP95: 'signDataCIP95',
+  signTxCIP95: 'signTxCIP95',
 };
 
 /*

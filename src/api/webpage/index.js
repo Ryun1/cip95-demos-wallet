@@ -19,7 +19,7 @@ export const getUnregisteredPubStakeKeys = async () => {
 
 export const signTxCIP95 = async (tx, partialSign = false) => {
   const result = await Messaging.sendToContent({
-    method: METHOD.signTx,
+    method: METHOD.signTxCIP95,
     data: { tx, partialSign },
   });
   return result.data;
@@ -27,7 +27,7 @@ export const signTxCIP95 = async (tx, partialSign = false) => {
 
 export const signDataCIP95 = async (address, payload) => {
   const result = await Messaging.sendToContent({
-    method: METHOD.signData,
+    method: METHOD.signDataCIP95,
     data: { address, payload, CIP30: true },
   });
   return result.data;
