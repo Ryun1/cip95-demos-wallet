@@ -9,64 +9,48 @@
 
 This is a *mock* wallet, based on [Nami](https://github.com/berry-pool/nami).
 
-Currently corresponding CIP-95 commit: [1f75f99](https://github.com/cardano-foundation/CIPs/pull/509/commits/1f75f990c4e8fdf308c3ed209bac723a84822931).
+Currently corresponding CIP-95 commit: [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md).
 
-| Tag  | CIP-95 Commit | demos dApp Tag |
-| ---- | ------------- | -------------- |
-| [1.4.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.4.0) | [fbc5fcb](https://github.com/cardano-foundation/CIPs/pull/509/commits/fbc5fcbb127313ccfd2a30376145f63627f3afd9) | [1.4.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.4.0) |
-| [1.4.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.4.0) | [1f75f99](https://github.com/cardano-foundation/CIPs/pull/509/commits/1f75f990c4e8fdf308c3ed209bac723a84822931) | [1.4.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.4.0) |
-| 1.5.0 (in progress) | [d02b02f](https://github.com/Ryun1/CIPs/commit/d02b02faf9733e3099f71fa2922f8de02fa1e0a3) | 1.5.0 |
+| Tag  | CIP-95 Commit | Feature Details | demos dApp Tag |
+| ---- | ------------- | --------------- | -------------- |
+| [1.4.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.4.0) | [1f75f99](https://github.com/cardano-foundation/CIPs/pull/509/commits/1f75f990c4e8fdf308c3ed209bac723a84822931) | [Here](./CHANGELOG.md#140) | [1.4.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.4.0) |
+| [1.5.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.0) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#150) | [1.5.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.5.0) |
 
 ## CIP-95/Conway Features Supported Notes
 
-### 1.4.0
-
-#### SanchoNet:
-- Cannot connect.
-  
-#### Cardano Serialization Library Conway Alpha:
-- Does not use any Conway alpha builds.
-
-#### CIP-95:
-- `.getPubDRepKey()`
-  - Should work correctly as expected.
-- `.getPubActiveStakeKeys()`
-  - Since this is a one stake key wallet, only one is ever returned.
-  - Currently there is no `active` check currently because it is easier for testing.
-- `.signTx()`
-  - No conway items supported properly (waiting for Sancho + CML/CSL).
-  - Supports signing transactions with DRep key, if DRep key in required signers field only.
-- `.signData()`
-  - No conway items supported properly (waiting for Sancho + CML/CSL).
-
-### 1.5.XX (In progress)
-
-Check pull requests to see this work.
+### 1.5.0
 
 #### SanchoNet:
 - Can connect using sancho Blockfrost.
 - Can view correct balance etc.
-- Some things might be broke.
-- May not be able to submit to Sancho
+- Can view transaction history.
   
 #### Cardano Serialization Library Conway Alpha:
-- Uses Alpha build to support connecting to Sancho and CIP-95.
-- Probably import using temporary modules.
+- Uses Alpha build to support serilization of Conaway items.
+- Import using as a temp modules.
+- Supports inspection and signing transactions with:
+  - Empty Tx 
+  - DRep Registration
+  - DRep Retirement
+  - DRep Update
+  - Vote Delegation
+  - Governance Action 
 
 #### CIP-95:
-- `.getPubDRepKey()`
-  - Should work correctly as expected.
-- `.getPubActiveStakeKeys()`
-  - Since this is a one stake key wallet, only one is ever returned.
-  - Currently there is no `active` check currently because it is easier for testing.
-- `.signTx()`
-  - Supports inspection and signature of all Conway items.
-- `.signData()`
-  - Supports properly signing with DRep Key.
+- `.cip95.getPubDRepKey()`
+- `.cip95.getRegisteredPubStakeKeys()`
+- `.cip95.getUnregisteredPubStakeKeys()`
+- `.cip95.signData()` **NOT implemented**
+- `signTx()`
 
 #### Misc
-- Rebase against Nami
-- Fix chrome extension errors
+Added .getSupportedExtensions() and .getExtensions()
+
+### 1.5.X (In progress):
+- Better inspection of Conway items
+- `.cip95.signData()`
+- Signing votes
+- Submit to sancho
 
 ## To Develop
 
