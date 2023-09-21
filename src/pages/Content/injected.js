@@ -41,6 +41,8 @@ window.cardano = {
           return {
             getBalance: () => getBalance(),
             signData: (address, payload) => signDataCIP30(address, payload),
+            // disabled as CIP-95 replacement is used
+            // signTx: (tx, partialSign) => signTx(tx, partialSign),
             submitTx: (tx) => submitTx(tx),
             getUtxos: (amount, paginate) => getUtxos(amount, paginate),
             getUsedAddresses: async () => [await getAddress()],
@@ -54,12 +56,15 @@ window.cardano = {
               getCollateral: () => getCollateral(),
             },
             // CIP-95 -----------------------------
-            getPubDRepKey: () => getDRepKey(),
-            getRegisteredPubStakeKeys: () => getRegisteredPubStakeKeys(),
-            getUnregisteredPubStakeKeys: () => getUnregisteredPubStakeKeys(),
-            signTx: (tx, partialSign) => signTxCIP95(tx, partialSign),
-            signData: (address, payload) => signDataCIP95(address, payload),
             getExtensions: () => [{ cip: 95 }],
+            signTx: (tx, partialSign) => signTxCIP95(tx, partialSign),
+            // Namespaced endpoints
+            cip95: {
+              getPubDRepKey: () => getDRepKey(),
+              getRegisteredPubStakeKeys: () => getRegisteredPubStakeKeys(),
+              getUnregisteredPubStakeKeys: () => getUnregisteredPubStakeKeys(),
+              signData: (address, payload) => signDataCIP95(address, payload),
+            },
           };
         }
       } else if (enableCIP95 == null) {
