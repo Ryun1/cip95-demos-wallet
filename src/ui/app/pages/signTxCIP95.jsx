@@ -439,17 +439,17 @@ const SignTx = ({ request, controller }) => {
     };
     if (txBody.certs()) keyHashFromCert(txBody);
 
-    // TODO key hashes from votes
-    // const votes = txBody.voting_procedures();
-    // const keyHashFromVote = (votes) => {
-    //   const voters = votes.get_voters();
-    //   let voterKeyhash;
-    //   for (let i = 0; i < voters.len(); i++) {
-    //     voterKeyhash = (voters.get(i)).to_drep_cred();
-    //     requiredKeyHashes.push(voterKeyhash.to_keyhash().to_hex());
-    //   }
-    // };
-    // if (votes) keyHashFromVote(votes);
+    // key hashes from votes
+    const votes = txBody.voting_procedures();
+    const keyHashFromVote = (votes) => {
+      const voters = votes.get_voters();
+      let voterKeyhash;
+      for (let i = 0; i < voters.len(); i++) {
+        voterKeyhash = (voters.get(i)).to_keyhash();
+        requiredKeyHashes.push(voterKeyhash.to_hex());
+      }
+    };
+    if (votes) keyHashFromVote(votes);
 
     // key hashes from withdrawals
     const withdrawals = txBody.withdrawals();
