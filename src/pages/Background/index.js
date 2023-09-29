@@ -21,6 +21,7 @@ import {
   setWhitelisted,
   getCurrentAccount,
   getCurrentAccountIndex,
+  signTxCIP95,
   signTx,
   getAccounts,
   createWallet,
@@ -103,42 +104,124 @@ app.add(METHOD.getUnregisteredPubStakeKeys, async (request, sendResponse) => {
 });
 
 app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
-  try {
-    await verifyTxCSL(request.data.tx);
-    const response = await createPopup(POPUP.internal)
-      .then((tab) => Messaging.sendToPopupInternal(tab, request))
-      .then((response) => response);
 
-    if (response.data) {
-      sendResponse({
-        id: request.id,
-        data: response.data,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    } else if (response.error) {
-      sendResponse({
-        id: request.id,
-        error: response.error,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    } else {
-      sendResponse({
-        id: request.id,
-        error: APIError.InternalError,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
+  // somed wallet ---------------------------------------
+
+  // try {
+    await Loader.load();
+    // await verifyTxCSL(request.data.tx);
+
+    const account = await getCurrentAccount();
+
+    const tx = Loader.CSL.Transaction.from_bytes(
+      Buffer.from(request.data.tx, 'hex')
+    );
+
+    const baseAddr = Loader.CSL.BaseAddress.from_address(
+      Loader.CSL.Address.from_bech32(account.paymentAddr)
+    );
+    const paymentKeyHash = Buffer.from(
+      baseAddr.payment_cred().to_keyhash().to_bytes()
+    ).toString('hex');
+
+    let requiredKeyHashes = [paymentKeyHash];
+  
+    try {
+
+      const txBody = tx.body();
+
+      for (let i = 0; i < txBody.certs().len(); i++) {
+          const cert = txBody.certs().get(i);
+
+          if (cert.kind() === 15) {
+            const credential = cert.as_vote_delegation().stake_credential();
+            // if credential is a key hash
+            if (credential.kind() === 0) {
+                const keyHash = Buffer.from(
+                  credential.to_keyhash().to_bytes()
+                ).toString('hex');
+                requiredKeyHashes.push(keyHash);
+            }
+          // conway drep registration, add drep credential
+          } else if (cert.kind() === 10) {
+            const credential = cert.as_drep_registration().voting_credential();
+            // if credential is a key hash
+            if (credential.kind() === 0) {
+              // DRep registration doesn't required key hash
+            }
+          // conway drep update, add drep credential
+          } else if (cert.kind() === 11) {
+            const credential = cert.as_drep_update().voting_credential();
+            // if credential is a key hash
+            if (credential.kind() === 0) {
+              const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+              requiredKeyHashes.push(keyHash);
+            }
+          // conway drep retirement, add drep credential
+          } else if (cert.kind() === 9) {
+            const credential = cert.as_drep_deregistration().voting_credential();
+            // if credential is a key hash
+            if (credential.kind() === 0) {
+              const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+              requiredKeyHashes.push(keyHash);
+            }
+          }
+      }
+    } catch (e) {
     }
-  } catch (e) {
+
+    const accountIndex = await getCurrentAccountIndex();
+
+    // sign with all keys to be safe
+    const txWitnesses = await signTxCIP95(request.data.tx, requiredKeyHashes, "ryan", accountIndex)
+
     sendResponse({
       id: request.id,
-      error: e,
+      data: (Buffer.from(txWitnesses.to_bytes(), 'hex')).toString('hex'),
       target: TARGET,
       sender: SENDER.extension,
     });
-  }
+
+  // try {
+  //   await verifyTxCSL(request.data.tx);
+  //   const response = await createPopup(POPUP.internal)
+  //     .then((tab) => Messaging.sendToPopupInternal(tab, request))
+  //     .then((response) => response);
+
+  //   if (response.data) {
+  //     sendResponse({
+  //       id: request.id,
+  //       data: response.data,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   } else if (response.error) {
+  //     sendResponse({
+  //       id: request.id,
+  //       error: response.error,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   } else {
+  //     sendResponse({
+  //       id: request.id,
+  //       error: APIError.InternalError,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   }
+  // } catch (e) {
+  //   sendResponse({
+  //     id: request.id,
+  //     error: e,
+  //     target: TARGET,
+  //     sender: SENDER.extension,
+  //   });
+  // }
 });
 
 app.add(METHOD.signDataCIP95, async (request, sendResponse) => {
@@ -220,8 +303,8 @@ app.add(METHOD.enable, async (request, sendResponse) => {
   if(!hasWallet){
     await createWallet("somed-wallet", entropyToMnemonic('00000000000000000000000000000000'), "ryan");
 
-    // set the network to preprod, as default is mainnet
-    await setNetwork({id : 'preprod', node : 'https://cardano-preprod.blockfrost.io/api/v0'});
+    // set the network to sancho, as default is mainnet
+    await setNetwork({id : 'sancho', node : 'https://cardano-sanchonet.blockfrost.io/api/v0'});
 
     sendResponse({
       id: request.id,
@@ -504,11 +587,11 @@ app.add(METHOD.signTx, async (request, sendResponse) => {
     ).toString('hex');
 
     const accountIndex = await getCurrentAccountIndex();
-    const lmao = await signTx(request.data.tx, [paymentKeyHash], "ryan", accountIndex)
+    const txWitnesses = await signTx(request.data.tx, [paymentKeyHash], "ryan", accountIndex)
 
     sendResponse({
       id: request.id,
-      data: (Buffer.from(lmao.to_bytes(), 'hex')).toString('hex'),
+      data: (Buffer.from(txWitnesses.to_bytes(), 'hex')).toString('hex'),
       target: TARGET,
       sender: SENDER.extension,
     });

@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "This is a mock wallet, based on Nami with no authentication. ⚠ DO NOT use for real funds ⚠",
   "name": "somed wallet",
   "background": { "scripts": ["background.bundle.js"], "persistent": false },
