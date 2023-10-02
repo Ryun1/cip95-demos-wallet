@@ -169,8 +169,28 @@ app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
               ).toString('hex');
               requiredKeyHashes.push(keyHash);
             }
+            // stake deregistration
+          } else if (cert.kind() === 1) {
+            const credential = cert.as_stake_deregistration().stake_credential();
+            if (credential.kind() === 0) {
+              const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+              requiredKeyHashes.push(keyHash);
+            }
           }
       }
+      const votes = txBody.voting_procedures();
+      const keyHashFromVote = (votes) => {
+        const voters = votes.get_voters();
+        let voterKeyhash;
+        for (let i = 0; i < voters.len(); i++) {
+          voterKeyhash = (voters.get(i)).to_keyhash();
+          requiredKeyHashes.push(voterKeyhash.to_hex());
+        }
+      };
+      if (votes) keyHashFromVote(votes);
+
     } catch (e) {
     }
 
