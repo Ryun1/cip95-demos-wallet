@@ -16,7 +16,16 @@ import {
   // CIP-95
   getDRepKey,
   getRegisteredPubStakeKeys,
-  getUnregisteredPubStakeKeys
+  getUnregisteredPubStakeKeys,
+  // somed wallet
+  setWhitelisted,
+  getCurrentAccount,
+  getCurrentAccountIndex,
+  signTxCIP95,
+  signTx,
+  getAccounts,
+  createWallet,
+  setNetwork,
 } from '../../api/extension';
 import { Messaging } from '../../api/messaging';
 import {
@@ -27,6 +36,12 @@ import {
   SENDER,
   TARGET,
 } from '../../config/config';
+
+import {
+  entropyToMnemonic,
+} from 'bip39';
+
+import Loader from '../../api/loader';
 
 const app = Messaging.createBackgroundController();
 
@@ -89,42 +104,144 @@ app.add(METHOD.getUnregisteredPubStakeKeys, async (request, sendResponse) => {
 });
 
 app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
-  try {
-    await verifyTxCSL(request.data.tx);
-    const response = await createPopup(POPUP.internal)
-      .then((tab) => Messaging.sendToPopupInternal(tab, request))
-      .then((response) => response);
 
-    if (response.data) {
-      sendResponse({
-        id: request.id,
-        data: response.data,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    } else if (response.error) {
-      sendResponse({
-        id: request.id,
-        error: response.error,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    } else {
-      sendResponse({
-        id: request.id,
-        error: APIError.InternalError,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
+  // somed wallet ---------------------------------------
+
+  // try {
+    await Loader.load();
+    // await verifyTxCSL(request.data.tx);
+
+    const account = await getCurrentAccount();
+
+    const tx = Loader.CSL.Transaction.from_bytes(
+      Buffer.from(request.data.tx, 'hex')
+    );
+
+    const baseAddr = Loader.CSL.BaseAddress.from_address(
+      Loader.CSL.Address.from_bech32(account.paymentAddr)
+    );
+    const paymentKeyHash = Buffer.from(
+      baseAddr.payment_cred().to_keyhash().to_bytes()
+    ).toString('hex');
+
+    let requiredKeyHashes = [paymentKeyHash];
+  
+    try {
+
+      const txBody = tx.body();
+
+      for (let i = 0; i < txBody.certs().len(); i++) {
+          const cert = txBody.certs().get(i);
+
+          if (cert.kind() === 15) {
+            const credential = cert.as_vote_delegation().stake_credential();
+            // if credential is a key hash
+            if (credential.kind() === 0) {
+                const keyHash = Buffer.from(
+                  credential.to_keyhash().to_bytes()
+                ).toString('hex');
+                requiredKeyHashes.push(keyHash);
+            }
+          // conway drep registration, add drep credential
+          } else if (cert.kind() === 10) {
+            const credential = cert.as_drep_registration().voting_credential();
+            // if credential is a key hash
+            if (credential.kind() === 0) {
+              // DRep registration doesn't required key hash
+            }
+          // conway drep update, add drep credential
+          } else if (cert.kind() === 11) {
+            const credential = cert.as_drep_update().voting_credential();
+            // if credential is a key hash
+            if (credential.kind() === 0) {
+              const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+              requiredKeyHashes.push(keyHash);
+            }
+          // conway drep retirement, add drep credential
+          } else if (cert.kind() === 9) {
+            const credential = cert.as_drep_deregistration().voting_credential();
+            // if credential is a key hash
+            if (credential.kind() === 0) {
+              const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+              requiredKeyHashes.push(keyHash);
+            }
+            // stake deregistration
+          } else if (cert.kind() === 1) {
+            const credential = cert.as_stake_deregistration().stake_credential();
+            if (credential.kind() === 0) {
+              const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+              requiredKeyHashes.push(keyHash);
+            }
+          }
+      }
+      const votes = txBody.voting_procedures();
+      const keyHashFromVote = (votes) => {
+        const voters = votes.get_voters();
+        let voterKeyhash;
+        for (let i = 0; i < voters.len(); i++) {
+          voterKeyhash = (voters.get(i)).to_keyhash();
+          requiredKeyHashes.push(voterKeyhash.to_hex());
+        }
+      };
+      if (votes) keyHashFromVote(votes);
+
+    } catch (e) {
     }
-  } catch (e) {
+
+    const accountIndex = await getCurrentAccountIndex();
+
+    // sign with all keys to be safe
+    const txWitnesses = await signTxCIP95(request.data.tx, requiredKeyHashes, "ryan", accountIndex)
+
     sendResponse({
       id: request.id,
-      error: e,
+      data: (Buffer.from(txWitnesses.to_bytes(), 'hex')).toString('hex'),
       target: TARGET,
       sender: SENDER.extension,
     });
-  }
+
+  // try {
+  //   await verifyTxCSL(request.data.tx);
+  //   const response = await createPopup(POPUP.internal)
+  //     .then((tab) => Messaging.sendToPopupInternal(tab, request))
+  //     .then((response) => response);
+
+  //   if (response.data) {
+  //     sendResponse({
+  //       id: request.id,
+  //       data: response.data,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   } else if (response.error) {
+  //     sendResponse({
+  //       id: request.id,
+  //       error: response.error,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   } else {
+  //     sendResponse({
+  //       id: request.id,
+  //       error: APIError.InternalError,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   }
+  // } catch (e) {
+  //   sendResponse({
+  //     id: request.id,
+  //     error: e,
+  //     target: TARGET,
+  //     sender: SENDER.extension,
+  //   });
+  // }
 });
 
 app.add(METHOD.signDataCIP95, async (request, sendResponse) => {
@@ -195,6 +312,30 @@ app.add(METHOD.getBalance, (request, sendResponse) => {
 });
 
 app.add(METHOD.enable, async (request, sendResponse) => {
+
+  // somed wallet ---------------------------------------
+
+  //Set whitelist here as the enable.jsx page will not be loaded
+  await setWhitelisted(request.origin);
+
+  // If a wallet doesn't exist, create one using hardcoded menmonic and password
+  const hasWallet = await getAccounts();
+  if(!hasWallet){
+    await createWallet("somed-wallet", entropyToMnemonic('00000000000000000000000000000000'), "ryan");
+
+    // set the network to sancho, as default is mainnet
+    await setNetwork({id : 'sancho', node : 'https://cardano-sanchonet.blockfrost.io/api/v0'});
+
+    sendResponse({
+      id: request.id,
+      data: true,
+      target: TARGET,
+      sender: SENDER.extension,
+    });
+  }
+
+  // somed wallet ---------------------------------------
+
   isWhitelisted(request.origin)
     .then(async (whitelisted) => {
       if (whitelisted) {
@@ -243,6 +384,7 @@ app.add(METHOD.enable, async (request, sendResponse) => {
 });
 
 app.add(METHOD.isEnabled, (request, sendResponse) => {
+
   isWhitelisted(request.origin)
     .then((whitelisted) => {
       sendResponse({
@@ -445,42 +587,76 @@ app.add(METHOD.signData, async (request, sendResponse) => {
 });
 
 app.add(METHOD.signTx, async (request, sendResponse) => {
-  try {
-    await verifyTx(request.data.tx);
-    const response = await createPopup(POPUP.internal)
-      .then((tab) => Messaging.sendToPopupInternal(tab, request))
-      .then((response) => response);
 
-    if (response.data) {
-      sendResponse({
-        id: request.id,
-        data: response.data,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    } else if (response.error) {
-      sendResponse({
-        id: request.id,
-        error: response.error,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    } else {
-      sendResponse({
-        id: request.id,
-        error: APIError.InternalError,
-        target: TARGET,
-        sender: SENDER.extension,
-      });
-    }
-  } catch (e) {
+  // somed wallet ---------------------------------------
+
+  // try {
+    await Loader.load();
+    await verifyTx(request.data.tx);
+
+    const account = await getCurrentAccount();
+
+    const tx = Loader.Cardano.Transaction.from_bytes(
+      Buffer.from(request.data.tx, 'hex')
+    );
+    const baseAddr = Loader.Cardano.BaseAddress.from_address(
+      Loader.Cardano.Address.from_bech32(account.paymentAddr)
+    );
+    const paymentKeyHash = Buffer.from(
+      baseAddr.payment_cred().to_keyhash().to_bytes()
+    ).toString('hex');
+
+    const accountIndex = await getCurrentAccountIndex();
+    const txWitnesses = await signTx(request.data.tx, [paymentKeyHash], "ryan", accountIndex)
+
     sendResponse({
       id: request.id,
-      error: e,
+      data: (Buffer.from(txWitnesses.to_bytes(), 'hex')).toString('hex'),
       target: TARGET,
       sender: SENDER.extension,
     });
-  }
+
+    // sendResponse({
+    //   id: request.id,
+    //   data: lmao,
+    //   target: TARGET,
+    //   sender: SENDER.extension,
+    // });
+
+    // const response = await createPopup(POPUP.internal)
+    //   .then((tab) => Messaging.sendToPopupInternal(tab, request))
+    //   .then((response) => response);
+
+    // if (response.data) {
+    //   sendResponse({
+    //     id: request.id,
+    //     data: response.data,
+    //     target: TARGET,
+    //     sender: SENDER.extension,
+    //   });
+  //   } else if (response.error) {
+  //     sendResponse({
+  //       id: request.id,
+  //       error: response.error,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   } else {
+  //     sendResponse({
+  //       id: request.id,
+  //       error: APIError.InternalError,
+  //       target: TARGET,
+  //       sender: SENDER.extension,
+  //     });
+  //   }
+  // } catch (e) {
+  //   sendResponse({
+  //     id: request.id,
+  //     error: e,
+  //     target: TARGET,
+  //     sender: SENDER.extension,
+  //   });
+  // }
 });
 
 app.listen();
