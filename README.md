@@ -15,42 +15,18 @@ Currently corresponding CIP-95 commit: [6153866](https://github.com/cardano-foun
 | ---- | ------------- | --------------- | -------------- |
 | [1.4.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.4.0) | [1f75f99](https://github.com/cardano-foundation/CIPs/pull/509/commits/1f75f990c4e8fdf308c3ed209bac723a84822931) | [Here](./CHANGELOG.md#140) | [1.4.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.4.0) |
 | [1.5.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.0) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#150) | [1.5.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.5.0) |
+| [1.5.1](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.1) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#151) | [1.5.4+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
 
 ## CIP-95/Conway Features Supported Notes
 
-### 1.5.0
+### 1.5.1
+- Bumped CSL to alpha version 8
+- Fixed vote signing
+- Fixed Gov action inspection
 
-#### SanchoNet:
-- Can connect using sancho Blockfrost.
-- Can view correct balance etc.
-- Can view transaction history.
-  
-#### Cardano Serialization Library Conway Alpha:
-- Uses Alpha build to support serilization of Conaway items.
-- Import using as a temp modules.
-- Supports inspection and signing transactions with:
-  - Empty Tx 
-  - DRep Registration
-  - DRep Retirement
-  - DRep Update
-  - Vote Delegation
-  - Governance Action 
-
-#### CIP-95:
-- `.cip95.getPubDRepKey()`
-- `.cip95.getRegisteredPubStakeKeys()`
-- `.cip95.getUnregisteredPubStakeKeys()`
-- `.cip95.signData()` **NOT implemented**
-- `signTx()`
-
-#### Misc
-Added .getSupportedExtensions() and .getExtensions()
-
-### 1.5.X (In progress):
+### 1.5.2 (In progress):
 - Better inspection of Conway items
 - `.cip95.signData()`
-- Signing votes
-- Submit to sancho
 
 ## To Develop
 

@@ -1,5 +1,10 @@
 # Tags
 
+### 1.5.1
+- Bumped CSL to alpha version 8
+- Fixed vote signing
+- Fixed Gov action inspection
+
 ### 1.5.0
 
 #### SanchoNet:
