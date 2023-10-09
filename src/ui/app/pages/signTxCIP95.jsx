@@ -445,7 +445,7 @@ const SignTx = ({ request, controller }) => {
       const voters = votes.get_voters();
       let voterKeyhash;
       for (let i = 0; i < voters.len(); i++) {
-        voterKeyhash = (voters.get(i)).to_keyhash();
+        voterKeyhash = (voters.get(i)).to_key_hash();
         requiredKeyHashes.push(voterKeyhash.to_hex());
       }
     };
