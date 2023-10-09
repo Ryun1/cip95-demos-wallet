@@ -1,19 +1,12 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
-* @param {string} password
-* @param {string} salt
-* @param {string} nonce
-* @param {string} data
-* @returns {string}
+* @param {Address} address
+* @param {TransactionUnspentOutputs} utxos
+* @param {TransactionBuilderConfig} config
+* @returns {TransactionBatchList}
 */
-export function encrypt_with_password(password: string, salt: string, nonce: string, data: string): string;
-/**
-* @param {string} password
-* @param {string} data
-* @returns {string}
-*/
-export function decrypt_with_password(password: string, data: string): string;
+export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
 /**
 * @param {Transaction} tx
 * @param {LinearFee} linear_fee
@@ -33,12 +26,19 @@ export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: 
 */
 export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
 /**
-* @param {Address} address
-* @param {TransactionUnspentOutputs} utxos
-* @param {TransactionBuilderConfig} config
-* @returns {TransactionBatchList}
+* @param {string} password
+* @param {string} salt
+* @param {string} nonce
+* @param {string} data
+* @returns {string}
 */
-export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
+export function encrypt_with_password(password: string, salt: string, nonce: string, data: string): string;
+/**
+* @param {string} password
+* @param {string} data
+* @returns {string}
+*/
+export function decrypt_with_password(password: string, data: string): string;
 /**
 * @param {TransactionHash} tx_body_hash
 * @param {ByronAddress} addr
@@ -128,6 +128,18 @@ export function min_ada_required(assets: Value, has_data_hash: boolean, coins_pe
 */
 export function encode_json_str_to_native_script(json: string, self_xpub: string, schema: number): NativeScript;
 /**
+* @param {string} json
+* @param {number} schema
+* @returns {PlutusData}
+*/
+export function encode_json_str_to_plutus_datum(json: string, schema: number): PlutusData;
+/**
+* @param {PlutusData} datum
+* @param {number} schema
+* @returns {string}
+*/
+export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: number): string;
+/**
 * @param {Uint8Array} bytes
 * @returns {TransactionMetadatum}
 */
@@ -150,17 +162,53 @@ export function encode_json_str_to_metadatum(json: string, schema: number): Tran
 */
 export function decode_metadatum_to_json_str(metadatum: TransactionMetadatum, schema: number): string;
 /**
-* @param {string} json
-* @param {number} schema
-* @returns {PlutusData}
 */
-export function encode_json_str_to_plutus_datum(json: string, schema: number): PlutusData;
+export enum MIRPot {
+  Reserves = 0,
+  Treasury = 1,
+}
 /**
-* @param {PlutusData} datum
-* @param {number} schema
-* @returns {string}
 */
-export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: number): string;
+export enum MIRKind {
+  ToOtherPot = 0,
+  ToStakeCredentials = 1,
+}
+/**
+*/
+export enum VoterKind {
+  ConstitutionalCommitteeHotKeyHash = 0,
+  ConstitutionalCommitteeHotScriptHash = 1,
+  DRepKeyHash = 2,
+  DRepScriptHash = 3,
+  StakingPoolKeyHash = 4,
+}
+/**
+*/
+export enum CborContainerType {
+  Array = 0,
+  Map = 1,
+}
+/**
+*/
+export enum CredKind {
+  Key = 0,
+  Script = 1,
+}
+/**
+*/
+export enum DRepKind {
+  KeyHash = 0,
+  ScriptHash = 1,
+  AlwaysAbstain = 2,
+  AlwaysNoConfidence = 3,
+}
+/**
+* Used to choosed the schema for a script JSON string
+*/
+export enum ScriptSchema {
+  Wallet = 0,
+  Node = 1,
+}
 /**
 */
 export enum RelayKind {
@@ -188,6 +236,7 @@ export enum ScriptHashNamespace {
   NativeScript = 0,
   PlutusScript = 1,
   PlutusScriptV2 = 2,
+  PlutusScriptV3 = 3,
 }
 /**
 */
@@ -197,33 +246,10 @@ export enum NetworkIdKind {
 }
 /**
 */
-export enum VoterKind {
-  ConstitutionalCommitteeHotKeyHash = 0,
-  ConstitutionalCommitteeHotScriptHash = 1,
-  DRepKeyHash = 2,
-  DRepScriptHash = 3,
-  StakingPoolKeyHash = 4,
-}
-/**
-*/
-export enum StakeCredKind {
-  Key = 0,
-  Script = 1,
-}
-/**
-*/
-export enum DRepKind {
-  KeyHash = 0,
-  ScriptHash = 1,
-  AlwaysAbstain = 2,
-  AlwaysNoConfidence = 3,
-}
-/**
-* Used to choosed the schema for a script JSON string
-*/
-export enum ScriptSchema {
-  Wallet = 0,
-  Node = 1,
+export enum VoteKind {
+  No = 0,
+  Yes = 1,
+  Abstain = 2,
 }
 /**
 */
@@ -235,8 +261,8 @@ export enum CertificateKind {
   PoolRetirement = 4,
   GenesisKeyDelegation = 5,
   MoveInstantaneousRewardsCert = 6,
-  CommitteeHotKeyRegistration = 7,
-  CommitteeHotKeyDeregistration = 8,
+  CommitteeHotAuth = 7,
+  CommitteeColdResign = 8,
   DrepDeregistration = 9,
   DrepRegistration = 10,
   DrepUpdate = 11,
@@ -248,43 +274,21 @@ export enum CertificateKind {
 }
 /**
 */
-export enum VoteKind {
-  No = 0,
-  Yes = 1,
-  Abstain = 2,
-}
-/**
-*/
-export enum VotingProposalKind {
-  ParameterChangeProposal = 0,
-  HardForkInitiationProposal = 1,
-  TreasuryWithdrawalsProposal = 2,
-  NoConfidenceProposal = 3,
-  NewCommitteeProposal = 4,
-  NewConstitutionProposal = 5,
-  InfoProposal = 6,
-}
-/**
-*/
-export enum TransactionMetadatumKind {
-  MetadataMap = 0,
-  MetadataList = 1,
-  Int = 2,
-  Bytes = 3,
-  Text = 4,
-}
-/**
-*/
-export enum MetadataJsonSchema {
-  NoConversions = 0,
-  BasicConversions = 1,
-  DetailedSchema = 2,
+export enum GovernanceActionKind {
+  ParameterChangeAction = 0,
+  HardForkInitiationAction = 1,
+  TreasuryWithdrawalsAction = 2,
+  NoConfidenceAction = 3,
+  UpdateCommitteeAction = 4,
+  NewConstitutionAction = 5,
+  InfoAction = 6,
 }
 /**
 */
 export enum LanguageKind {
   PlutusV1 = 0,
   PlutusV2 = 1,
+  PlutusV3 = 2,
 }
 /**
 */
@@ -359,6 +363,22 @@ export enum PlutusDatumSchema {
 }
 /**
 */
+export enum TransactionMetadatumKind {
+  MetadataMap = 0,
+  MetadataList = 1,
+  Int = 2,
+  Bytes = 3,
+  Text = 4,
+}
+/**
+*/
+export enum MetadataJsonSchema {
+  NoConversions = 0,
+  BasicConversions = 1,
+  DetailedSchema = 2,
+}
+/**
+*/
 export enum CoinSelectionStrategyCIP2 {
 /**
 * Performs CIP2's Largest First ada-only selection. Will error if outputs contain non-ADA assets.
@@ -376,24 +396,6 @@ export enum CoinSelectionStrategyCIP2 {
 * Same as RandomImprove, but before adding ADA, will insert by random-improve for each asset type.
 */
   RandomImproveMultiAsset = 3,
-}
-/**
-*/
-export enum MIRPot {
-  Reserves = 0,
-  Treasury = 1,
-}
-/**
-*/
-export enum MIRKind {
-  ToOtherPot = 0,
-  ToStakeCredentials = 1,
-}
-/**
-*/
-export enum CborContainerType {
-  Array = 0,
-  Map = 1,
 }
 /**
 */
@@ -483,7 +485,7 @@ export class Anchor {
 /**
 * @returns {URL}
 */
-  anchor_url(): URL;
+  url(): URL;
 /**
 * @returns {AnchorDataHash}
 */
@@ -1501,15 +1503,15 @@ export class Certificate {
 */
   static new_move_instantaneous_rewards_cert(move_instantaneous_rewards_cert: MoveInstantaneousRewardsCert): Certificate;
 /**
-* @param {CommitteeHotKeyRegistration} committee_hot_key_registration
+* @param {CommitteeHotAuth} committee_hot_key_registration
 * @returns {Certificate}
 */
-  static new_committee_hot_key_registration(committee_hot_key_registration: CommitteeHotKeyRegistration): Certificate;
+  static new_committee_hot_key_registration(committee_hot_key_registration: CommitteeHotAuth): Certificate;
 /**
-* @param {CommitteeHotKeyDeregistration} committee_hot_key_deregistration
+* @param {CommitteeColdResign} committee_hot_key_deregistration
 * @returns {Certificate}
 */
-  static new_committee_hot_key_deregistration(committee_hot_key_deregistration: CommitteeHotKeyDeregistration): Certificate;
+  static new_committee_hot_key_deregistration(committee_hot_key_deregistration: CommitteeColdResign): Certificate;
 /**
 * @param {DrepDeregistration} drep_deregistration
 * @returns {Certificate}
@@ -1583,13 +1585,13 @@ export class Certificate {
 */
   as_move_instantaneous_rewards_cert(): MoveInstantaneousRewardsCert | undefined;
 /**
-* @returns {CommitteeHotKeyRegistration | undefined}
+* @returns {CommitteeHotAuth | undefined}
 */
-  as_committee_hot_key_registration(): CommitteeHotKeyRegistration | undefined;
+  as_committee_hot_key_registration(): CommitteeHotAuth | undefined;
 /**
-* @returns {CommitteeHotKeyDeregistration | undefined}
+* @returns {CommitteeColdResign | undefined}
 */
-  as_committee_hot_key_deregistration(): CommitteeHotKeyDeregistration | undefined;
+  as_committee_hot_key_deregistration(): CommitteeColdResign | undefined;
 /**
 * @returns {DrepDeregistration | undefined}
 */
@@ -1776,9 +1778,9 @@ export class Committee {
 */
   static new(quorum_threshold: UnitInterval): Committee;
 /**
-* @returns {StakeCredentials}
+* @returns {Credentials}
 */
-  members_keys(): StakeCredentials;
+  members_keys(): Credentials;
 /**
 * @returns {UnitInterval}
 */
@@ -1796,7 +1798,7 @@ export class Committee {
 }
 /**
 */
-export class CommitteeHotKeyDeregistration {
+export class CommitteeColdResign {
   free(): void;
 /**
 * @returns {Uint8Array}
@@ -1804,40 +1806,40 @@ export class CommitteeHotKeyDeregistration {
   to_bytes(): Uint8Array;
 /**
 * @param {Uint8Array} bytes
-* @returns {CommitteeHotKeyDeregistration}
+* @returns {CommitteeColdResign}
 */
-  static from_bytes(bytes: Uint8Array): CommitteeHotKeyDeregistration;
+  static from_bytes(bytes: Uint8Array): CommitteeColdResign;
 /**
 * @returns {string}
 */
   to_hex(): string;
 /**
 * @param {string} hex_str
-* @returns {CommitteeHotKeyDeregistration}
+* @returns {CommitteeColdResign}
 */
-  static from_hex(hex_str: string): CommitteeHotKeyDeregistration;
+  static from_hex(hex_str: string): CommitteeColdResign;
 /**
 * @returns {string}
 */
   to_json(): string;
 /**
-* @returns {CommitteeHotKeyDeregistrationJSON}
+* @returns {CommitteeColdResignJSON}
 */
-  to_js_value(): CommitteeHotKeyDeregistrationJSON;
+  to_js_value(): CommitteeColdResignJSON;
 /**
 * @param {string} json
-* @returns {CommitteeHotKeyDeregistration}
+* @returns {CommitteeColdResign}
 */
-  static from_json(json: string): CommitteeHotKeyDeregistration;
+  static from_json(json: string): CommitteeColdResign;
 /**
 * @returns {Credential}
 */
   committee_cold_key(): Credential;
 /**
 * @param {Credential} committee_cold_key
-* @returns {CommitteeHotKeyDeregistration}
+* @returns {CommitteeColdResign}
 */
-  static new(committee_cold_key: Credential): CommitteeHotKeyDeregistration;
+  static new(committee_cold_key: Credential): CommitteeColdResign;
 /**
 * @returns {boolean}
 */
@@ -1845,7 +1847,7 @@ export class CommitteeHotKeyDeregistration {
 }
 /**
 */
-export class CommitteeHotKeyRegistration {
+export class CommitteeHotAuth {
   free(): void;
 /**
 * @returns {Uint8Array}
@@ -1853,31 +1855,31 @@ export class CommitteeHotKeyRegistration {
   to_bytes(): Uint8Array;
 /**
 * @param {Uint8Array} bytes
-* @returns {CommitteeHotKeyRegistration}
+* @returns {CommitteeHotAuth}
 */
-  static from_bytes(bytes: Uint8Array): CommitteeHotKeyRegistration;
+  static from_bytes(bytes: Uint8Array): CommitteeHotAuth;
 /**
 * @returns {string}
 */
   to_hex(): string;
 /**
 * @param {string} hex_str
-* @returns {CommitteeHotKeyRegistration}
+* @returns {CommitteeHotAuth}
 */
-  static from_hex(hex_str: string): CommitteeHotKeyRegistration;
+  static from_hex(hex_str: string): CommitteeHotAuth;
 /**
 * @returns {string}
 */
   to_json(): string;
 /**
-* @returns {CommitteeHotKeyRegistrationJSON}
+* @returns {CommitteeHotAuthJSON}
 */
-  to_js_value(): CommitteeHotKeyRegistrationJSON;
+  to_js_value(): CommitteeHotAuthJSON;
 /**
 * @param {string} json
-* @returns {CommitteeHotKeyRegistration}
+* @returns {CommitteeHotAuth}
 */
-  static from_json(json: string): CommitteeHotKeyRegistration;
+  static from_json(json: string): CommitteeHotAuth;
 /**
 * @returns {Credential}
 */
@@ -1889,9 +1891,9 @@ export class CommitteeHotKeyRegistration {
 /**
 * @param {Credential} committee_cold_key
 * @param {Credential} committee_hot_key
-* @returns {CommitteeHotKeyRegistration}
+* @returns {CommitteeHotAuth}
 */
-  static new(committee_cold_key: Credential, committee_hot_key: Credential): CommitteeHotKeyRegistration;
+  static new(committee_cold_key: Credential, committee_hot_key: Credential): CommitteeHotAuth;
 /**
 * @returns {boolean}
 */
@@ -2173,6 +2175,59 @@ export class Credential {
 * @returns {Credential}
 */
   static from_json(json: string): Credential;
+}
+/**
+*/
+export class Credentials {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {Credentials}
+*/
+  static from_bytes(bytes: Uint8Array): Credentials;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {Credentials}
+*/
+  static from_hex(hex_str: string): Credentials;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {CredentialsJSON}
+*/
+  to_js_value(): CredentialsJSON;
+/**
+* @param {string} json
+* @returns {Credentials}
+*/
+  static from_json(json: string): Credentials;
+/**
+* @returns {Credentials}
+*/
+  static new(): Credentials;
+/**
+* @returns {number}
+*/
+  len(): number;
+/**
+* @param {number} index
+* @returns {Credential}
+*/
+  get(index: number): Credential;
+/**
+* @param {Credential} elem
+*/
+  add(elem: Credential): void;
 }
 /**
 */
@@ -2572,6 +2627,140 @@ export class DrepUpdate {
 * @returns {boolean}
 */
   has_script_credentials(): boolean;
+}
+/**
+*/
+export class DrepVotingThresholds {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {DrepVotingThresholds}
+*/
+  static from_bytes(bytes: Uint8Array): DrepVotingThresholds;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {DrepVotingThresholds}
+*/
+  static from_hex(hex_str: string): DrepVotingThresholds;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {DrepVotingThresholdsJSON}
+*/
+  to_js_value(): DrepVotingThresholdsJSON;
+/**
+* @param {string} json
+* @returns {DrepVotingThresholds}
+*/
+  static from_json(json: string): DrepVotingThresholds;
+/**
+* @param {UnitInterval} motion_no_confidence
+* @param {UnitInterval} committee_normal
+* @param {UnitInterval} committee_no_confidence
+* @param {UnitInterval} update_constitution
+* @param {UnitInterval} hard_fork_initiation
+* @param {UnitInterval} pp_network_group
+* @param {UnitInterval} pp_economic_group
+* @param {UnitInterval} pp_technical_group
+* @param {UnitInterval} pp_governance_group
+* @param {UnitInterval} treasury_withdrawal
+* @returns {DrepVotingThresholds}
+*/
+  static new(motion_no_confidence: UnitInterval, committee_normal: UnitInterval, committee_no_confidence: UnitInterval, update_constitution: UnitInterval, hard_fork_initiation: UnitInterval, pp_network_group: UnitInterval, pp_economic_group: UnitInterval, pp_technical_group: UnitInterval, pp_governance_group: UnitInterval, treasury_withdrawal: UnitInterval): DrepVotingThresholds;
+/**
+* @returns {DrepVotingThresholds}
+*/
+  static new_default(): DrepVotingThresholds;
+/**
+* @param {UnitInterval} motion_no_confidence
+*/
+  set_motion_no_confidence(motion_no_confidence: UnitInterval): void;
+/**
+* @param {UnitInterval} committee_normal
+*/
+  set_committee_normal(committee_normal: UnitInterval): void;
+/**
+* @param {UnitInterval} committee_no_confidence
+*/
+  set_committee_no_confidence(committee_no_confidence: UnitInterval): void;
+/**
+* @param {UnitInterval} update_constitution
+*/
+  set_update_constitution(update_constitution: UnitInterval): void;
+/**
+* @param {UnitInterval} hard_fork_initiation
+*/
+  set_hard_fork_initiation(hard_fork_initiation: UnitInterval): void;
+/**
+* @param {UnitInterval} pp_network_group
+*/
+  set_pp_network_group(pp_network_group: UnitInterval): void;
+/**
+* @param {UnitInterval} pp_economic_group
+*/
+  set_pp_economic_group(pp_economic_group: UnitInterval): void;
+/**
+* @param {UnitInterval} pp_technical_group
+*/
+  set_pp_technical_group(pp_technical_group: UnitInterval): void;
+/**
+* @param {UnitInterval} pp_governance_group
+*/
+  set_pp_governance_group(pp_governance_group: UnitInterval): void;
+/**
+* @param {UnitInterval} treasury_withdrawal
+*/
+  set_treasury_withdrawal(treasury_withdrawal: UnitInterval): void;
+/**
+* @returns {UnitInterval}
+*/
+  motion_no_confidence(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  committee_normal(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  committee_no_confidence(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  update_constitution(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  hard_fork_initiation(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  pp_network_group(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  pp_economic_group(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  pp_technical_group(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  pp_governance_group(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  treasury_withdrawal(): UnitInterval;
 }
 /**
 */
@@ -3136,6 +3325,109 @@ export class GenesisKeyDelegation {
 }
 /**
 */
+export class GovernanceAction {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {GovernanceAction}
+*/
+  static from_bytes(bytes: Uint8Array): GovernanceAction;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {GovernanceAction}
+*/
+  static from_hex(hex_str: string): GovernanceAction;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {GovernanceActionJSON}
+*/
+  to_js_value(): GovernanceActionJSON;
+/**
+* @param {string} json
+* @returns {GovernanceAction}
+*/
+  static from_json(json: string): GovernanceAction;
+/**
+* @param {ParameterChangeAction} parameter_change_action
+* @returns {GovernanceAction}
+*/
+  static new_parameter_change_action(parameter_change_action: ParameterChangeAction): GovernanceAction;
+/**
+* @param {HardForkInitiationAction} hard_fork_initiation_action
+* @returns {GovernanceAction}
+*/
+  static new_hard_fork_initiation_action(hard_fork_initiation_action: HardForkInitiationAction): GovernanceAction;
+/**
+* @param {TreasuryWithdrawalsAction} treasury_withdrawals_action
+* @returns {GovernanceAction}
+*/
+  static new_treasury_withdrawals_action(treasury_withdrawals_action: TreasuryWithdrawalsAction): GovernanceAction;
+/**
+* @param {NoConfidenceAction} no_confidence_action
+* @returns {GovernanceAction}
+*/
+  static new_no_confidence_action(no_confidence_action: NoConfidenceAction): GovernanceAction;
+/**
+* @param {UpdateCommitteeAction} new_committee_action
+* @returns {GovernanceAction}
+*/
+  static new_new_committee_action(new_committee_action: UpdateCommitteeAction): GovernanceAction;
+/**
+* @param {NewConstitutionAction} new_constitution_action
+* @returns {GovernanceAction}
+*/
+  static new_new_constitution_action(new_constitution_action: NewConstitutionAction): GovernanceAction;
+/**
+* @param {InfoAction} info_action
+* @returns {GovernanceAction}
+*/
+  static new_info_action(info_action: InfoAction): GovernanceAction;
+/**
+* @returns {number}
+*/
+  kind(): number;
+/**
+* @returns {ParameterChangeAction | undefined}
+*/
+  as_parameter_change_action(): ParameterChangeAction | undefined;
+/**
+* @returns {HardForkInitiationAction | undefined}
+*/
+  as_hard_fork_initiation_action(): HardForkInitiationAction | undefined;
+/**
+* @returns {TreasuryWithdrawalsAction | undefined}
+*/
+  as_treasury_withdrawals_action(): TreasuryWithdrawalsAction | undefined;
+/**
+* @returns {NoConfidenceAction | undefined}
+*/
+  as_no_confidence_action(): NoConfidenceAction | undefined;
+/**
+* @returns {UpdateCommitteeAction | undefined}
+*/
+  as_new_committee_action(): UpdateCommitteeAction | undefined;
+/**
+* @returns {NewConstitutionAction | undefined}
+*/
+  as_new_constitution_action(): NewConstitutionAction | undefined;
+/**
+* @returns {InfoAction | undefined}
+*/
+  as_info_action(): InfoAction | undefined;
+}
+/**
+*/
 export class GovernanceActionId {
   free(): void;
 /**
@@ -3206,6 +3498,10 @@ export class GovernanceActionIds {
 */
   static new(): GovernanceActionIds;
 /**
+* @param {GovernanceActionId} governance_action_id
+*/
+  add(governance_action_id: GovernanceActionId): void;
+/**
 * @param {number} index
 * @returns {GovernanceActionId | undefined}
 */
@@ -3217,7 +3513,7 @@ export class GovernanceActionIds {
 }
 /**
 */
-export class HardForkInitiationProposal {
+export class HardForkInitiationAction {
   free(): void;
 /**
 * @returns {Uint8Array}
@@ -3225,31 +3521,31 @@ export class HardForkInitiationProposal {
   to_bytes(): Uint8Array;
 /**
 * @param {Uint8Array} bytes
-* @returns {HardForkInitiationProposal}
+* @returns {HardForkInitiationAction}
 */
-  static from_bytes(bytes: Uint8Array): HardForkInitiationProposal;
+  static from_bytes(bytes: Uint8Array): HardForkInitiationAction;
 /**
 * @returns {string}
 */
   to_hex(): string;
 /**
 * @param {string} hex_str
-* @returns {HardForkInitiationProposal}
+* @returns {HardForkInitiationAction}
 */
-  static from_hex(hex_str: string): HardForkInitiationProposal;
+  static from_hex(hex_str: string): HardForkInitiationAction;
 /**
 * @returns {string}
 */
   to_json(): string;
 /**
-* @returns {HardForkInitiationProposalJSON}
+* @returns {HardForkInitiationActionJSON}
 */
-  to_js_value(): HardForkInitiationProposalJSON;
+  to_js_value(): HardForkInitiationActionJSON;
 /**
 * @param {string} json
-* @returns {HardForkInitiationProposal}
+* @returns {HardForkInitiationAction}
 */
-  static from_json(json: string): HardForkInitiationProposal;
+  static from_json(json: string): HardForkInitiationAction;
 /**
 * @returns {GovernanceActionId | undefined}
 */
@@ -3260,15 +3556,15 @@ export class HardForkInitiationProposal {
   protocol_version(): ProtocolVersion;
 /**
 * @param {ProtocolVersion} protocol_version
-* @returns {HardForkInitiationProposal}
+* @returns {HardForkInitiationAction}
 */
-  static new(protocol_version: ProtocolVersion): HardForkInitiationProposal;
+  static new(protocol_version: ProtocolVersion): HardForkInitiationAction;
 /**
 * @param {GovernanceActionId} gov_action_id
 * @param {ProtocolVersion} protocol_version
-* @returns {HardForkInitiationProposal}
+* @returns {HardForkInitiationAction}
 */
-  static new_with_action_id(gov_action_id: GovernanceActionId, protocol_version: ProtocolVersion): HardForkInitiationProposal;
+  static new_with_action_id(gov_action_id: GovernanceActionId, protocol_version: ProtocolVersion): HardForkInitiationAction;
 }
 /**
 */
@@ -3460,12 +3756,12 @@ export class HeaderBody {
 }
 /**
 */
-export class InfoProposal {
+export class InfoAction {
   free(): void;
 /**
-* @returns {InfoProposal}
+* @returns {InfoAction}
 */
-  static new(): InfoProposal;
+  static new(): InfoAction;
 }
 /**
 */
@@ -3796,6 +4092,10 @@ export class Language {
 */
   static new_plutus_v2(): Language;
 /**
+* @returns {Language}
+*/
+  static new_plutus_v3(): Language;
+/**
 * @returns {number}
 */
   kind(): number;
@@ -3918,9 +4218,9 @@ export class MIRToStakeCredentials {
 */
   get(cred: Credential): Int | undefined;
 /**
-* @returns {StakeCredentials}
+* @returns {Credentials}
 */
-  keys(): StakeCredentials;
+  keys(): Credentials;
 }
 /**
 */
@@ -4694,7 +4994,7 @@ export class NetworkInfo {
 }
 /**
 */
-export class NewCommitteeProposal {
+export class NewConstitutionAction {
   free(): void;
 /**
 * @returns {Uint8Array}
@@ -4702,92 +5002,31 @@ export class NewCommitteeProposal {
   to_bytes(): Uint8Array;
 /**
 * @param {Uint8Array} bytes
-* @returns {NewCommitteeProposal}
+* @returns {NewConstitutionAction}
 */
-  static from_bytes(bytes: Uint8Array): NewCommitteeProposal;
+  static from_bytes(bytes: Uint8Array): NewConstitutionAction;
 /**
 * @returns {string}
 */
   to_hex(): string;
 /**
 * @param {string} hex_str
-* @returns {NewCommitteeProposal}
+* @returns {NewConstitutionAction}
 */
-  static from_hex(hex_str: string): NewCommitteeProposal;
+  static from_hex(hex_str: string): NewConstitutionAction;
 /**
 * @returns {string}
 */
   to_json(): string;
 /**
-* @returns {NewCommitteeProposalJSON}
+* @returns {NewConstitutionActionJSON}
 */
-  to_js_value(): NewCommitteeProposalJSON;
+  to_js_value(): NewConstitutionActionJSON;
 /**
 * @param {string} json
-* @returns {NewCommitteeProposal}
+* @returns {NewConstitutionAction}
 */
-  static from_json(json: string): NewCommitteeProposal;
-/**
-* @returns {GovernanceActionId | undefined}
-*/
-  gov_action_id(): GovernanceActionId | undefined;
-/**
-* @returns {Committee}
-*/
-  committee(): Committee;
-/**
-* @returns {StakeCredentials}
-*/
-  members_to_remove(): StakeCredentials;
-/**
-* @param {Committee} committee
-* @param {StakeCredentials} members_to_remove
-* @returns {NewCommitteeProposal}
-*/
-  static new(committee: Committee, members_to_remove: StakeCredentials): NewCommitteeProposal;
-/**
-* @param {GovernanceActionId} gov_action_id
-* @param {Committee} committee
-* @param {StakeCredentials} members_to_remove
-* @returns {NewCommitteeProposal}
-*/
-  static new_with_action_id(gov_action_id: GovernanceActionId, committee: Committee, members_to_remove: StakeCredentials): NewCommitteeProposal;
-}
-/**
-*/
-export class NewConstitutionProposal {
-  free(): void;
-/**
-* @returns {Uint8Array}
-*/
-  to_bytes(): Uint8Array;
-/**
-* @param {Uint8Array} bytes
-* @returns {NewConstitutionProposal}
-*/
-  static from_bytes(bytes: Uint8Array): NewConstitutionProposal;
-/**
-* @returns {string}
-*/
-  to_hex(): string;
-/**
-* @param {string} hex_str
-* @returns {NewConstitutionProposal}
-*/
-  static from_hex(hex_str: string): NewConstitutionProposal;
-/**
-* @returns {string}
-*/
-  to_json(): string;
-/**
-* @returns {NewConstitutionProposalJSON}
-*/
-  to_js_value(): NewConstitutionProposalJSON;
-/**
-* @param {string} json
-* @returns {NewConstitutionProposal}
-*/
-  static from_json(json: string): NewConstitutionProposal;
+  static from_json(json: string): NewConstitutionAction;
 /**
 * @returns {GovernanceActionId | undefined}
 */
@@ -4798,19 +5037,19 @@ export class NewConstitutionProposal {
   constitution(): Constitution;
 /**
 * @param {Constitution} constitution
-* @returns {NewConstitutionProposal}
+* @returns {NewConstitutionAction}
 */
-  static new(constitution: Constitution): NewConstitutionProposal;
+  static new(constitution: Constitution): NewConstitutionAction;
 /**
 * @param {GovernanceActionId} gov_action_id
 * @param {Constitution} constitution
-* @returns {NewConstitutionProposal}
+* @returns {NewConstitutionAction}
 */
-  static new_with_action_id(gov_action_id: GovernanceActionId, constitution: Constitution): NewConstitutionProposal;
+  static new_with_action_id(gov_action_id: GovernanceActionId, constitution: Constitution): NewConstitutionAction;
 }
 /**
 */
-export class NoConfidenceProposal {
+export class NoConfidenceAction {
   free(): void;
 /**
 * @returns {Uint8Array}
@@ -4818,44 +5057,44 @@ export class NoConfidenceProposal {
   to_bytes(): Uint8Array;
 /**
 * @param {Uint8Array} bytes
-* @returns {NoConfidenceProposal}
+* @returns {NoConfidenceAction}
 */
-  static from_bytes(bytes: Uint8Array): NoConfidenceProposal;
+  static from_bytes(bytes: Uint8Array): NoConfidenceAction;
 /**
 * @returns {string}
 */
   to_hex(): string;
 /**
 * @param {string} hex_str
-* @returns {NoConfidenceProposal}
+* @returns {NoConfidenceAction}
 */
-  static from_hex(hex_str: string): NoConfidenceProposal;
+  static from_hex(hex_str: string): NoConfidenceAction;
 /**
 * @returns {string}
 */
   to_json(): string;
 /**
-* @returns {NoConfidenceProposalJSON}
+* @returns {NoConfidenceActionJSON}
 */
-  to_js_value(): NoConfidenceProposalJSON;
+  to_js_value(): NoConfidenceActionJSON;
 /**
 * @param {string} json
-* @returns {NoConfidenceProposal}
+* @returns {NoConfidenceAction}
 */
-  static from_json(json: string): NoConfidenceProposal;
+  static from_json(json: string): NoConfidenceAction;
 /**
 * @returns {GovernanceActionId | undefined}
 */
   gov_action_id(): GovernanceActionId | undefined;
 /**
-* @returns {NoConfidenceProposal}
+* @returns {NoConfidenceAction}
 */
-  static new(): NoConfidenceProposal;
+  static new(): NoConfidenceAction;
 /**
 * @param {GovernanceActionId} gov_action_id
-* @returns {NoConfidenceProposal}
+* @returns {NoConfidenceAction}
 */
-  static new_with_action_id(gov_action_id: GovernanceActionId): NoConfidenceProposal;
+  static new_with_action_id(gov_action_id: GovernanceActionId): NoConfidenceAction;
 }
 /**
 */
@@ -4991,7 +5230,7 @@ export class OutputDatum {
 }
 /**
 */
-export class ParameterChangeProposal {
+export class ParameterChangeAction {
   free(): void;
 /**
 * @returns {Uint8Array}
@@ -4999,31 +5238,31 @@ export class ParameterChangeProposal {
   to_bytes(): Uint8Array;
 /**
 * @param {Uint8Array} bytes
-* @returns {ParameterChangeProposal}
+* @returns {ParameterChangeAction}
 */
-  static from_bytes(bytes: Uint8Array): ParameterChangeProposal;
+  static from_bytes(bytes: Uint8Array): ParameterChangeAction;
 /**
 * @returns {string}
 */
   to_hex(): string;
 /**
 * @param {string} hex_str
-* @returns {ParameterChangeProposal}
+* @returns {ParameterChangeAction}
 */
-  static from_hex(hex_str: string): ParameterChangeProposal;
+  static from_hex(hex_str: string): ParameterChangeAction;
 /**
 * @returns {string}
 */
   to_json(): string;
 /**
-* @returns {ParameterChangeProposalJSON}
+* @returns {ParameterChangeActionJSON}
 */
-  to_js_value(): ParameterChangeProposalJSON;
+  to_js_value(): ParameterChangeActionJSON;
 /**
 * @param {string} json
-* @returns {ParameterChangeProposal}
+* @returns {ParameterChangeAction}
 */
-  static from_json(json: string): ParameterChangeProposal;
+  static from_json(json: string): ParameterChangeAction;
 /**
 * @returns {GovernanceActionId | undefined}
 */
@@ -5034,15 +5273,15 @@ export class ParameterChangeProposal {
   protocol_param_updates(): ProtocolParamUpdate;
 /**
 * @param {ProtocolParamUpdate} protocol_param_updates
-* @returns {ParameterChangeProposal}
+* @returns {ParameterChangeAction}
 */
-  static new(protocol_param_updates: ProtocolParamUpdate): ParameterChangeProposal;
+  static new(protocol_param_updates: ProtocolParamUpdate): ParameterChangeAction;
 /**
 * @param {GovernanceActionId} gov_action_id
 * @param {ProtocolParamUpdate} protocol_param_updates
-* @returns {ParameterChangeProposal}
+* @returns {ParameterChangeAction}
 */
-  static new_with_action_id(gov_action_id: GovernanceActionId, protocol_param_updates: ProtocolParamUpdate): ParameterChangeProposal;
+  static new_with_action_id(gov_action_id: GovernanceActionId, protocol_param_updates: ProtocolParamUpdate): ParameterChangeAction;
 }
 /**
 */
@@ -5279,6 +5518,16 @@ export class PlutusScript {
 *     * If you creating this from those you should use PlutusScript::from_bytes() instead.
 *     
 * @param {Uint8Array} bytes
+* @returns {PlutusScript}
+*/
+  static new_v3(bytes: Uint8Array): PlutusScript;
+/**
+*
+*     * Creates a new Plutus script from the RAW bytes of the compiled script.
+*     * This does NOT include any CBOR encoding around these bytes (e.g. from "cborBytes" in cardano-cli)
+*     * If you creating this from those you should use PlutusScript::from_bytes() instead.
+*     
+* @param {Uint8Array} bytes
 * @param {Language} language
 * @returns {PlutusScript}
 */
@@ -5297,6 +5546,12 @@ export class PlutusScript {
 * @returns {PlutusScript}
 */
   static from_bytes_v2(bytes: Uint8Array): PlutusScript;
+/**
+* Same as `.from_bytes` but will consider the script as requiring the Plutus Language V3
+* @param {Uint8Array} bytes
+* @returns {PlutusScript}
+*/
+  static from_bytes_v3(bytes: Uint8Array): PlutusScript;
 /**
 * Same as `.from_bytes` but will consider the script as requiring the specified language version
 * @param {Uint8Array} bytes
@@ -5805,6 +6060,66 @@ export class PoolRetirement {
 }
 /**
 */
+export class PoolVotingThresholds {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {PoolVotingThresholds}
+*/
+  static from_bytes(bytes: Uint8Array): PoolVotingThresholds;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {PoolVotingThresholds}
+*/
+  static from_hex(hex_str: string): PoolVotingThresholds;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {PoolVotingThresholdsJSON}
+*/
+  to_js_value(): PoolVotingThresholdsJSON;
+/**
+* @param {string} json
+* @returns {PoolVotingThresholds}
+*/
+  static from_json(json: string): PoolVotingThresholds;
+/**
+* @param {UnitInterval} motion_no_confidence
+* @param {UnitInterval} committee_normal
+* @param {UnitInterval} committee_no_confidence
+* @param {UnitInterval} hard_fork_initiation
+* @returns {PoolVotingThresholds}
+*/
+  static new(motion_no_confidence: UnitInterval, committee_normal: UnitInterval, committee_no_confidence: UnitInterval, hard_fork_initiation: UnitInterval): PoolVotingThresholds;
+/**
+* @returns {UnitInterval}
+*/
+  motion_no_confidence(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  committee_normal(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  committee_no_confidence(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  hard_fork_initiation(): UnitInterval;
+}
+/**
+*/
 export class PrivateKey {
   free(): void;
 /**
@@ -6068,6 +6383,8 @@ export class ProtocolParamUpdate {
 */
   extra_entropy(): Nonce | undefined;
 /**
+* !!! DEPRECATED !!!
+* Since conway era this param is outdated. But this param you can meet in a pre-conway block.
 * @param {ProtocolVersion} protocol_version
 */
   set_protocol_version(protocol_version: ProtocolVersion): void;
@@ -6147,6 +6464,70 @@ export class ProtocolParamUpdate {
 * @returns {number | undefined}
 */
   max_collateral_inputs(): number | undefined;
+/**
+* @param {PoolVotingThresholds} pool_voting_thresholds
+*/
+  set_pool_voting_thresholds(pool_voting_thresholds: PoolVotingThresholds): void;
+/**
+* @returns {PoolVotingThresholds | undefined}
+*/
+  pool_voting_thresholds(): PoolVotingThresholds | undefined;
+/**
+* @param {DrepVotingThresholds} drep_voting_thresholds
+*/
+  set_drep_voting_thresholds(drep_voting_thresholds: DrepVotingThresholds): void;
+/**
+* @returns {DrepVotingThresholds | undefined}
+*/
+  drep_voting_thresholds(): DrepVotingThresholds | undefined;
+/**
+* @param {number} min_committee_size
+*/
+  set_min_committee_size(min_committee_size: number): void;
+/**
+* @returns {number | undefined}
+*/
+  min_committee_size(): number | undefined;
+/**
+* @param {number} committee_term_limit
+*/
+  set_committee_term_limit(committee_term_limit: number): void;
+/**
+* @returns {number | undefined}
+*/
+  committee_term_limit(): number | undefined;
+/**
+* @param {number} governance_action_validity_period
+*/
+  set_governance_action_validity_period(governance_action_validity_period: number): void;
+/**
+* @returns {number | undefined}
+*/
+  governance_action_validity_period(): number | undefined;
+/**
+* @param {BigNum} governance_action_deposit
+*/
+  set_governance_action_deposit(governance_action_deposit: BigNum): void;
+/**
+* @returns {BigNum | undefined}
+*/
+  governance_action_deposit(): BigNum | undefined;
+/**
+* @param {BigNum} drep_deposit
+*/
+  set_drep_deposit(drep_deposit: BigNum): void;
+/**
+* @returns {BigNum | undefined}
+*/
+  drep_deposit(): BigNum | undefined;
+/**
+* @param {number} drep_inactivity_period
+*/
+  set_drep_inactivity_period(drep_inactivity_period: number): void;
+/**
+* @returns {number | undefined}
+*/
+  drep_inactivity_period(): number | undefined;
 /**
 * @returns {ProtocolParamUpdate}
 */
@@ -7181,59 +7562,6 @@ export class StakeAndVoteDelegation {
 }
 /**
 */
-export class StakeCredentials {
-  free(): void;
-/**
-* @returns {Uint8Array}
-*/
-  to_bytes(): Uint8Array;
-/**
-* @param {Uint8Array} bytes
-* @returns {StakeCredentials}
-*/
-  static from_bytes(bytes: Uint8Array): StakeCredentials;
-/**
-* @returns {string}
-*/
-  to_hex(): string;
-/**
-* @param {string} hex_str
-* @returns {StakeCredentials}
-*/
-  static from_hex(hex_str: string): StakeCredentials;
-/**
-* @returns {string}
-*/
-  to_json(): string;
-/**
-* @returns {StakeCredentialsJSON}
-*/
-  to_js_value(): StakeCredentialsJSON;
-/**
-* @param {string} json
-* @returns {StakeCredentials}
-*/
-  static from_json(json: string): StakeCredentials;
-/**
-* @returns {StakeCredentials}
-*/
-  static new(): StakeCredentials;
-/**
-* @returns {number}
-*/
-  len(): number;
-/**
-* @param {number} index
-* @returns {Credential}
-*/
-  get(index: number): Credential;
-/**
-* @param {Credential} elem
-*/
-  add(elem: Credential): void;
-}
-/**
-*/
 export class StakeDelegation {
   free(): void;
 /**
@@ -8005,6 +8333,30 @@ export class TransactionBody {
 */
   voting_procedures(): VotingProcedures | undefined;
 /**
+* @param {VotingProposals} voting_proposals
+*/
+  set_voting_proposals(voting_proposals: VotingProposals): void;
+/**
+* @returns {VotingProposals | undefined}
+*/
+  voting_proposals(): VotingProposals | undefined;
+/**
+* @param {BigNum} donation
+*/
+  set_donation(donation: BigNum): void;
+/**
+* @returns {BigNum | undefined}
+*/
+  donation(): BigNum | undefined;
+/**
+* @param {BigNum} current_treasury_value
+*/
+  set_current_treasury_value(current_treasury_value: BigNum): void;
+/**
+* @returns {BigNum | undefined}
+*/
+  current_treasury_value(): BigNum | undefined;
+/**
 * !!! DEPRECATED !!!
 * This constructor uses outdated slot number format for the ttl value.
 * Use `.new_tx_body` and then `.set_ttl` instead
@@ -8362,6 +8714,22 @@ export class TransactionBuilder {
 */
   get_extra_witness_datums(): PlutusList | undefined;
 /**
+* @param {BigNum} donation
+*/
+  set_donation(donation: BigNum): void;
+/**
+* @returns {BigNum | undefined}
+*/
+  get_donation(): BigNum | undefined;
+/**
+* @param {BigNum} current_treasury_value
+*/
+  set_current_treasury_value(current_treasury_value: BigNum): void;
+/**
+* @returns {BigNum | undefined}
+*/
+  get_current_treasury_value(): BigNum | undefined;
+/**
 * @param {TransactionBuilderConfig} cfg
 * @returns {TransactionBuilder}
 */
@@ -8543,11 +8911,6 @@ export class TransactionBuilderConfigBuilder {
 * @returns {TransactionBuilderConfigBuilder}
 */
   prefer_pure_change(prefer_pure_change: boolean): TransactionBuilderConfigBuilder;
-/**
-* @param {BigNum} voting_proposal_deposit
-* @returns {TransactionBuilderConfigBuilder}
-*/
-  voting_proposal_deposit(voting_proposal_deposit: BigNum): TransactionBuilderConfigBuilder;
 /**
 * @returns {TransactionBuilderConfig}
 */
@@ -9293,7 +9656,7 @@ export class TreasuryWithdrawals {
 }
 /**
 */
-export class TreasuryWithdrawalsProposal {
+export class TreasuryWithdrawalsAction {
   free(): void;
 /**
 * @returns {Uint8Array}
@@ -9301,40 +9664,40 @@ export class TreasuryWithdrawalsProposal {
   to_bytes(): Uint8Array;
 /**
 * @param {Uint8Array} bytes
-* @returns {TreasuryWithdrawalsProposal}
+* @returns {TreasuryWithdrawalsAction}
 */
-  static from_bytes(bytes: Uint8Array): TreasuryWithdrawalsProposal;
+  static from_bytes(bytes: Uint8Array): TreasuryWithdrawalsAction;
 /**
 * @returns {string}
 */
   to_hex(): string;
 /**
 * @param {string} hex_str
-* @returns {TreasuryWithdrawalsProposal}
+* @returns {TreasuryWithdrawalsAction}
 */
-  static from_hex(hex_str: string): TreasuryWithdrawalsProposal;
+  static from_hex(hex_str: string): TreasuryWithdrawalsAction;
 /**
 * @returns {string}
 */
   to_json(): string;
 /**
-* @returns {TreasuryWithdrawalsProposalJSON}
+* @returns {TreasuryWithdrawalsActionJSON}
 */
-  to_js_value(): TreasuryWithdrawalsProposalJSON;
+  to_js_value(): TreasuryWithdrawalsActionJSON;
 /**
 * @param {string} json
-* @returns {TreasuryWithdrawalsProposal}
+* @returns {TreasuryWithdrawalsAction}
 */
-  static from_json(json: string): TreasuryWithdrawalsProposal;
+  static from_json(json: string): TreasuryWithdrawalsAction;
 /**
 * @returns {TreasuryWithdrawals}
 */
   withdrawals(): TreasuryWithdrawals;
 /**
 * @param {TreasuryWithdrawals} withdrawals
-* @returns {TreasuryWithdrawalsProposal}
+* @returns {TreasuryWithdrawalsAction}
 */
-  static new(withdrawals: TreasuryWithdrawals): TreasuryWithdrawalsProposal;
+  static new(withdrawals: TreasuryWithdrawals): TreasuryWithdrawalsAction;
 }
 /**
 */
@@ -9633,6 +9996,67 @@ export class Update {
 * @returns {Update}
 */
   static new(proposed_protocol_parameter_updates: ProposedProtocolParameterUpdates, epoch: number): Update;
+}
+/**
+*/
+export class UpdateCommitteeAction {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {UpdateCommitteeAction}
+*/
+  static from_bytes(bytes: Uint8Array): UpdateCommitteeAction;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {UpdateCommitteeAction}
+*/
+  static from_hex(hex_str: string): UpdateCommitteeAction;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {UpdateCommitteeActionJSON}
+*/
+  to_js_value(): UpdateCommitteeActionJSON;
+/**
+* @param {string} json
+* @returns {UpdateCommitteeAction}
+*/
+  static from_json(json: string): UpdateCommitteeAction;
+/**
+* @returns {GovernanceActionId | undefined}
+*/
+  gov_action_id(): GovernanceActionId | undefined;
+/**
+* @returns {Committee}
+*/
+  committee(): Committee;
+/**
+* @returns {Credentials}
+*/
+  members_to_remove(): Credentials;
+/**
+* @param {Committee} committee
+* @param {Credentials} members_to_remove
+* @returns {UpdateCommitteeAction}
+*/
+  static new(committee: Committee, members_to_remove: Credentials): UpdateCommitteeAction;
+/**
+* @param {GovernanceActionId} gov_action_id
+* @param {Committee} committee
+* @param {Credentials} members_to_remove
+* @returns {UpdateCommitteeAction}
+*/
+  static new_with_action_id(gov_action_id: GovernanceActionId, committee: Committee, members_to_remove: Credentials): UpdateCommitteeAction;
 }
 /**
 */
@@ -10187,15 +10611,15 @@ export class Voter {
 /**
 * @returns {Credential | undefined}
 */
-  to_constitutional_committee_hot_key(): Credential | undefined;
+  to_constitutional_committee_hot_cred(): Credential | undefined;
 /**
 * @returns {Credential | undefined}
 */
-  to_drep(): Credential | undefined;
+  to_drep_cred(): Credential | undefined;
 /**
 * @returns {Ed25519KeyHash | undefined}
 */
-  to_staking_pool(): Ed25519KeyHash | undefined;
+  to_staking_pool_key_hash(): Ed25519KeyHash | undefined;
 /**
 * @returns {boolean}
 */
@@ -10203,7 +10627,7 @@ export class Voter {
 /**
 * @returns {Ed25519KeyHash | undefined}
 */
-  to_keyhash(): Ed25519KeyHash | undefined;
+  to_key_hash(): Ed25519KeyHash | undefined;
 }
 /**
 */
@@ -10226,6 +10650,10 @@ export class Voters {
 * @returns {Voters}
 */
   static new(): Voters;
+/**
+* @param {Voter} voter
+*/
+  add(voter: Voter): void;
 /**
 * @param {number} index
 * @returns {Voter | undefined}
@@ -10437,72 +10865,29 @@ export class VotingProposal {
 */
   static from_json(json: string): VotingProposal;
 /**
-* @param {ParameterChangeProposal} parameter_change_proposal
+* @returns {GovernanceAction}
+*/
+  governance_action(): GovernanceAction;
+/**
+* @returns {Anchor}
+*/
+  anchor(): Anchor;
+/**
+* @returns {RewardAddress}
+*/
+  reward_account(): RewardAddress;
+/**
+* @returns {BigNum}
+*/
+  deposit(): BigNum;
+/**
+* @param {GovernanceAction} governance_action
+* @param {Anchor} anchor
+* @param {RewardAddress} reward_account
+* @param {BigNum} deposit
 * @returns {VotingProposal}
 */
-  static new_parameter_change_proposal(parameter_change_proposal: ParameterChangeProposal): VotingProposal;
-/**
-* @param {HardForkInitiationProposal} hard_fork_initiation_proposal
-* @returns {VotingProposal}
-*/
-  static new_hard_fork_initiation_proposal(hard_fork_initiation_proposal: HardForkInitiationProposal): VotingProposal;
-/**
-* @param {TreasuryWithdrawalsProposal} treasury_withdrawals_proposal
-* @returns {VotingProposal}
-*/
-  static new_treasury_withdrawals_proposal(treasury_withdrawals_proposal: TreasuryWithdrawalsProposal): VotingProposal;
-/**
-* @param {NoConfidenceProposal} no_confidence_proposal
-* @returns {VotingProposal}
-*/
-  static new_no_confidence_proposal(no_confidence_proposal: NoConfidenceProposal): VotingProposal;
-/**
-* @param {NewCommitteeProposal} new_committee_proposal
-* @returns {VotingProposal}
-*/
-  static new_new_committee_proposal(new_committee_proposal: NewCommitteeProposal): VotingProposal;
-/**
-* @param {NewConstitutionProposal} new_constitution_proposal
-* @returns {VotingProposal}
-*/
-  static new_new_constitution_proposal(new_constitution_proposal: NewConstitutionProposal): VotingProposal;
-/**
-* @param {InfoProposal} info_proposal
-* @returns {VotingProposal}
-*/
-  static new_info_proposal(info_proposal: InfoProposal): VotingProposal;
-/**
-* @returns {number}
-*/
-  kind(): number;
-/**
-* @returns {ParameterChangeProposal | undefined}
-*/
-  as_parameter_change_proposal(): ParameterChangeProposal | undefined;
-/**
-* @returns {HardForkInitiationProposal | undefined}
-*/
-  as_hard_fork_initiation_proposal(): HardForkInitiationProposal | undefined;
-/**
-* @returns {TreasuryWithdrawalsProposal | undefined}
-*/
-  as_treasury_withdrawals_proposal(): TreasuryWithdrawalsProposal | undefined;
-/**
-* @returns {NoConfidenceProposal | undefined}
-*/
-  as_no_confidence_proposal(): NoConfidenceProposal | undefined;
-/**
-* @returns {NewCommitteeProposal | undefined}
-*/
-  as_new_committee_proposal(): NewCommitteeProposal | undefined;
-/**
-* @returns {NewConstitutionProposal | undefined}
-*/
-  as_new_constitution_proposal(): NewConstitutionProposal | undefined;
-/**
-* @returns {InfoProposal | undefined}
-*/
-  as_info_proposal(): InfoProposal | undefined;
+  static new(governance_action: GovernanceAction, anchor: Anchor, reward_account: RewardAddress, deposit: BigNum): VotingProposal;
 }
 /**
 */
@@ -10702,6 +11087,8 @@ export class WithdrawalsBuilder {
 }
 
 export type AddressJSON = string;
+export type URLJSON = string;
+
 export interface AnchorJSON {
   anchor_data_hash: string;
   anchor_url: URLJSON;
@@ -10712,6 +11099,28 @@ export type AssetNamesJSON = string[];
 export interface AssetsJSON {
   [k: string]: string;
 }
+export type NativeScriptJSON =
+  | {
+      ScriptPubkey: ScriptPubkeyJSON;
+    }
+  | {
+      ScriptAll: ScriptAllJSON;
+    }
+  | {
+      ScriptAny: ScriptAnyJSON;
+    }
+  | {
+      ScriptNOfK: ScriptNOfKJSON;
+    }
+  | {
+      TimelockStart: TimelockStartJSON;
+    }
+  | {
+      TimelockExpiry: TimelockExpiryJSON;
+    };
+export type NativeScriptsJSON = NativeScriptJSON[];
+export type PlutusScriptsJSON = string[];
+
 export interface AuxiliaryDataJSON {
   metadata?: {
     [k: string]: string;
@@ -10720,197 +11129,122 @@ export interface AuxiliaryDataJSON {
   plutus_scripts?: PlutusScriptsJSON | null;
   prefer_alonzo_format: boolean;
 }
+export interface ScriptPubkeyJSON {
+  addr_keyhash: string;
+}
+export interface ScriptAllJSON {
+  native_scripts: NativeScriptsJSON;
+}
+export interface ScriptAnyJSON {
+  native_scripts: NativeScriptsJSON;
+}
+export interface ScriptNOfKJSON {
+  n: number;
+  native_scripts: NativeScriptsJSON;
+}
+export interface TimelockStartJSON {
+  slot: string;
+}
+export interface TimelockExpiryJSON {
+  slot: string;
+}
 export type AuxiliaryDataHashJSON = string;
 export interface AuxiliaryDataSetJSON {
   [k: string]: AuxiliaryDataJSON;
 }
 export type BigIntJSON = string;
 export type BigNumJSON = string;
-export interface BlockJSON {
-  auxiliary_data_set: {
-    [k: string]: AuxiliaryDataJSON;
-  };
-  header: HeaderJSON;
-  invalid_transactions: number[];
-  transaction_bodies: TransactionBodiesJSON;
-  transaction_witness_sets: TransactionWitnessSetsJSON;
-}
-export type BlockHashJSON = string;
-export interface BootstrapWitnessJSON {
-  attributes: number[];
-  chain_code: number[];
-  signature: string;
-  vkey: VkeyJSON;
-}
-export type BootstrapWitnessesJSON = BootstrapWitnessJSON[];
-export type CertificateJSON = CertificateEnumJSON;
-export type CertificateEnumJSON =
+export type VkeyJSON = string;
+export type HeaderLeaderCertEnumJSON =
   | {
-      StakeRegistrationJSON: StakeRegistration;
+      /**
+       * @minItems 2
+       * @maxItems 2
+       */
+      NonceAndLeader: [VRFCertJSON, VRFCertJSON];
     }
   | {
-      StakeDeregistrationJSON: StakeDeregistration;
-    }
-  | {
-      StakeDelegationJSON: StakeDelegation;
-    }
-  | {
-      PoolRegistrationJSON: PoolRegistration;
-    }
-  | {
-      PoolRetirementJSON: PoolRetirement;
-    }
-  | {
-      GenesisKeyDelegationJSON: GenesisKeyDelegation;
-    }
-  | {
-      MoveInstantaneousRewardsCertJSON: MoveInstantaneousRewardsCert;
-    }
-  | {
-      CommitteeHotKeyRegistrationJSON: CommitteeHotKeyRegistration;
-    }
-  | {
-      CommitteeHotKeyDeregistrationJSON: CommitteeHotKeyDeregistration;
-    }
-  | {
-      DrepDeregistrationJSON: DrepDeregistration;
-    }
-  | {
-      DrepRegistrationJSON: DrepRegistration;
-    }
-  | {
-      DrepUpdateJSON: DrepUpdate;
-    }
-  | {
-      StakeAndVoteDelegationJSON: StakeAndVoteDelegation;
-    }
-  | {
-      StakeRegistrationAndDelegationJSON: StakeRegistrationAndDelegation;
-    }
-  | {
-      StakeVoteRegistrationAndDelegationJSON: StakeVoteRegistrationAndDelegation;
-    }
-  | {
-      VoteDelegationJSON: VoteDelegation;
-    }
-  | {
-      VoteRegistrationAndDelegationJSON: VoteRegistrationAndDelegation;
+      VrfResult: VRFCertJSON;
     };
-export type CertificatesJSON = CertificateJSON[];
-export interface CommitteeJSON {
-  members: CommitteeMember[];
-  quorum_threshold: UnitIntervalJSON;
-}
-export interface CommitteeHotKeyDeregistrationJSON {
-  committee_cold_key: CredentialJSON;
-}
-export interface CommitteeHotKeyRegistrationJSON {
-  committee_cold_key: CredentialJSON;
-  committee_hot_key: CredentialJSON;
-}
-export interface ConstitutionJSON {
-  anchor: AnchorJSON;
-  script_hash?: string | null;
-}
-export type CostModelJSON = string[];
-export interface CostmdlsJSON {
-  [k: string]: CostModelJSON;
-}
-export type CredentialJSON = StakeCredTypeJSON;
-export type StakeCredTypeJSON =
+export type CertificateJSON =
+  | {
+      StakeRegistration: StakeRegistrationJSON;
+    }
+  | {
+      StakeDeregistration: StakeDeregistrationJSON;
+    }
+  | {
+      StakeDelegation: StakeDelegationJSON;
+    }
+  | {
+      PoolRegistration: PoolRegistrationJSON;
+    }
+  | {
+      PoolRetirement: PoolRetirementJSON;
+    }
+  | {
+      GenesisKeyDelegation: GenesisKeyDelegationJSON;
+    }
+  | {
+      MoveInstantaneousRewardsCert: MoveInstantaneousRewardsCertJSON;
+    }
+  | {
+      CommitteeHotAuth: CommitteeHotAuthJSON;
+    }
+  | {
+      CommitteeColdResign: CommitteeColdResignJSON;
+    }
+  | {
+      DrepDeregistration: DrepDeregistrationJSON;
+    }
+  | {
+      DrepRegistration: DrepRegistrationJSON;
+    }
+  | {
+      DrepUpdate: DrepUpdateJSON;
+    }
+  | {
+      StakeAndVoteDelegation: StakeAndVoteDelegationJSON;
+    }
+  | {
+      StakeRegistrationAndDelegation: StakeRegistrationAndDelegationJSON;
+    }
+  | {
+      StakeVoteRegistrationAndDelegation: StakeVoteRegistrationAndDelegationJSON;
+    }
+  | {
+      VoteDelegation: VoteDelegationJSON;
+    }
+  | {
+      VoteRegistrationAndDelegation: VoteRegistrationAndDelegationJSON;
+    };
+export type CredTypeJSON =
   | {
       Key: string;
     }
   | {
       Script: string;
     };
-export type DNSRecordAorAAAAJSON = string;
-export type DNSRecordSRVJSON = string;
-export type DRepJSON = DRepEnumJSON;
-export type DRepEnumJSON =
-  | ("AlwaysAbstain" | "AlwaysNoConfidence")
-  | {
-      KeyHash: string;
-    }
-  | {
-      ScriptHashJSON: string;
-    };
-export type DataHashJSON = string;
-export type DataOptionJSON =
-  | {
-      DataHashJSON: string;
-    }
-  | {
-      Data: string;
-    };
-export interface DrepDeregistrationJSON {
-  coin: string;
-  voting_credential: CredentialJSON;
-}
-export interface DrepRegistrationJSON {
-  anchor?: AnchorJSON | null;
-  coin: string;
-  voting_credential: CredentialJSON;
-}
-export interface DrepUpdateJSON {
-  anchor?: AnchorJSON | null;
-  voting_credential: CredentialJSON;
-}
-export type Ed25519KeyHashJSON = string;
 export type Ed25519KeyHashesJSON = string[];
-export type Ed25519SignatureJSON = string;
-export interface ExUnitPricesJSON {
-  mem_price: UnitIntervalJSON;
-  step_price: UnitIntervalJSON;
-}
-export interface ExUnitsJSON {
-  mem: string;
-  steps: string;
-}
-export interface GeneralTransactionMetadataJSON {
-  [k: string]: string;
-}
-export type GenesisDelegateHashJSON = string;
-export type GenesisHashJSON = string;
-export type GenesisHashesJSON = string[];
-export interface GenesisKeyDelegationJSON {
-  genesis_delegate_hash: string;
-  genesishash: string;
-  vrf_keyhash: string;
-}
-export interface GovernanceActionIdJSON {
-  index: number;
-  transaction_id: string;
-}
-export interface HardForkInitiationProposalJSON {
-  gov_action_id?: GovernanceActionIdJSON | null;
-  protocol_version: ProtocolVersionJSON;
-}
-export interface HeaderJSON {
-  body_signature: string;
-  header_body: HeaderBodyJSON;
-}
-export interface HeaderBodyJSON {
-  block_body_hash: string;
-  block_body_size: number;
-  block_number: number;
-  issuer_vkey: VkeyJSON;
-  leader_cert: HeaderLeaderCertEnumJSON;
-  operational_cert: OperationalCertJSON;
-  prev_hash?: string | null;
-  protocol_version: ProtocolVersionJSON;
-  slot: string;
-  vrf_vkey: string;
-}
-export type HeaderLeaderCertEnumJSON =
+export type RelayJSON =
   | {
-      NonceAndLeader: [VRFCertJSON, VRFCert];
+      SingleHostAddr: SingleHostAddrJSON;
     }
   | {
-      VrfResult: VRFCertJSON;
+      SingleHostName: SingleHostNameJSON;
+    }
+  | {
+      MultiHostName: MultiHostNameJSON;
     };
-export type IntJSON = string;
+/**
+ * @minItems 4
+ * @maxItems 4
+ */
 export type Ipv4JSON = [number, number, number, number];
+/**
+ * @minItems 16
+ * @maxItems 16
+ */
 export type Ipv6JSON = [
   number,
   number,
@@ -10929,72 +11263,350 @@ export type Ipv6JSON = [
   number,
   number
 ];
-export type KESVKeyJSON = string;
-export type LanguageJSON = LanguageKindJSON;
-export type LanguageKindJSON = "PlutusV1" | "PlutusV2";
-export type LanguagesJSON = LanguageJSON[];
+export type DNSRecordAorAAAAJSON = string;
+export type DNSRecordSRVJSON = string;
+export type RelaysJSON = RelayJSON[];
+export type MIRPotJSON = "Reserves" | "Treasury";
 export type MIREnumJSON =
   | {
       ToOtherPot: string;
     }
   | {
-      ToStakeCredentials: StakeToCoinJson[];
+      ToStakeCredentials: StakeToCoinJSON[];
     };
-export type MIRPotJSON = "Reserves" | "Treasury";
-export type MIRToStakeCredentialsJSON = StakeToCoinJson[];
+export type DRepJSON =
+  | ("AlwaysAbstain" | "AlwaysNoConfidence")
+  | {
+      KeyHash: string;
+    }
+  | {
+      ScriptHash: string;
+    };
+export type CertificatesJSON = CertificateJSON[];
+export type TransactionInputsJSON = TransactionInputJSON[];
+export type DataOptionJSON =
+  | {
+      DataHash: string;
+    }
+  | {
+      Data: string;
+    };
+export type ScriptRefJSON =
+  | {
+      NativeScript: NativeScriptJSON;
+    }
+  | {
+      PlutusScript: string;
+    };
 export type MintJSON = [string, MintAssetsJSON][];
-export interface MintAssetsJSON {
-  [k: string]: string;
+export type NetworkIdJSON = "Testnet" | "Mainnet";
+export type TransactionOutputsJSON = TransactionOutputJSON[];
+export type CostModelJSON = string[];
+export type VoterJSON =
+  | {
+      ConstitutionalCommitteeHotKey: CredTypeJSON;
+    }
+  | {
+      DRep: CredTypeJSON;
+    }
+  | {
+      StakingPool: string;
+    };
+export type VoteKindJSON = "No" | "Yes" | "Abstain";
+export type GovernanceActionJSON =
+  | {
+      ParameterChangeAction: ParameterChangeActionJSON;
+    }
+  | {
+      HardForkInitiationAction: HardForkInitiationActionJSON;
+    }
+  | {
+      TreasuryWithdrawalsAction: TreasuryWithdrawalsActionJSON;
+    }
+  | {
+      NoConfidenceAction: NoConfidenceActionJSON;
+    }
+  | {
+      UpdateCommitteeAction: UpdateCommitteeActionJSON;
+    }
+  | {
+      NewConstitutionAction: NewConstitutionActionJSON;
+    }
+  | {
+      InfoAction: InfoActionJSON;
+    };
+/**
+ * @minItems 0
+ * @maxItems 0
+ */
+export type InfoActionJSON = [];
+export type VotingProposalsJSON = VotingProposalJSON[];
+export type TransactionBodiesJSON = TransactionBodyJSON[];
+export type BootstrapWitnessesJSON = BootstrapWitnessJSON[];
+export type RedeemerTagJSON = "Spend" | "Mint" | "Cert" | "Reward" | "Vote" | "VotingProposal";
+export type RedeemersJSON = RedeemerJSON[];
+export type VkeywitnessesJSON = VkeywitnessJSON[];
+export type TransactionWitnessSetsJSON = TransactionWitnessSetJSON[];
+
+export interface BlockJSON {
+  auxiliary_data_set: {
+    [k: string]: AuxiliaryDataJSON;
+  };
+  header: HeaderJSON;
+  invalid_transactions: number[];
+  transaction_bodies: TransactionBodiesJSON;
+  transaction_witness_sets: TransactionWitnessSetsJSON;
+}
+export interface HeaderJSON {
+  body_signature: string;
+  header_body: HeaderBodyJSON;
+}
+export interface HeaderBodyJSON {
+  block_body_hash: string;
+  block_body_size: number;
+  block_number: number;
+  issuer_vkey: VkeyJSON;
+  leader_cert: HeaderLeaderCertEnumJSON;
+  operational_cert: OperationalCertJSON;
+  prev_hash?: string | null;
+  protocol_version: ProtocolVersionJSON;
+  slot: string;
+  vrf_vkey: string;
+}
+export interface VRFCertJSON {
+  output: number[];
+  proof: number[];
+}
+export interface OperationalCertJSON {
+  hot_vkey: string;
+  kes_period: number;
+  sequence_number: number;
+  sigma: string;
+}
+export interface ProtocolVersionJSON {
+  major: number;
+  minor: number;
+}
+export interface TransactionBodyJSON {
+  auxiliary_data_hash?: string | null;
+  certs?: CertificatesJSON | null;
+  collateral?: TransactionInputsJSON | null;
+  collateral_return?: TransactionOutputJSON | null;
+  current_treasury_value?: string | null;
+  donation?: string | null;
+  fee: string;
+  inputs: TransactionInputsJSON;
+  mint?: MintJSON | null;
+  network_id?: NetworkIdJSON | null;
+  outputs: TransactionOutputsJSON;
+  reference_inputs?: TransactionInputsJSON | null;
+  required_signers?: Ed25519KeyHashesJSON | null;
+  script_data_hash?: string | null;
+  total_collateral?: string | null;
+  ttl?: string | null;
+  update?: UpdateJSON | null;
+  validity_start_interval?: string | null;
+  voting_procedures?: VoterVotesJSON[] | null;
+  voting_proposals?: VotingProposalsJSON | null;
+  withdrawals?: {
+    [k: string]: string;
+  } | null;
+}
+export interface StakeRegistrationJSON {
+  coin?: string | null;
+  stake_credential: CredTypeJSON;
+}
+export interface StakeDeregistrationJSON {
+  coin?: string | null;
+  stake_credential: CredTypeJSON;
+}
+export interface StakeDelegationJSON {
+  pool_keyhash: string;
+  stake_credential: CredTypeJSON;
+}
+export interface PoolRegistrationJSON {
+  pool_params: PoolParamsJSON;
+}
+export interface PoolParamsJSON {
+  cost: string;
+  margin: UnitIntervalJSON;
+  operator: string;
+  pledge: string;
+  pool_metadata?: PoolMetadataJSON | null;
+  pool_owners: Ed25519KeyHashesJSON;
+  relays: RelaysJSON;
+  reward_account: string;
+  vrf_keyhash: string;
+}
+export interface UnitIntervalJSON {
+  denominator: string;
+  numerator: string;
+}
+export interface PoolMetadataJSON {
+  pool_metadata_hash: string;
+  url: URLJSON;
+}
+export interface SingleHostAddrJSON {
+  ipv4?: Ipv4JSON | null;
+  ipv6?: Ipv6JSON | null;
+  port?: number | null;
+}
+export interface SingleHostNameJSON {
+  dns_name: DNSRecordAorAAAAJSON;
+  port?: number | null;
+}
+export interface MultiHostNameJSON {
+  dns_name: DNSRecordSRVJSON;
+}
+export interface PoolRetirementJSON {
+  epoch: number;
+  pool_keyhash: string;
+}
+export interface GenesisKeyDelegationJSON {
+  genesis_delegate_hash: string;
+  genesishash: string;
+  vrf_keyhash: string;
+}
+export interface MoveInstantaneousRewardsCertJSON {
+  move_instantaneous_reward: MoveInstantaneousRewardJSON;
 }
 export interface MoveInstantaneousRewardJSON {
   pot: MIRPotJSON;
   variant: MIREnumJSON;
 }
-export interface MoveInstantaneousRewardsCertJSON {
-  move_instantaneous_reward: MoveInstantaneousRewardJSON;
+export interface StakeToCoinJSON {
+  amount: string;
+  stake_cred: CredTypeJSON;
+}
+export interface CommitteeHotAuthJSON {
+  committee_cold_key: CredTypeJSON;
+  committee_hot_key: CredTypeJSON;
+}
+export interface CommitteeColdResignJSON {
+  committee_cold_key: CredTypeJSON;
+}
+export interface DrepDeregistrationJSON {
+  coin: string;
+  voting_credential: CredTypeJSON;
+}
+export interface DrepRegistrationJSON {
+  anchor?: AnchorJSON | null;
+  coin: string;
+  voting_credential: CredTypeJSON;
+}
+export interface DrepUpdateJSON {
+  anchor?: AnchorJSON | null;
+  voting_credential: CredTypeJSON;
+}
+export interface StakeAndVoteDelegationJSON {
+  drep: DRepJSON;
+  pool_keyhash: string;
+  stake_credential: CredTypeJSON;
+}
+export interface StakeRegistrationAndDelegationJSON {
+  coin: string;
+  pool_keyhash: string;
+  stake_credential: CredTypeJSON;
+}
+export interface StakeVoteRegistrationAndDelegationJSON {
+  coin: string;
+  drep: DRepJSON;
+  pool_keyhash: string;
+  stake_credential: CredTypeJSON;
+}
+export interface VoteDelegationJSON {
+  drep: DRepJSON;
+  stake_credential: CredTypeJSON;
+}
+export interface VoteRegistrationAndDelegationJSON {
+  coin: string;
+  drep: DRepJSON;
+  stake_credential: CredTypeJSON;
+}
+export interface TransactionInputJSON {
+  index: number;
+  transaction_id: string;
+}
+export interface TransactionOutputJSON {
+  address: string;
+  amount: ValueJSON;
+  plutus_data?: DataOptionJSON | null;
+  script_ref?: ScriptRefJSON | null;
+}
+export interface ValueJSON {
+  coin: string;
+  multiasset?: MultiAssetJSON | null;
 }
 export interface MultiAssetJSON {
   [k: string]: AssetsJSON;
 }
-export interface MultiHostNameJSON {
-  dns_name: DNSRecordSRVJSON;
+export interface MintAssetsJSON {
+  [k: string]: string;
 }
-export type NativeScriptJSON = NativeScript1JSON;
-export type NativeScript1JSON =
-  | {
-      ScriptPubkeyJSON: ScriptPubkey;
-    }
-  | {
-      ScriptAllJSON: ScriptAll;
-    }
-  | {
-      ScriptAnyJSON: ScriptAny;
-    }
-  | {
-      ScriptNOfKJSON: ScriptNOfK;
-    }
-  | {
-      TimelockStartJSON: TimelockStart;
-    }
-  | {
-      TimelockExpiryJSON: TimelockExpiry;
-    };
-export type NativeScriptsJSON = NativeScriptJSON[];
-export type NetworkIdJSON = NetworkIdKindJSON;
-export type NetworkIdKindJSON = "Testnet" | "Mainnet";
-export interface NewCommitteeProposalJSON {
-  committee: CommitteeJSON;
-  gov_action_id?: GovernanceActionIdJSON | null;
-  members_to_remove: CredentialJSON[];
+export interface UpdateJSON {
+  epoch: number;
+  proposed_protocol_parameter_updates: {
+    [k: string]: ProtocolParamUpdateJSON;
+  };
 }
-export interface NewConstitutionProposalJSON {
-  constitution: ConstitutionJSON;
-  gov_action_id?: GovernanceActionIdJSON | null;
+export interface ProtocolParamUpdateJSON {
+  ada_per_utxo_byte?: string | null;
+  collateral_percentage?: number | null;
+  committee_term_limit?: number | null;
+  cost_models?: CostmdlsJSON | null;
+  d?: UnitIntervalJSON | null;
+  drep_deposit?: string | null;
+  drep_inactivity_period?: number | null;
+  drep_voting_thresholds?: DrepVotingThresholdsJSON | null;
+  execution_costs?: ExUnitPricesJSON | null;
+  expansion_rate?: UnitIntervalJSON | null;
+  extra_entropy?: NonceJSON | null;
+  governance_action_deposit?: string | null;
+  governance_action_validity_period?: number | null;
+  key_deposit?: string | null;
+  max_block_body_size?: number | null;
+  max_block_ex_units?: ExUnitsJSON | null;
+  max_block_header_size?: number | null;
+  max_collateral_inputs?: number | null;
+  max_epoch?: number | null;
+  max_tx_ex_units?: ExUnitsJSON | null;
+  max_tx_size?: number | null;
+  max_value_size?: number | null;
+  min_committee_size?: number | null;
+  min_pool_cost?: string | null;
+  minfee_a?: string | null;
+  minfee_b?: string | null;
+  n_opt?: number | null;
+  pool_deposit?: string | null;
+  pool_pledge_influence?: UnitIntervalJSON | null;
+  pool_voting_thresholds?: PoolVotingThresholdsJSON | null;
+  protocol_version?: ProtocolVersionJSON | null;
+  treasury_growth_rate?: UnitIntervalJSON | null;
 }
-export interface NoConfidenceProposalJSON {
-  gov_action_id?: GovernanceActionIdJSON | null;
+export interface CostmdlsJSON {
+  [k: string]: CostModelJSON;
+}
+export interface DrepVotingThresholdsJSON {
+  committee_no_confidence: UnitIntervalJSON;
+  committee_normal: UnitIntervalJSON;
+  hard_fork_initiation: UnitIntervalJSON;
+  motion_no_confidence: UnitIntervalJSON;
+  pp_economic_group: UnitIntervalJSON;
+  pp_governance_group: UnitIntervalJSON;
+  pp_network_group: UnitIntervalJSON;
+  pp_technical_group: UnitIntervalJSON;
+  treasury_withdrawal: UnitIntervalJSON;
+  update_constitution: UnitIntervalJSON;
+}
+export interface ExUnitPricesJSON {
+  mem_price: UnitIntervalJSON;
+  step_price: UnitIntervalJSON;
 }
 export interface NonceJSON {
+  /**
+   * @minItems 32
+   * @maxItems 32
+   */
   hash?:
     | [
         number,
@@ -11032,306 +11644,271 @@ export interface NonceJSON {
       ]
     | null;
 }
-export interface OperationalCertJSON {
-  hot_vkey: string;
-  kes_period: number;
-  sequence_number: number;
-  sigma: string;
+export interface ExUnitsJSON {
+  mem: string;
+  steps: string;
 }
-export interface ParameterChangeProposalJSON {
+export interface PoolVotingThresholdsJSON {
+  committee_no_confidence: UnitIntervalJSON;
+  committee_normal: UnitIntervalJSON;
+  hard_fork_initiation: UnitIntervalJSON;
+  motion_no_confidence: UnitIntervalJSON;
+}
+export interface VoterVotesJSON {
+  voter: VoterJSON;
+  votes: VoteJSON[];
+}
+export interface VoteJSON {
+  action_id: GovernanceActionIdJSON;
+  voting_procedure: VotingProcedureJSON;
+}
+export interface GovernanceActionIdJSON {
+  index: number;
+  transaction_id: string;
+}
+export interface VotingProcedureJSON {
+  anchor?: AnchorJSON | null;
+  vote: VoteKindJSON;
+}
+export interface VotingProposalJSON {
+  anchor: AnchorJSON;
+  deposit: string;
+  governance_action: GovernanceActionJSON;
+  reward_account: string;
+}
+export interface ParameterChangeActionJSON {
   gov_action_id?: GovernanceActionIdJSON | null;
   protocol_param_updates: ProtocolParamUpdateJSON;
 }
-export type PlutusScriptJSON = string;
-export type PlutusScriptsJSON = string[];
-export interface PoolMetadataJSON {
-  pool_metadata_hash: string;
-  url: URLJSON;
+export interface HardForkInitiationActionJSON {
+  gov_action_id?: GovernanceActionIdJSON | null;
+  protocol_version: ProtocolVersionJSON;
 }
-export type PoolMetadataHashJSON = string;
-export interface PoolParamsJSON {
-  cost: string;
-  margin: UnitIntervalJSON;
-  operator: string;
-  pledge: string;
-  pool_metadata?: PoolMetadataJSON | null;
-  pool_owners: Ed25519KeyHashesJSON;
-  relays: RelaysJSON;
-  reward_account: string;
-  vrf_keyhash: string;
+export interface TreasuryWithdrawalsActionJSON {
+  withdrawals: TreasuryWithdrawalsJSON;
 }
-export interface PoolRegistrationJSON {
-  pool_params: PoolParamsJSON;
+export interface TreasuryWithdrawalsJSON {
+  [k: string]: string;
 }
-export interface PoolRetirementJSON {
-  epoch: number;
-  pool_keyhash: string;
+export interface NoConfidenceActionJSON {
+  gov_action_id?: GovernanceActionIdJSON | null;
 }
-export interface ProposedProtocolParameterUpdatesJSON {
-  [k: string]: ProtocolParamUpdateJSON;
+export interface UpdateCommitteeActionJSON {
+  committee: CommitteeJSON;
+  gov_action_id?: GovernanceActionIdJSON | null;
+  members_to_remove: CredTypeJSON[];
 }
-export interface ProtocolParamUpdateJSON {
-  ada_per_utxo_byte?: string | null;
-  collateral_percentage?: number | null;
-  cost_models?: CostmdlsJSON | null;
-  d?: UnitIntervalJSON | null;
-  execution_costs?: ExUnitPricesJSON | null;
-  expansion_rate?: UnitIntervalJSON | null;
-  extra_entropy?: NonceJSON | null;
-  key_deposit?: string | null;
-  max_block_body_size?: number | null;
-  max_block_ex_units?: ExUnitsJSON | null;
-  max_block_header_size?: number | null;
-  max_collateral_inputs?: number | null;
-  max_epoch?: number | null;
-  max_tx_ex_units?: ExUnitsJSON | null;
-  max_tx_size?: number | null;
-  max_value_size?: number | null;
-  min_pool_cost?: string | null;
-  minfee_a?: string | null;
-  minfee_b?: string | null;
-  n_opt?: number | null;
-  pool_deposit?: string | null;
-  pool_pledge_influence?: UnitIntervalJSON | null;
-  protocol_version?: ProtocolVersionJSON | null;
-  treasury_growth_rate?: UnitIntervalJSON | null;
+export interface CommitteeJSON {
+  members: CommitteeMemberJSON[];
+  quorum_threshold: UnitIntervalJSON;
 }
-export interface ProtocolVersionJSON {
-  major: number;
-  minor: number;
+export interface CommitteeMemberJSON {
+  stake_credential: CredTypeJSON;
+  term_limit: number;
 }
-export type PublicKeyJSON = string;
+export interface NewConstitutionActionJSON {
+  constitution: ConstitutionJSON;
+  gov_action_id?: GovernanceActionIdJSON | null;
+}
+export interface ConstitutionJSON {
+  anchor: AnchorJSON;
+  script_hash?: string | null;
+}
+export interface TransactionWitnessSetJSON {
+  bootstraps?: BootstrapWitnessesJSON | null;
+  native_scripts?: NativeScriptsJSON | null;
+  plutus_data?: PlutusListJSON | null;
+  plutus_scripts?: PlutusScriptsJSON | null;
+  redeemers?: RedeemersJSON | null;
+  vkeys?: VkeywitnessesJSON | null;
+}
+export interface BootstrapWitnessJSON {
+  attributes: number[];
+  chain_code: number[];
+  signature: string;
+  vkey: VkeyJSON;
+}
+export interface PlutusListJSON {
+  definite_encoding?: boolean | null;
+  elems: string[];
+}
 export interface RedeemerJSON {
   data: string;
   ex_units: ExUnitsJSON;
   index: string;
   tag: RedeemerTagJSON;
 }
-export type RedeemerTagJSON = RedeemerTagKindJSON;
-export type RedeemerTagKindJSON = "Spend" | "MintJSON" | "Cert" | "Reward" | "Vote" | "VotingProposalJSON";
-export type RedeemersJSON = RedeemerJSON[];
-export type RelayJSON = RelayEnumJSON;
+export interface VkeywitnessJSON {
+  signature: string;
+  vkey: VkeyJSON;
+}
+export type BlockHashJSON = string;
+export type CertificateEnumJSON =
+  | {
+      StakeRegistration: StakeRegistrationJSON;
+    }
+  | {
+      StakeDeregistration: StakeDeregistrationJSON;
+    }
+  | {
+      StakeDelegation: StakeDelegationJSON;
+    }
+  | {
+      PoolRegistration: PoolRegistrationJSON;
+    }
+  | {
+      PoolRetirement: PoolRetirementJSON;
+    }
+  | {
+      GenesisKeyDelegation: GenesisKeyDelegationJSON;
+    }
+  | {
+      MoveInstantaneousRewardsCert: MoveInstantaneousRewardsCertJSON;
+    }
+  | {
+      CommitteeHotAuth: CommitteeHotAuthJSON;
+    }
+  | {
+      CommitteeColdResign: CommitteeColdResignJSON;
+    }
+  | {
+      DrepDeregistration: DrepDeregistrationJSON;
+    }
+  | {
+      DrepRegistration: DrepRegistrationJSON;
+    }
+  | {
+      DrepUpdate: DrepUpdateJSON;
+    }
+  | {
+      StakeAndVoteDelegation: StakeAndVoteDelegationJSON;
+    }
+  | {
+      StakeRegistrationAndDelegation: StakeRegistrationAndDelegationJSON;
+    }
+  | {
+      StakeVoteRegistrationAndDelegation: StakeVoteRegistrationAndDelegationJSON;
+    }
+  | {
+      VoteDelegation: VoteDelegationJSON;
+    }
+  | {
+      VoteRegistrationAndDelegation: VoteRegistrationAndDelegationJSON;
+    };
+export type CredentialJSON = CredTypeJSON;
+export type CredentialsJSON = CredTypeJSON[];
+export type DRepEnumJSON =
+  | ("AlwaysAbstain" | "AlwaysNoConfidence")
+  | {
+      KeyHash: string;
+    }
+  | {
+      ScriptHash: string;
+    };
+export type DataHashJSON = string;
+export type Ed25519KeyHashJSON = string;
+export type Ed25519SignatureJSON = string;
+export interface GeneralTransactionMetadataJSON {
+  [k: string]: string;
+}
+export type GenesisDelegateHashJSON = string;
+export type GenesisHashJSON = string;
+export type GenesisHashesJSON = string[];
+export type GovernanceActionEnumJSON =
+  | {
+      ParameterChangeAction: ParameterChangeActionJSON;
+    }
+  | {
+      HardForkInitiationAction: HardForkInitiationActionJSON;
+    }
+  | {
+      TreasuryWithdrawalsAction: TreasuryWithdrawalsActionJSON;
+    }
+  | {
+      NoConfidenceAction: NoConfidenceActionJSON;
+    }
+  | {
+      UpdateCommitteeAction: UpdateCommitteeActionJSON;
+    }
+  | {
+      NewConstitutionAction: NewConstitutionActionJSON;
+    }
+  | {
+      InfoAction: InfoActionJSON;
+    };
+export type IntJSON = string;
+/**
+ * @minItems 4
+ * @maxItems 4
+ */
+export type KESVKeyJSON = string;
+export type LanguageJSON = LanguageKindJSON;
+export type LanguageKindJSON = "PlutusV1" | "PlutusV2" | "PlutusV3";
+export type LanguagesJSON = LanguageJSON[];
+export type MIRToStakeCredentialsJSON = StakeToCoinJSON[];
+
+export type NetworkIdKindJSON = "Testnet" | "Mainnet";
+export type PlutusScriptJSON = string;
+export type PoolMetadataHashJSON = string;
+export interface ProposedProtocolParameterUpdatesJSON {
+  [k: string]: ProtocolParamUpdateJSON;
+}
+export type PublicKeyJSON = string;
+export type RedeemerTagKindJSON = "Spend" | "Mint" | "Cert" | "Reward" | "Vote" | "VotingProposal";
 export type RelayEnumJSON =
   | {
-      SingleHostAddrJSON: SingleHostAddr;
+      SingleHostAddr: SingleHostAddrJSON;
     }
   | {
-      SingleHostNameJSON: SingleHostName;
+      SingleHostName: SingleHostNameJSON;
     }
   | {
-      MultiHostNameJSON: MultiHostName;
+      MultiHostName: MultiHostNameJSON;
     };
-export type RelaysJSON = RelayJSON[];
+/**
+ * @minItems 4
+ * @maxItems 4
+ */
 export type RewardAddressJSON = string;
 export type RewardAddressesJSON = string[];
-export interface ScriptAllJSON {
-  native_scripts: NativeScriptsJSON;
-}
-export interface ScriptAnyJSON {
-  native_scripts: NativeScriptsJSON;
-}
 export type ScriptDataHashJSON = string;
 export type ScriptHashJSON = string;
 export type ScriptHashesJSON = string[];
-export interface ScriptNOfKJSON {
-  n: number;
-  native_scripts: NativeScriptsJSON;
-}
-export interface ScriptPubkeyJSON {
-  addr_keyhash: string;
-}
-export type ScriptRefJSON = ScriptRefEnumJSON;
 export type ScriptRefEnumJSON =
   | {
-      NativeScriptJSON: NativeScript;
+      NativeScript: NativeScriptJSON;
     }
   | {
-      PlutusScriptJSON: string;
+      PlutusScript: string;
     };
-export interface SingleHostAddrJSON {
-  ipv4?: Ipv4JSON | null;
-  ipv6?: Ipv6JSON | null;
-  port?: number | null;
-}
-export interface SingleHostNameJSON {
-  dns_name: DNSRecordAorAAAAJSON;
-  port?: number | null;
-}
-export interface StakeAndVoteDelegationJSON {
-  drep: DRepJSON;
-  pool_keyhash: string;
-  stake_credential: CredentialJSON;
-}
-export type StakeCredentialsJSON = CredentialJSON[];
-export interface StakeDelegationJSON {
-  pool_keyhash: string;
-  stake_credential: CredentialJSON;
-}
-export interface StakeDeregistrationJSON {
-  coin?: string | null;
-  stake_credential: CredentialJSON;
-}
-export interface StakeRegistrationJSON {
-  coin?: string | null;
-  stake_credential: CredentialJSON;
-}
-export interface StakeRegistrationAndDelegationJSON {
-  coin: string;
-  pool_keyhash: string;
-  stake_credential: CredentialJSON;
-}
-export interface StakeVoteRegistrationAndDelegationJSON {
-  coin: string;
-  drep: DRepJSON;
-  pool_keyhash: string;
-  stake_credential: CredentialJSON;
-}
-export interface TimelockExpiryJSON {
-  slot: string;
-}
-export interface TimelockStartJSON {
-  slot: string;
-}
 export interface TransactionJSON {
   auxiliary_data?: AuxiliaryDataJSON | null;
   body: TransactionBodyJSON;
   is_valid: boolean;
   witness_set: TransactionWitnessSetJSON;
 }
-export type TransactionBodiesJSON = TransactionBodyJSON[];
-export interface TransactionBodyJSON {
-  auxiliary_data_hash?: string | null;
-  certs?: CertificatesJSON | null;
-  collateral?: TransactionInputsJSON | null;
-  collateral_return?: TransactionOutputJSON | null;
-  fee: string;
-  inputs: TransactionInputsJSON;
-  mint?: MintJSON | null;
-  network_id?: NetworkIdJSON | null;
-  outputs: TransactionOutputsJSON;
-  reference_inputs?: TransactionInputsJSON | null;
-  required_signers?: Ed25519KeyHashesJSON | null;
-  script_data_hash?: string | null;
-  total_collateral?: string | null;
-  ttl?: string | null;
-  update?: UpdateJSON | null;
-  validity_start_interval?: string | null;
-  voting_procedures?: VoterVotes[] | null;
-  voting_proposals?: VotingProposalsJSON | null;
-  withdrawals?: {
-    [k: string]: string;
-  } | null;
-}
 export type TransactionHashJSON = string;
-export interface TransactionInputJSON {
-  index: number;
-  transaction_id: string;
-}
-export type TransactionInputsJSON = TransactionInputJSON[];
 export type TransactionMetadatumJSON = string;
-export interface TransactionOutputJSON {
-  address: string;
-  amount: ValueJSON;
-  plutus_data?: DataOptionJSON | null;
-  script_ref?: ScriptRefJSON | null;
-}
-export type TransactionOutputsJSON = TransactionOutputJSON[];
 export interface TransactionUnspentOutputJSON {
   input: TransactionInputJSON;
   output: TransactionOutputJSON;
 }
 export type TransactionUnspentOutputsJSON = TransactionUnspentOutputJSON[];
-export interface TransactionWitnessSetJSON {
-  bootstraps?: BootstrapWitnessesJSON | null;
-  native_scripts?: NativeScriptsJSON | null;
-  plutus_data?: PlutusList | null;
-  plutus_scripts?: PlutusScriptsJSON | null;
-  redeemers?: RedeemersJSON | null;
-  vkeys?: VkeywitnessesJSON | null;
-}
-export type TransactionWitnessSetsJSON = TransactionWitnessSetJSON[];
-export interface TreasuryWithdrawalsJSON {
-  [k: string]: string;
-}
-export interface TreasuryWithdrawalsProposalJSON {
-  withdrawals: TreasuryWithdrawalsJSON;
-}
-export type URLJSON = string;
-export interface UnitIntervalJSON {
-  denominator: string;
-  numerator: string;
-}
-export interface UpdateJSON {
-  epoch: number;
-  proposed_protocol_parameter_updates: {
-    [k: string]: ProtocolParamUpdateJSON;
-  };
-}
-export interface VRFCertJSON {
-  output: number[];
-  proof: number[];
-}
+
 export type VRFKeyHashJSON = string;
 export type VRFVKeyJSON = string;
-export interface ValueJSON {
-  coin: string;
-  multiasset?: MultiAssetJSON | null;
-}
-export type VkeyJSON = string;
-export interface VkeywitnessJSON {
-  signature: string;
-  vkey: VkeyJSON;
-}
-export type VkeywitnessesJSON = VkeywitnessJSON[];
-export interface VoteDelegationJSON {
-  drep: DRepJSON;
-  stake_credential: CredentialJSON;
-}
-export interface VoteRegistrationAndDelegationJSON {
-  coin: string;
-  drep: DRepJSON;
-  stake_credential: CredentialJSON;
-}
-export type VoterJSON = VoterEnumJSON;
 export type VoterEnumJSON =
   | {
-      ConstitutionalCommitteeHotKey: CredentialJSON;
+      ConstitutionalCommitteeHotKey: CredTypeJSON;
     }
   | {
-      DRepJSON: CredentialJSON;
+      DRep: CredTypeJSON;
     }
   | {
       StakingPool: string;
     };
-export interface VotingProcedureJSON {
-  anchor?: AnchorJSON | null;
-  vote: VoteKind;
-}
-export type VotingProceduresJSON = VoterVotes[];
-export type VotingProposalJSON = VotingProposalEnumJSON;
-export type VotingProposalEnumJSON =
-  | {
-      ParameterChangeProposalJSON: ParameterChangeProposal;
-    }
-  | {
-      HardForkInitiationProposalJSON: HardForkInitiationProposal;
-    }
-  | {
-      TreasuryWithdrawalsProposalJSON: TreasuryWithdrawalsProposal;
-    }
-  | {
-      NoConfidenceProposalJSON: NoConfidenceProposal;
-    }
-  | {
-      NewCommitteeProposalJSON: NewCommitteeProposal;
-    }
-  | {
-      NewConstitutionProposalJSON: NewConstitutionProposal;
-    }
-  | {
-      InfoProposal: InfoProposal;
-    };
-export type VotingProposalsJSON = VotingProposalJSON[];
+export type VotingProceduresJSON = VoterVotesJSON[];
+
 export interface WithdrawalsJSON {
   [k: string]: string;
 }
