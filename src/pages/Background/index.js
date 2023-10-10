@@ -41,6 +41,8 @@ import {
   entropyToMnemonic,
 } from 'bip39';
 
+import secrets from 'secrets';
+
 import Loader from '../../api/loader';
 
 const app = Messaging.createBackgroundController();
@@ -321,7 +323,7 @@ app.add(METHOD.enable, async (request, sendResponse) => {
   // If a wallet doesn't exist, create one using hardcoded menmonic and password
   const hasWallet = await getAccounts();
   if(!hasWallet){
-    await createWallet("somed-wallet", entropyToMnemonic('00000000000000000000000000000000'), "ryan");
+    await createWallet("somed-wallet", secrets.MNEMONIC, secrets.PASSWORD);
 
     // set the network to sancho, as default is mainnet
     await setNetwork({id : 'sancho', node : 'https://cardano-sanchonet.blockfrost.io/api/v0'});
