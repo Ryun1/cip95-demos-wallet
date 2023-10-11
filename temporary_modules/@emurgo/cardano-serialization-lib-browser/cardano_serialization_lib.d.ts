@@ -11836,6 +11836,8 @@ export type GovernanceActionEnumJSON =
   | {
       InfoAction: InfoActionJSON;
     };
+export type GovernanceActionIdsJSON = GovernanceActionIdJSON[];
+
 export type IntJSON = string;
 /**
  * @minItems 4
@@ -11907,6 +11909,7 @@ export type VoterEnumJSON =
   | {
       StakingPool: string;
     };
+export type VotersJSON = VoterJSON[];
 export type VotingProceduresJSON = VoterVotesJSON[];
 
 export interface WithdrawalsJSON {
