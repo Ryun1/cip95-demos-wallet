@@ -1,5 +1,8 @@
 # Tags
 
+### 1.5.2
+- Bumped CSL to alpha version 10
+
 ### 1.5.1
 - Bumped CSL to alpha version 8
 - Fixed vote signing
