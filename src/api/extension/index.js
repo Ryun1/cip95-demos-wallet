@@ -174,17 +174,17 @@ export const signTxCIP95 = async (
 
 export const getRegisteredPubStakeKeys = async () => {
   if (await isStakeKeyRegistered()){
-    return [(await getStakeKey()), secrets.EXPLICIT_REG_STAKE_KEYS];
+    return [(await getStakeKey())].concat(secrets.EXPLICIT_REG_STAKE_KEYS);
   } else {
-    return [secrets.EXPLICIT_REG_STAKE_KEYS];
+    return secrets.EXPLICIT_REG_STAKE_KEYS;
   }
 }
 
 export const getUnregisteredPubStakeKeys = async () => {
   if (await isStakeKeyRegistered()){
-    return [secrets.EXPLICIT_UNREG_STAKE_KEYS];
+    return secrets.EXPLICIT_UNREG_STAKE_KEYS;
   } else {
-    return [(await getStakeKey()), secrets.EXPLICIT_UNREG_STAKE_KEYS];
+    return [(await getStakeKey())].concat(secrets.EXPLICIT_UNREG_STAKE_KEYS);
   }
 }
 
