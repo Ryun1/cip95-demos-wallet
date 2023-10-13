@@ -40,6 +40,7 @@ import TrezorConnect from '../../../temporary_modules/trezor-connect';
 import AssetFingerprint from '@emurgo/cip14-js';
 import Web3Utils from 'web3-utils';
 import { milkomedaNetworks } from '@dcspark/milkomeda-constants';
+import secrets from 'secrets';
 
 export const getStorage = (key) =>
   new Promise((res, rej) =>
@@ -173,17 +174,17 @@ export const signTxCIP95 = async (
 
 export const getRegisteredPubStakeKeys = async () => {
   if (await isStakeKeyRegistered()){
-    return [(await getStakeKey())];
+    return [(await getStakeKey()), secrets.EXPLICIT_REG_STAKE_KEYS];
   } else {
-    return [];
+    return [secrets.EXPLICIT_REG_STAKE_KEYS];
   }
 }
 
 export const getUnregisteredPubStakeKeys = async () => {
   if (await isStakeKeyRegistered()){
-    return [];
+    return [secrets.EXPLICIT_UNREG_STAKE_KEYS];
   } else {
-    return [(await getStakeKey())];
+    return [(await getStakeKey()), secrets.EXPLICIT_UNREG_STAKE_KEYS];
   }
 }
 

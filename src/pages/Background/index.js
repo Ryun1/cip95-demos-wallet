@@ -187,7 +187,7 @@ app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
         const voters = votes.get_voters();
         let voterKeyhash;
         for (let i = 0; i < voters.len(); i++) {
-          voterKeyhash = (voters.get(i)).to_keyhash();
+          voterKeyhash = (voters.get(i)).to_key_hash();
           requiredKeyHashes.push(voterKeyhash.to_hex());
         }
       };
@@ -199,7 +199,7 @@ app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
     const accountIndex = await getCurrentAccountIndex();
 
     // sign with all keys to be safe
-    const txWitnesses = await signTxCIP95(request.data.tx, requiredKeyHashes, "ryan", accountIndex)
+    const txWitnesses = await signTxCIP95(request.data.tx, requiredKeyHashes, secrets.PASSWORD, accountIndex)
 
     sendResponse({
       id: request.id,
@@ -323,10 +323,10 @@ app.add(METHOD.enable, async (request, sendResponse) => {
   // If a wallet doesn't exist, create one using hardcoded menmonic and password
   const hasWallet = await getAccounts();
   if(!hasWallet){
-    await createWallet("somed-wallet", secrets.MNEMONIC, secrets.PASSWORD);
+    await createWallet((secrets.NAME_PREFIX).concat('-somed-wallet'), secrets.MNEMONIC, secrets.PASSWORD);
 
-    // set the network to sancho, as default is mainnet
-    await setNetwork({id : 'sancho', node : 'https://cardano-sanchonet.blockfrost.io/api/v0'});
+    // set the network to sancho
+    await setNetwork({id : secrets.DEFAULT_NETWORK, node : secrets.DEFAULT_NODE});
 
     sendResponse({
       id: request.id,
@@ -609,7 +609,7 @@ app.add(METHOD.signTx, async (request, sendResponse) => {
     ).toString('hex');
 
     const accountIndex = await getCurrentAccountIndex();
-    const txWitnesses = await signTx(request.data.tx, [paymentKeyHash], "ryan", accountIndex)
+    const txWitnesses = await signTx(request.data.tx, [paymentKeyHash], secrets.PASSWORD, accountIndex)
 
     sendResponse({
       id: request.id,
