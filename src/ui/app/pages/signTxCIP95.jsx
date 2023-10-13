@@ -1208,6 +1208,34 @@ const DetailsModal = React.forwardRef(
                       </>
                     )}
                   </Box>
+                  {property.vote && (
+                    <Box fontSize="md" fontWeight={'bold'} width={'full'}>
+                      🗳 Votes 🗳
+                    </Box>
+                  )}
+                  <Box height="4" />
+                  <Box width={'full'} display={'flex'} flexWrap={'wrap'}>
+                    {property.vote && (
+                      <>
+                        <Box height="4" />
+                        <Box
+                          padding="2.5"
+                          rounded={'xl'}
+                          width={'full'}
+                          height={'200px'}
+                          background={innerBackground}
+                        >
+                          <Scrollbars autoHide>
+                            <JSONPretty
+                              id="json-pretty"
+                              data={property.vote.to_json()}
+                            ></JSONPretty>
+                          </Scrollbars>
+                        </Box>
+                        <Box h={10} />
+                      </>
+                    )}
+                  </Box>
                   <Box h={5} />
                   <Text width={'full'} fontSize="md" fontWeight={'bold'}>
                     Raw transaction
