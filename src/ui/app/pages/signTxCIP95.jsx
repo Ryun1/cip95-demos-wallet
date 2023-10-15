@@ -100,8 +100,7 @@ const SignTx = ({ request, controller }) => {
     const script = tx.witness_set().native_scripts();
     // cip-95
     const vote = tx.body().voting_procedures();
-    //const proposal = tx.body().voting_proposals();
-    const proposal = false;
+    const proposal = tx.body().voting_proposals();
     let datum;
     let contract = tx.body().script_data_hash();
     const outputs = tx.body().outputs();
@@ -1109,7 +1108,7 @@ const DetailsModal = React.forwardRef(
                       >
                         <Box
                           as={'b'}
-                          color={keyHash == 'payment' ? 'teal.400' : 'orange'}
+                          color={keyHash === 'DRep' ? 'purple.300' : keyHash === 'payment' ? 'teal.400' : 'orange'}
                         >
                           {keyHash}
                         </Box>
@@ -1144,8 +1143,8 @@ const DetailsModal = React.forwardRef(
                                 {p == 'contract' && 'Contract'}
                                 {p == 'script' && 'Script'}
                                 {p == 'datum' && 'Datum'}
-                                {p == 'vote' && '🗳 Vote'}
-                                {p == 'proposal' && '💡 Governance Action'}
+                                {p == 'vote' && '🗳 Vote 🗳'}
+                                {p == 'proposal' && '💡 Governance Action 💡'}
                               </Box>
                             </Box>
                           ))}
@@ -1153,12 +1152,89 @@ const DetailsModal = React.forwardRef(
                       <Box h={10} />
                     </>
                   )}
-                  <Box fontSize="md" fontWeight={'bold'} width={'full'}>
-                    💥Certificates
-                  </Box>
+                  {property.certificate && (
+                    <Box fontSize="md" fontWeight={'bold'} width={'full'}>
+                      💥 Certificates 💥
+                    </Box>
+                  )}
                   <Box height="4" />
                   <Box width={'full'} display={'flex'} flexWrap={'wrap'}>
-                        {"certs"}
+                    {property.certificate && (
+                      <>
+                        <Box height="4" />
+                        <Box
+                          padding="2.5"
+                          rounded={'xl'}
+                          width={'full'}
+                          height={'200px'}
+                          background={innerBackground}
+                        >
+                          <Scrollbars autoHide>
+                            <JSONPretty
+                              id="json-pretty"
+                              data={property.certificate.to_json()}
+                            ></JSONPretty>
+                          </Scrollbars>
+                        </Box>
+                        <Box h={10} />
+                      </>
+                    )}
+                  </Box>
+                  {property.proposal && (
+                    <Box fontSize="md" fontWeight={'bold'} width={'full'}>
+                      💡 Governance Actions 💡
+                    </Box>
+                  )}
+                  <Box height="4" />
+                  <Box width={'full'} display={'flex'} flexWrap={'wrap'}>
+                    {property.proposal && (
+                      <>
+                        <Box height="4" />
+                        <Box
+                          padding="2.5"
+                          rounded={'xl'}
+                          width={'full'}
+                          height={'200px'}
+                          background={innerBackground}
+                        >
+                          <Scrollbars autoHide>
+                            <JSONPretty
+                              id="json-pretty"
+                              data={property.proposal.to_json()}
+                            ></JSONPretty>
+                          </Scrollbars>
+                        </Box>
+                        <Box h={10} />
+                      </>
+                    )}
+                  </Box>
+                  {property.vote && (
+                    <Box fontSize="md" fontWeight={'bold'} width={'full'}>
+                      🗳 Votes 🗳
+                    </Box>
+                  )}
+                  <Box height="4" />
+                  <Box width={'full'} display={'flex'} flexWrap={'wrap'}>
+                    {property.vote && (
+                      <>
+                        <Box height="4" />
+                        <Box
+                          padding="2.5"
+                          rounded={'xl'}
+                          width={'full'}
+                          height={'200px'}
+                          background={innerBackground}
+                        >
+                          <Scrollbars autoHide>
+                            <JSONPretty
+                              id="json-pretty"
+                              data={property.vote.to_json()}
+                            ></JSONPretty>
+                          </Scrollbars>
+                        </Box>
+                        <Box h={10} />
+                      </>
+                    )}
                   </Box>
                   <Box h={5} />
                   <Text width={'full'} fontSize="md" fontWeight={'bold'}>
