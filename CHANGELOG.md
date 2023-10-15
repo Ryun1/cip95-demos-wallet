@@ -1,5 +1,8 @@
 # Tags
 
+### 1.5.3 
+- A lot nicer UI to inspect Conway certs, votes and gov actions
+
 ### 1.5.2
 - Bumped CSL to alpha version 10
 
