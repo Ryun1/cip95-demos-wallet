@@ -188,6 +188,13 @@ function debugString(val) {
     return className;
 }
 
+function _assertClass(instance, klass) {
+    if (!(instance instanceof klass)) {
+        throw new Error(`expected instance of ${klass.name}`);
+    }
+    return instance.ptr;
+}
+
 function getArrayU8FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getUint8Memory0().subarray(ptr / 1, ptr / 1 + len);
@@ -198,13 +205,6 @@ function passArray8ToWasm0(arg, malloc) {
     getUint8Memory0().set(arg, ptr / 1);
     WASM_VECTOR_LEN = arg.length;
     return ptr;
-}
-
-function _assertClass(instance, klass) {
-    if (!(instance instanceof klass)) {
-        throw new Error(`expected instance of ${klass.name}`);
-    }
-    return instance.ptr;
 }
 /**
 * @param {Address} address
@@ -18830,7 +18830,7 @@ export class PlutusWitnesses {
     * @returns {number}
     */
     len() {
-        const ret = wasm.plutuswitnesses_len(this.__wbg_ptr);
+        const ret = wasm.governanceactionids_len(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**
@@ -22791,7 +22791,7 @@ export class Relays {
     * @returns {number}
     */
     len() {
-        const ret = wasm.plutuswitnesses_len(this.__wbg_ptr);
+        const ret = wasm.relays_len(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**
