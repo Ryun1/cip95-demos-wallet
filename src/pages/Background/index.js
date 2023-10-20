@@ -132,6 +132,17 @@ app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
 
       const txBody = tx.body();
 
+      const votes = txBody.voting_procedures();
+      const keyHashFromVote = (votes) => {
+        const voters = votes.get_voters();
+        let voterKeyhash;
+        for (let i = 0; i < voters.len(); i++) {
+          voterKeyhash = (voters.get(i)).to_key_hash();
+          requiredKeyHashes.push(voterKeyhash.to_hex());
+        }
+      };
+      if (votes) keyHashFromVote(votes);
+
       for (let i = 0; i < txBody.certs().len(); i++) {
           const cert = txBody.certs().get(i);
 
@@ -182,16 +193,6 @@ app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
             }
           }
       }
-      const votes = txBody.voting_procedures();
-      const keyHashFromVote = (votes) => {
-        const voters = votes.get_voters();
-        let voterKeyhash;
-        for (let i = 0; i < voters.len(); i++) {
-          voterKeyhash = (voters.get(i)).to_key_hash();
-          requiredKeyHashes.push(voterKeyhash.to_hex());
-        }
-      };
-      if (votes) keyHashFromVote(votes);
 
     } catch (e) {
     }
