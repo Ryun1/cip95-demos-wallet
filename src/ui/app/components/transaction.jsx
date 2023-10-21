@@ -59,6 +59,19 @@ const txTypeColor = {
   mint: 'cyan.500',
   multisig: 'pink.400',
   contract: 'teal.400',
+  // conway
+  voteDelegation: 'purple.300',
+  dRepRegistration: 'purple.300',
+  dRepUpdate: 'purple.300',
+  dRepRetire: 'purple.300',
+  vote: 'purple.300',
+  govActNoConfidence: 'purple.300',
+  govActUpdateCommittee: 'purple.300',
+  govActUpdateConst: 'purple.300',
+  govActHF: 'purple.300',
+  govActParamUpdate: 'purple.300',
+  govActTreasury: 'purple.300',
+  govActInfo: 'purple.300',
 };
 
 const txTypeLabel = {
