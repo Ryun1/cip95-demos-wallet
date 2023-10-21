@@ -84,6 +84,19 @@ const txTypeLabel = {
   mint: 'Minting',
   multisig: 'Multi-signatures',
   contract: 'Contract',
+  // conway
+  voteDelegation: 'Vote Delegation',
+  dRepRegistration: 'DRep Registration',
+  dRepUpdate: 'DRep Update',
+  dRepRetire: 'DRep Retirement',
+  vote: 'Vote',
+  govActNoConfidence: 'No Confidence',
+  govActUpdateCommittee: 'Update Committee',
+  govActUpdateConst: 'Update Consitution',
+  govActHF: 'Hard fork initiation',
+  govActParamUpdate: 'Protocol Parameter Update',
+  govActTreasury: 'Treasury Withdrawal',
+  govActInfo: 'Info Action',
 };
 
 const useIsMounted = () => {
