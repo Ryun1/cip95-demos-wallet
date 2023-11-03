@@ -4775,18 +4775,18 @@ export class Certificate {
     * @param {CommitteeHotAuth} committee_hot_key_registration
     * @returns {Certificate}
     */
-    static new_committee_hot_key_registration(committee_hot_key_registration) {
+    static new_committee_hot_auth(committee_hot_key_registration) {
         _assertClass(committee_hot_key_registration, CommitteeHotAuth);
-        const ret = wasm.certificate_new_committee_hot_key_registration(committee_hot_key_registration.__wbg_ptr);
+        const ret = wasm.certificate_new_committee_hot_auth(committee_hot_key_registration.__wbg_ptr);
         return Certificate.__wrap(ret);
     }
     /**
     * @param {CommitteeColdResign} committee_hot_key_deregistration
     * @returns {Certificate}
     */
-    static new_committee_hot_key_deregistration(committee_hot_key_deregistration) {
+    static new_committee_cold_resign(committee_hot_key_deregistration) {
         _assertClass(committee_hot_key_deregistration, CommitteeColdResign);
-        const ret = wasm.certificate_new_committee_hot_key_deregistration(committee_hot_key_deregistration.__wbg_ptr);
+        const ret = wasm.certificate_new_committee_cold_resign(committee_hot_key_deregistration.__wbg_ptr);
         return Certificate.__wrap(ret);
     }
     /**
@@ -5744,12 +5744,30 @@ export class CommitteeColdResign {
         return Credential.__wrap(ret);
     }
     /**
+    * @returns {Anchor | undefined}
+    */
+    anchor() {
+        const ret = wasm.committeecoldresign_anchor(this.__wbg_ptr);
+        return ret === 0 ? undefined : Anchor.__wrap(ret);
+    }
+    /**
     * @param {Credential} committee_cold_key
     * @returns {CommitteeColdResign}
     */
     static new(committee_cold_key) {
         _assertClass(committee_cold_key, Credential);
         const ret = wasm.committeecoldresign_new(committee_cold_key.__wbg_ptr);
+        return CommitteeColdResign.__wrap(ret);
+    }
+    /**
+    * @param {Credential} committee_cold_key
+    * @param {Anchor} anchor
+    * @returns {CommitteeColdResign}
+    */
+    static new_with_anchor(committee_cold_key, anchor) {
+        _assertClass(committee_cold_key, Credential);
+        _assertClass(anchor, Anchor);
+        const ret = wasm.committeecoldresign_new_with_anchor(committee_cold_key.__wbg_ptr, anchor.__wbg_ptr);
         return CommitteeColdResign.__wrap(ret);
     }
     /**
@@ -8597,14 +8615,14 @@ export class DrepUpdate {
     * @returns {Credential}
     */
     voting_credential() {
-        const ret = wasm.drepupdate_voting_credential(this.__wbg_ptr);
+        const ret = wasm.committeecoldresign_committee_cold_key(this.__wbg_ptr);
         return Credential.__wrap(ret);
     }
     /**
     * @returns {Anchor | undefined}
     */
     anchor() {
-        const ret = wasm.drepupdate_anchor(this.__wbg_ptr);
+        const ret = wasm.committeecoldresign_anchor(this.__wbg_ptr);
         return ret === 0 ? undefined : Anchor.__wrap(ret);
     }
     /**
@@ -8613,7 +8631,7 @@ export class DrepUpdate {
     */
     static new(voting_credential) {
         _assertClass(voting_credential, Credential);
-        const ret = wasm.drepupdate_new(voting_credential.__wbg_ptr);
+        const ret = wasm.committeecoldresign_new(voting_credential.__wbg_ptr);
         return DrepUpdate.__wrap(ret);
     }
     /**
@@ -8624,14 +8642,14 @@ export class DrepUpdate {
     static new_with_anchor(voting_credential, anchor) {
         _assertClass(voting_credential, Credential);
         _assertClass(anchor, Anchor);
-        const ret = wasm.drepupdate_new_with_anchor(voting_credential.__wbg_ptr, anchor.__wbg_ptr);
+        const ret = wasm.committeecoldresign_new_with_anchor(voting_credential.__wbg_ptr, anchor.__wbg_ptr);
         return DrepUpdate.__wrap(ret);
     }
     /**
     * @returns {boolean}
     */
     has_script_credentials() {
-        const ret = wasm.drepupdate_has_script_credentials(this.__wbg_ptr);
+        const ret = wasm.committeecoldresign_has_script_credentials(this.__wbg_ptr);
         return ret !== 0;
     }
 }
@@ -25729,6 +25747,13 @@ export class StakeRegistration {
         _assertClass(coin, BigNum);
         const ret = wasm.stakederegistration_new_with_coin(stake_credential.__wbg_ptr, coin.__wbg_ptr);
         return StakeRegistration.__wrap(ret);
+    }
+    /**
+    * @returns {boolean}
+    */
+    has_script_credentials() {
+        const ret = wasm.stakederegistration_has_script_credentials(this.__wbg_ptr);
+        return ret !== 0;
     }
 }
 /**
