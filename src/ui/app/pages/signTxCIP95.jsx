@@ -346,8 +346,14 @@ const SignTx = ({ request, controller }) => {
         const cert = txBody.certs().get(i);
         if (cert.kind() === 0) {
           const credential = cert.as_stake_registration().stake_credential();
-          if (credential.kind() === 0) {
+          const coin = cert.as_stake_registration().coin();
+          if (credential.kind() === 0 && !coin) {
             // stake registration doesn't required key hash
+          } else if (credential.kind() === 0 && coin) {
+            const keyHash = Buffer.from(
+              credential.to_keyhash().to_bytes()
+            ).toString('hex');
+            requiredKeyHashes.push(keyHash);
           }
         } else if (cert.kind() === 1) {
           const credential = cert.as_stake_deregistration().stake_credential();
