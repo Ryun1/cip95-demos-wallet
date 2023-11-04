@@ -1,5 +1,10 @@
 # Tags
 
+### 1.6.0
+- CSL Alpha 13
+- Combination certificate support
+- UI Tx balancing bug
+
 ### 1.5.3 
 - A lot nicer UI to inspect Conway certs, votes and gov actions
 
