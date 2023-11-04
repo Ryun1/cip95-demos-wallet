@@ -25,6 +25,7 @@ import {
   blockfrostRequest,
   networkNameToId,
   utxoFromJson,
+  utxoFromJsonCSL,
   assetsToValue,
   txToLedger,
   txToTrezor,
@@ -220,9 +221,9 @@ export const getUtxosCSL = async (amount = undefined, paginate = undefined) => {
     );
   }
 
-  const address = await getAddress();
+  const address = await getAddressCSL();
   let converted = await Promise.all(
-    result.map(async (utxo) => await utxoFromJson(utxo, address))
+    result.map(async (utxo) => await utxoFromJsonCSL(utxo, address))
   );
   // filter utxos
   if (amount) {
@@ -638,6 +639,16 @@ export const getCollateral = async () => {
   );
 };
 
+export const getAddressCSL = async () => {
+  await Loader.load();
+  const currentAccount = await getCurrentAccount();
+  const paymentAddr = Buffer.from(
+    Loader.CSL.Address.from_bech32(currentAccount.paymentAddr).to_bytes(),
+    'hex'
+  ).toString('hex');
+  return paymentAddr;
+};
+
 export const getAddress = async () => {
   await Loader.load();
   const currentAccount = await getCurrentAccount();
@@ -886,6 +897,38 @@ export const isValidAddress = async (address) => {
   return false;
 };
 
+const isValidAddressBytesCSL = async (address) => {
+  await Loader.load();
+  const network = await getNetwork();
+  try {
+    const addr = Loader.CSL.Address.from_bytes(address);
+    if (
+      (addr.network_id() === 1 && network.id === NETWORK_ID.mainnet) ||
+      (addr.network_id() === 0 &&
+        (network.id === NETWORK_ID.testnet ||
+          network.id === NETWORK_ID.preview ||
+          network.id === NETWORK_ID.sancho ||
+          network.id === NETWORK_ID.preprod))
+    )
+      return true;
+    return false;
+  } catch (e) {}
+  try {
+    const addr = Loader.CSL.ByronAddress.from_bytes(address);
+    if (
+      (addr.network_id() === 1 && network.id === NETWORK_ID.mainnet) ||
+      (addr.network_id() === 0 &&
+        (network.id === NETWORK_ID.testnet ||
+          network.id === NETWORK_ID.preview ||
+          network.id === NETWORK_ID.sancho ||
+          network.id === NETWORK_ID.preprod))
+    )
+      return true;
+    return false;
+  } catch (e) {}
+  return false;
+};
+
 const isValidAddressBytes = async (address) => {
   await Loader.load();
   const network = await getNetwork();
@@ -951,6 +994,54 @@ export const extractKeyHash = async (address) => {
     return addr.payment_cred().to_keyhash().to_bech32('stake_vkh');
   } catch (e) {}
   throw DataSignError.AddressNotPK;
+};
+
+export const extractKeyOrScriptHashCSL = async (address) => {
+  await Loader.load();
+  if (!(await isValidAddressBytesCSL(Buffer.from(address, 'hex'))))
+    throw DataSignError.InvalidFormat;
+  try {
+    const addr = Loader.CSL.BaseAddress.from_address(
+      Loader.CSL.Address.from_bytes(Buffer.from(address, 'hex'))
+    );
+
+    const credential = addr.payment_cred();
+    if (credential.kind() === 0)
+      return credential.to_keyhash().to_bech32('addr_vkh');
+    if (credential.kind() === 1)
+      return credential.to_scripthash().to_bech32('script');
+  } catch (e) {}
+  try {
+    const addr = Loader.CSL.EnterpriseAddress.from_address(
+      Loader.CSL.Address.from_bytes(Buffer.from(address, 'hex'))
+    );
+    const credential = addr.payment_cred();
+    if (credential.kind() === 0)
+      return credential.to_keyhash().to_bech32('addr_vkh');
+    if (credential.kind() === 1)
+      return credential.to_scripthash().to_bech32('script');
+  } catch (e) {}
+  try {
+    const addr = Loader.CSL.PointerAddress.from_address(
+      Loader.CSL.Address.from_bytes(Buffer.from(address, 'hex'))
+    );
+    const credential = addr.payment_cred();
+    if (credential.kind() === 0)
+      return credential.to_keyhash().to_bech32('addr_vkh');
+    if (credential.kind() === 1)
+      return credential.to_scripthash().to_bech32('script');
+  } catch (e) {}
+  try {
+    const addr = Loader.CSL.RewardAddress.from_address(
+      Loader.CSL.Address.from_bytes(Buffer.from(address, 'hex'))
+    );
+    const credential = addr.payment_cred();
+    if (credential.kind() === 0)
+      return credential.to_keyhash().to_bech32('stake_vkh');
+    if (credential.kind() === 1)
+      return credential.to_scripthash().to_bech32('script');
+  } catch (e) {}
+  throw new Error('No address type matched.');
 };
 
 export const extractKeyOrScriptHash = async (address) => {

@@ -204,6 +204,24 @@ export const linkToSrc = (link, base64 = false) => {
  * @param {BaseAddress} address
  * @returns
  */
+export const utxoFromJsonCSL = async (output, address) => {
+  await Loader.load();
+  return Loader.CSL.TransactionUnspentOutput.new(
+    Loader.CSL.TransactionInput.new(
+      Loader.CSL.TransactionHash.from_bytes(
+        Buffer.from(output.tx_hash || output.txHash, 'hex')
+      ),
+      Loader.CSL.BigNum.from_str(
+        (output.output_index ?? output.txId).toString()
+      )
+    ),
+    Loader.CSL.TransactionOutput.new(
+      Loader.CSL.Address.from_bytes(Buffer.from(address, 'hex')),
+      await assetsToValueCSL(output.amount)
+    )
+  );
+};
+
 export const utxoFromJson = async (output, address) => {
   await Loader.load();
   return Loader.Cardano.TransactionUnspentOutput.new(
@@ -252,6 +270,40 @@ export const utxoToJson = async (utxo) => {
     txId: utxo.input().index(),
     amount: assets,
   };
+};
+
+export const assetsToValueCSL = async (assets) => {
+  await Loader.load();
+  const multiAsset = Loader.CSL.MultiAsset.new();
+  const lovelace = assets.find((asset) => asset.unit === 'lovelace');
+  const policies = [
+    ...new Set(
+      assets
+        .filter((asset) => asset.unit !== 'lovelace')
+        .map((asset) => asset.unit.slice(0, 56))
+    ),
+  ];
+  policies.forEach((policy) => {
+    const policyAssets = assets.filter(
+      (asset) => asset.unit.slice(0, 56) === policy
+    );
+    const assetsValue = Loader.CSL.Assets.new();
+    policyAssets.forEach((asset) => {
+      assetsValue.insert(
+        Loader.CSL.AssetName.new(Buffer.from(asset.unit.slice(56), 'hex')),
+        Loader.CSL.BigNum.from_str(asset.quantity)
+      );
+    });
+    multiAsset.insert(
+      Loader.CSL.ScriptHash.from_bytes(Buffer.from(policy, 'hex')),
+      assetsValue
+    );
+  });
+  const value = Loader.CSL.Value.new(
+    Loader.CSL.BigNum.from_str(lovelace ? lovelace.quantity : '0')
+  );
+  if (assets.length > 1 || !lovelace) value.set_multiasset(multiAsset);
+  return value;
 };
 
 export const assetsToValue = async (assets) => {
