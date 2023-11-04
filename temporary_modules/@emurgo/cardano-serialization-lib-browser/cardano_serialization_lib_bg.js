@@ -11725,7 +11725,7 @@ export class GovernanceActionIds {
     * @returns {number}
     */
     len() {
-        const ret = wasm.governanceactionids_len(this.__wbg_ptr);
+        const ret = wasm.certificates_len(this.__wbg_ptr);
         return ret >>> 0;
     }
 }
@@ -18848,7 +18848,7 @@ export class PlutusWitnesses {
     * @returns {number}
     */
     len() {
-        const ret = wasm.governanceactionids_len(this.__wbg_ptr);
+        const ret = wasm.plutuswitnesses_len(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**
