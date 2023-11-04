@@ -1506,12 +1506,12 @@ export class Certificate {
 * @param {CommitteeHotAuth} committee_hot_key_registration
 * @returns {Certificate}
 */
-  static new_committee_hot_key_registration(committee_hot_key_registration: CommitteeHotAuth): Certificate;
+  static new_committee_hot_auth(committee_hot_key_registration: CommitteeHotAuth): Certificate;
 /**
 * @param {CommitteeColdResign} committee_hot_key_deregistration
 * @returns {Certificate}
 */
-  static new_committee_hot_key_deregistration(committee_hot_key_deregistration: CommitteeColdResign): Certificate;
+  static new_committee_cold_resign(committee_hot_key_deregistration: CommitteeColdResign): Certificate;
 /**
 * @param {DrepDeregistration} drep_deregistration
 * @returns {Certificate}
@@ -1836,10 +1836,20 @@ export class CommitteeColdResign {
 */
   committee_cold_key(): Credential;
 /**
+* @returns {Anchor | undefined}
+*/
+  anchor(): Anchor | undefined;
+/**
 * @param {Credential} committee_cold_key
 * @returns {CommitteeColdResign}
 */
   static new(committee_cold_key: Credential): CommitteeColdResign;
+/**
+* @param {Credential} committee_cold_key
+* @param {Anchor} anchor
+* @returns {CommitteeColdResign}
+*/
+  static new_with_anchor(committee_cold_key: Credential, anchor: Anchor): CommitteeColdResign;
 /**
 * @returns {boolean}
 */
@@ -7727,6 +7737,10 @@ export class StakeRegistration {
 * @returns {StakeRegistration}
 */
   static new_with_coin(stake_credential: Credential, coin: BigNum): StakeRegistration;
+/**
+* @returns {boolean}
+*/
+  has_script_credentials(): boolean;
 }
 /**
 */
@@ -11483,6 +11497,7 @@ export interface CommitteeHotAuthJSON {
   committee_hot_key: CredTypeJSON;
 }
 export interface CommitteeColdResignJSON {
+  anchor?: AnchorJSON | null;
   committee_cold_key: CredTypeJSON;
 }
 export interface DrepDeregistrationJSON {

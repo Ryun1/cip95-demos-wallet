@@ -13,18 +13,19 @@ Currently corresponding CIP-95 commit: [6153866](https://github.com/cardano-foun
 
 | Tag  | CIP-95 Commit | Feature Details | demos dApp Tag |
 | ---- | ------------- | --------------- | -------------- |
-| [1.4.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.4.0) | [1f75f99](https://github.com/cardano-foundation/CIPs/pull/509/commits/1f75f990c4e8fdf308c3ed209bac723a84822931) | [Here](./CHANGELOG.md#140) | [1.4.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.4.0) |
-| [1.5.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.0) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#150) | [1.5.0](https://github.com/Ryun1/cip95-cardano-wallet-connector/releases/tag/1.5.0) |
-| [1.5.1](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.1) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#151) | [1.5.4+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
 | [1.5.2](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.2) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#152) | [1.5.4+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
 | [1.5.3](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.3) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#153) | [1.5.4+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
+| [1.6.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.6.0) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#160) | [1.6.0+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
+
 
 ## CIP-95/Conway Features Supported Notes
 
-### 1.5.3 
-- A lot nicer UI to inspect Conway certs, votes and gov actions
+### 1.6.0
+- CSL Alpha 13
+- Combination certificate support
+- UI Tx balancing bug
 
-### 1.5.4 (In progress)
+### 1.6.1 (In progress)
 - `.cip95.signData()`
 
 ## To Develop
