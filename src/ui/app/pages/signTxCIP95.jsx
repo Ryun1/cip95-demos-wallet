@@ -2,6 +2,7 @@ import React from 'react';
 import {
   bytesAddressToBinary,
   extractKeyOrScriptHash,
+  extractKeyOrScriptHashCSL,
   getCurrentAccount,
   getSpecificUtxo,
   getUtxosCSL,
@@ -146,17 +147,12 @@ const SignTx = ({ request, controller }) => {
     const inputs = tx.body().inputs();
     for (let i = 0; i < inputs.len(); i++) {
       const input = inputs.get(i);
-      const inputTxHash = Buffer.from(
-        input.transaction_id().to_bytes()
-      ).toString('hex');
-      //const inputTxId = parseInt(input.index().to_str());
-      const inputTxId = (input.index()).toString();
+      const inputTxHash = input.transaction_id().to_hex();
+      const inputTxId = input.index().toString();
+      //const inputTxId = (input.index()).toString();
       const utxo = utxos.find((utxo) => {
-        const utxoTxHash = Buffer.from(
-          utxo.input().transaction_id().to_bytes()
-        ).toString('hex');
-        //const utxoTxId = parseInt(utxo.input().index().to_str());
-        const utxoTxId = (utxo.input().index()).toString();
+        const utxoTxHash = utxo.input().transaction_id().to_hex()
+        const utxoTxId = utxo.input().index().toString();
         return inputTxHash === utxoTxHash && inputTxId === utxoTxId;
       });
       if (utxo) {
@@ -172,13 +168,13 @@ const SignTx = ({ request, controller }) => {
     for (let i = 0; i < outputs.len(); i++) {
       const output = outputs.get(i);
       const address = output.address().to_bech32();
-      const hashBech32 = await extractKeyOrScriptHash(
+      const hashBech32 = await extractKeyOrScriptHashCSL(
         Buffer.from(output.address().to_bytes()).toString('hex')
       );
       // making sure funds at mangled addresses are also included
       if (hashBech32 === account.paymentKeyHashBech32) {
-        //own
-        ownOutputValue = ownOutputValue.checked_add(output.amount());
+        // ownOutputValue = ownOutputValue.checked_add(output.amount());
+        // inputValue = inputValue.checked_sub(output.amount());
       } else {
         //external
         if (!externalOutputs[address]) {
@@ -347,8 +343,9 @@ const SignTx = ({ request, controller }) => {
         if (cert.kind() === 0) {
           const credential = cert.as_stake_registration().stake_credential();
           const coin = cert.as_stake_registration().coin();
+          // If stake registration doesn't have a coin, then it does not need a key hash
           if (credential.kind() === 0 && !coin) {
-            // stake registration doesn't required key hash
+            // no keyhash required
           } else if (credential.kind() === 0 && coin) {
             const keyHash = Buffer.from(
               credential.to_keyhash().to_bytes()
@@ -402,15 +399,37 @@ const SignTx = ({ request, controller }) => {
         //     }
         //   }
 
-        // conway vote delegation, add stake credential
-        } else if (cert.kind() === 15) {
-          const credential = cert.as_vote_delegation().stake_credential();
-          // if credential is a key hash
+        // conway CC hot key registration
+        } else if (cert.kind() === 7) {
+          const credential = cert.as_committee_hot_key_registration().committee_cold_key();
+            // if credential is a key hash
           if (credential.kind() === 0) {
-              const keyHash = Buffer.from(
+            const keyHash = Buffer.from(
                 credential.to_keyhash().to_bytes()
               ).toString('hex');
-              requiredKeyHashes.push(keyHash);
+            requiredKeyHashes.push(keyHash);
+          }
+
+        // conway CC cold key resignation
+        } else if (cert.kind() === 8) {
+          const credential = cert.as_committee_hot_key_deregistration().committee_cold_key();
+            // if credential is a key hash
+          if (credential.kind() === 0) {
+            const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+            requiredKeyHashes.push(keyHash);
+          }
+
+        // conway drep retirement, add drep credential
+        } else if (cert.kind() === 9) {
+          const credential = cert.as_drep_deregistration().voting_credential();
+                // if credential is a key hash
+          if (credential.kind() === 0) {
+            const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+            requiredKeyHashes.push(keyHash);
           }
         // conway drep registration, add drep credential
         } else if (cert.kind() === 10) {
@@ -429,9 +448,52 @@ const SignTx = ({ request, controller }) => {
             ).toString('hex');
             requiredKeyHashes.push(keyHash);
           }
-        // conway drep retirement, add drep credential
-        } else if (cert.kind() === 9) {
-          const credential = cert.as_drep_deregistration().voting_credential();
+        // conway stake pool and vote delegation
+        } else if (cert.kind() === 12) {
+          const credential = cert.as_stake_and_vote_delegation().stake_credential();
+          // if credential is a key hash
+          if (credential.kind() === 0) {
+            const keyHash = Buffer.from(
+              credential.to_keyhash().to_bytes()
+            ).toString('hex');
+            requiredKeyHashes.push(keyHash);
+          }
+
+        // conway stake reg and vote delegation
+        } else if (cert.kind() === 13) {
+          const credential = cert.as_stake_registration_and_delegation().stake_credential();
+          // if credential is a key hash
+          if (credential.kind() === 0) {
+            const keyHash = Buffer.from(
+              credential.to_keyhash().to_bytes()
+            ).toString('hex');
+            requiredKeyHashes.push(keyHash);
+          }
+        
+        // conway stake reg, stake pool and vote delegation
+        } else if (cert.kind() === 14) {
+          const credential = cert.as_stake_vote_registration_and_delegation().stake_credential();
+          // if credential is a key hash
+          if (credential.kind() === 0) {
+            const keyHash = Buffer.from(
+              credential.to_keyhash().to_bytes()
+            ).toString('hex');
+            requiredKeyHashes.push(keyHash);
+          }
+
+          // conway vote delegation, add stake credential
+        } else if (cert.kind() === 15) {
+          const credential = cert.as_vote_delegation().stake_credential();
+          // if credential is a key hash
+          if (credential.kind() === 0) {
+              const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+              requiredKeyHashes.push(keyHash);
+          }
+          // conway stake key reg and vote deleg, add stake credential
+        } else if (cert.kind() === 16) {
+          const credential = cert.as_vote_registration_and_delegation().stake_credential();
           // if credential is a key hash
           if (credential.kind() === 0) {
             const keyHash = Buffer.from(
