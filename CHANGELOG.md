@@ -1,5 +1,8 @@
 # Tags
 
+### 1.7.0
+- CSL 12 alpha 16
+
 ### 1.6.0
 - CSL Alpha 13
 - Combination certificate support

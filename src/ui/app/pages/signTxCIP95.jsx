@@ -369,35 +369,13 @@ const SignTx = ({ request, controller }) => {
             requiredKeyHashes.push(keyHash);
           }
         } else if (cert.kind() === 3) {
-          const owners = cert
-            .as_pool_registration()
-            .pool_params()
-            .pool_owners();
-          for (let i = 0; i < owners.len(); i++) {
-            const keyHash = Buffer.from(owners.get(i).to_bytes()).toString(
-              'hex'
-            );
-            requiredKeyHashes.push(keyHash);
-          }
-        } else if (cert.kind() === 4) {
-          const operator = cert.as_pool_retirement().pool_keyhash().to_hex();
-          requiredKeyHashes.push(operator);
-        // } else if (cert.kind() === 6) {
-        //   const instant_reward = cert
-        //     .as_move_instantaneous_rewards_cert()
-        //     .move_instantaneous_reward()
-        //     .as_to_stake_creds()
-        //     .keys();
-        //   for (let i = 0; i < instant_reward.len(); i++) {
-        //     const credential = instant_reward.get(i);
+          // pool registration is not supported
 
-        //     if (credential.kind() === 0) {
-        //       const keyHash = Buffer.from(
-        //         credential.to_keyhash().to_bytes()
-        //       ).toString('hex');
-        //       requiredKeyHashes.push(keyHash);
-        //     }
-        //   }
+        } else if (cert.kind() === 4) {
+          // pool retirement is not supported
+
+        } else if (cert.kind() === 6) {
+          // MIR certificates are not supported
 
         // conway CC hot key registration
         } else if (cert.kind() === 7) {
@@ -436,7 +414,10 @@ const SignTx = ({ request, controller }) => {
           const credential = cert.as_drep_registration().voting_credential();
           // if credential is a key hash
           if (credential.kind() === 0) {
-            // DRep registration doesn't required key hash
+            const keyHash = Buffer.from(
+                credential.to_keyhash().to_bytes()
+              ).toString('hex');
+            requiredKeyHashes.push(keyHash);
           }
         // conway drep update, add drep credential
         } else if (cert.kind() === 11) {
@@ -481,7 +462,7 @@ const SignTx = ({ request, controller }) => {
             requiredKeyHashes.push(keyHash);
           }
 
-          // conway vote delegation, add stake credential
+        // conway vote delegation, add stake credential
         } else if (cert.kind() === 15) {
           const credential = cert.as_vote_delegation().stake_credential();
           // if credential is a key hash
@@ -491,7 +472,8 @@ const SignTx = ({ request, controller }) => {
               ).toString('hex');
               requiredKeyHashes.push(keyHash);
           }
-          // conway stake key reg and vote deleg, add stake credential
+
+        // conway stake key reg and vote deleg, add stake credential
         } else if (cert.kind() === 16) {
           const credential = cert.as_vote_registration_and_delegation().stake_credential();
           // if credential is a key hash

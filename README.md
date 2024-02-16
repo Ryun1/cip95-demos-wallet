@@ -9,23 +9,18 @@
 
 This is a *mock* wallet, based on [Nami](https://github.com/berry-pool/nami).
 
-Currently corresponding CIP-95 commit: [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md).
-
-| Tag  | CIP-95 Commit | Feature Details | demos dApp Tag |
-| ---- | ------------- | --------------- | -------------- |
-| [1.5.2](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.2) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#152) | [1.5.4+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
-| [1.5.3](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.3) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#153) | [1.5.4+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
-| [1.6.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.6.0) | [6153866](https://github.com/cardano-foundation/CIPs/blob/6153866bbafe874e196431f736d6bf6691359988/CIP-0095/README.md) | [Here](./CHANGELOG.md#160) | [1.6.0+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
-
+| Tag  | Feature Details | demos dApp Tag |
+| ---- | --------------- | -------------- |
+| [1.5.3](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.5.3) | [Here](./CHANGELOG.md#153) | [1.5.4+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
+| [1.6.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.6.0) | [Here](./CHANGELOG.md#160) | [1.6.0+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
+| [1.7.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.7.0) | [Here](./CHANGELOG.md#170) | [1.7.0+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
 
 ## CIP-95/Conway Features Supported Notes
 
-### 1.6.0
-- CSL Alpha 13
-- Combination certificate support
-- UI Tx balancing bug
+### 1.7.0
+- CSL 12 alpha 16
 
-### 1.6.1 (In progress)
+### 1.7.1 (In progress)
 - `.cip95.signData()`
 
 ## To Develop
@@ -59,14 +54,14 @@ code secrets.development.js secrets.production.js
 1. Install modules, youll probably have to fight with node here due to conflicts.
 
 ```bash
-sudo npm install
+npm install
 ```
 
 2. Try to start
 
 
 ```bash
-sudo npm start
+npm start
 ```
 
 ## To Test Wallet
@@ -76,7 +71,7 @@ sudo npm start
 If you are running from `npm start` you'll already have a build otherwise:
 
 ```bash
-sudo npm run build
+npm run build
 ```
 
 ### Load extension into Chrome (for first time)
