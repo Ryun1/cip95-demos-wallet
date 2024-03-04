@@ -160,7 +160,10 @@ app.add(METHOD.signTxCIP95, async (request, sendResponse) => {
             const credential = cert.as_drep_registration().voting_credential();
             // if credential is a key hash
             if (credential.kind() === 0) {
-              // DRep registration doesn't required key hash
+              const keyHash = Buffer.from(
+                  credential.to_keyhash().to_bytes()
+                ).toString('hex');
+              requiredKeyHashes.push(keyHash);
             }
           // conway drep update, add drep credential
           } else if (cert.kind() === 11) {
