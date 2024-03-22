@@ -1,5 +1,8 @@
 # Tags
 
+### 1.8.0
+- CSL 12 alpha 19
+  
 ### 1.7.0
 - CSL 12 alpha 16
 

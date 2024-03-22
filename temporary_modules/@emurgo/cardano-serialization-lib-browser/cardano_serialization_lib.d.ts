@@ -1,6 +1,79 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+* @param {string} json
+* @param {PlutusDatumSchema} schema
+* @returns {PlutusData}
+*/
+export function encode_json_str_to_plutus_datum(json: string, schema: PlutusDatumSchema): PlutusData;
+/**
+* @param {PlutusData} datum
+* @param {PlutusDatumSchema} schema
+* @returns {string}
+*/
+export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: PlutusDatumSchema): string;
+/**
+* @param {Uint8Array} bytes
+* @returns {TransactionMetadatum}
+*/
+export function encode_arbitrary_bytes_as_metadatum(bytes: Uint8Array): TransactionMetadatum;
+/**
+* @param {TransactionMetadatum} metadata
+* @returns {Uint8Array}
+*/
+export function decode_arbitrary_bytes_from_metadatum(metadata: TransactionMetadatum): Uint8Array;
+/**
+* @param {string} json
+* @param {MetadataJsonSchema} schema
+* @returns {TransactionMetadatum}
+*/
+export function encode_json_str_to_metadatum(json: string, schema: MetadataJsonSchema): TransactionMetadatum;
+/**
+* @param {TransactionMetadatum} metadatum
+* @param {MetadataJsonSchema} schema
+* @returns {string}
+*/
+export function decode_metadatum_to_json_str(metadatum: TransactionMetadatum, schema: MetadataJsonSchema): string;
+/**
+* @param {Address} address
+* @param {TransactionUnspentOutputs} utxos
+* @param {TransactionBuilderConfig} config
+* @returns {TransactionBatchList}
+*/
+export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
+/**
+* @param {Transaction} tx
+* @param {LinearFee} linear_fee
+* @returns {BigNum}
+*/
+export function min_fee(tx: Transaction, linear_fee: LinearFee): BigNum;
+/**
+* @param {ExUnits} ex_units
+* @param {ExUnitPrices} ex_unit_prices
+* @returns {BigNum}
+*/
+export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: ExUnitPrices): BigNum;
+/**
+* @param {Transaction} tx
+* @param {ExUnitPrices} ex_unit_prices
+* @returns {BigNum}
+*/
+export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
+/**
+* @param {string} password
+* @param {string} salt
+* @param {string} nonce
+* @param {string} data
+* @returns {string}
+*/
+export function encrypt_with_password(password: string, salt: string, nonce: string, data: string): string;
+/**
+* @param {string} password
+* @param {string} data
+* @returns {string}
+*/
+export function decrypt_with_password(password: string, data: string): string;
+/**
 * @param {TransactionHash} tx_body_hash
 * @param {ByronAddress} addr
 * @param {LegacyDaedalusPrivateKey} key
@@ -79,100 +152,10 @@ export function min_ada_for_output(output: TransactionOutput, data_cost: DataCos
 */
 export function encode_json_str_to_native_script(json: string, self_xpub: string, schema: ScriptSchema): NativeScript;
 /**
-* @param {Address} address
-* @param {TransactionUnspentOutputs} utxos
-* @param {TransactionBuilderConfig} config
-* @returns {TransactionBatchList}
 */
-export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
-/**
-* @param {string} password
-* @param {string} salt
-* @param {string} nonce
-* @param {string} data
-* @returns {string}
-*/
-export function encrypt_with_password(password: string, salt: string, nonce: string, data: string): string;
-/**
-* @param {string} password
-* @param {string} data
-* @returns {string}
-*/
-export function decrypt_with_password(password: string, data: string): string;
-/**
-* @param {Uint8Array} bytes
-* @returns {TransactionMetadatum}
-*/
-export function encode_arbitrary_bytes_as_metadatum(bytes: Uint8Array): TransactionMetadatum;
-/**
-* @param {TransactionMetadatum} metadata
-* @returns {Uint8Array}
-*/
-export function decode_arbitrary_bytes_from_metadatum(metadata: TransactionMetadatum): Uint8Array;
-/**
-* @param {string} json
-* @param {MetadataJsonSchema} schema
-* @returns {TransactionMetadatum}
-*/
-export function encode_json_str_to_metadatum(json: string, schema: MetadataJsonSchema): TransactionMetadatum;
-/**
-* @param {TransactionMetadatum} metadatum
-* @param {MetadataJsonSchema} schema
-* @returns {string}
-*/
-export function decode_metadatum_to_json_str(metadatum: TransactionMetadatum, schema: MetadataJsonSchema): string;
-/**
-* @param {Transaction} tx
-* @param {LinearFee} linear_fee
-* @returns {BigNum}
-*/
-export function min_fee(tx: Transaction, linear_fee: LinearFee): BigNum;
-/**
-* @param {ExUnits} ex_units
-* @param {ExUnitPrices} ex_unit_prices
-* @returns {BigNum}
-*/
-export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: ExUnitPrices): BigNum;
-/**
-* @param {Transaction} tx
-* @param {ExUnitPrices} ex_unit_prices
-* @returns {BigNum}
-*/
-export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
-/**
-* @param {string} json
-* @param {PlutusDatumSchema} schema
-* @returns {PlutusData}
-*/
-export function encode_json_str_to_plutus_datum(json: string, schema: PlutusDatumSchema): PlutusData;
-/**
-* @param {PlutusData} datum
-* @param {PlutusDatumSchema} schema
-* @returns {string}
-*/
-export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: PlutusDatumSchema): string;
-/**
-*/
-export enum VoteKind {
-  No = 0,
-  Yes = 1,
-  Abstain = 2,
-}
-/**
-* Used to choosed the schema for a script JSON string
-*/
-export enum ScriptSchema {
-  Wallet = 0,
-  Node = 1,
-}
-/**
-*/
-export enum VoterKind {
-  ConstitutionalCommitteeHotKeyHash = 0,
-  ConstitutionalCommitteeHotScriptHash = 1,
-  DRepKeyHash = 2,
-  DRepScriptHash = 3,
-  StakingPoolKeyHash = 4,
+export enum MIRKind {
+  ToOtherPot = 0,
+  ToStakeCredentials = 1,
 }
 /**
 * JSON <-> PlutusData conversion schemas.
@@ -228,31 +211,41 @@ export enum PlutusDatumSchema {
 }
 /**
 */
-export enum CertificateKind {
-  StakeRegistration = 0,
-  StakeDeregistration = 1,
-  StakeDelegation = 2,
-  PoolRegistration = 3,
-  PoolRetirement = 4,
-  GenesisKeyDelegation = 5,
-  MoveInstantaneousRewardsCert = 6,
-  CommitteeHotAuth = 7,
-  CommitteeColdResign = 8,
-  DrepDeregistration = 9,
-  DrepRegistration = 10,
-  DrepUpdate = 11,
-  StakeAndVoteDelegation = 12,
-  StakeRegistrationAndDelegation = 13,
-  StakeVoteRegistrationAndDelegation = 14,
-  VoteDelegation = 15,
-  VoteRegistrationAndDelegation = 16,
+export enum GovernanceActionKind {
+  ParameterChangeAction = 0,
+  HardForkInitiationAction = 1,
+  TreasuryWithdrawalsAction = 2,
+  NoConfidenceAction = 3,
+  UpdateCommitteeAction = 4,
+  NewConstitutionAction = 5,
+  InfoAction = 6,
 }
 /**
 */
-export enum RelayKind {
-  SingleHostAddr = 0,
-  SingleHostName = 1,
-  MultiHostName = 2,
+export enum DRepKind {
+  KeyHash = 0,
+  ScriptHash = 1,
+  AlwaysAbstain = 2,
+  AlwaysNoConfidence = 3,
+}
+/**
+*/
+export enum LanguageKind {
+  PlutusV1 = 0,
+  PlutusV2 = 1,
+  PlutusV3 = 2,
+}
+/**
+* Each new language uses a different namespace for hashing its script
+* This is because you could have a language where the same bytes have different semantics
+* So this avoids scripts in different languages mapping to the same hash
+* Note that the enum value here is different than the enum value for deciding the cost model of a script
+*/
+export enum ScriptHashNamespace {
+  NativeScript = 0,
+  PlutusScript = 1,
+  PlutusScriptV2 = 2,
+  PlutusScriptV3 = 3,
 }
 /**
 */
@@ -263,31 +256,9 @@ export enum MetadataJsonSchema {
 }
 /**
 */
-export enum TransactionMetadatumKind {
-  MetadataMap = 0,
-  MetadataList = 1,
-  Int = 2,
-  Bytes = 3,
-  Text = 4,
-}
-/**
-*/
-export enum LanguageKind {
-  PlutusV1 = 0,
-  PlutusV2 = 1,
-  PlutusV3 = 2,
-}
-/**
-*/
-export enum MIRPot {
-  Reserves = 0,
-  Treasury = 1,
-}
-/**
-*/
-export enum CborContainerType {
-  Array = 0,
-  Map = 1,
+export enum NetworkIdKind {
+  Testnet = 0,
+  Mainnet = 1,
 }
 /**
 */
@@ -311,54 +282,16 @@ export enum CoinSelectionStrategyCIP2 {
 }
 /**
 */
-export enum PlutusDataKind {
-  ConstrPlutusData = 0,
-  Map = 1,
-  List = 2,
-  Integer = 3,
-  Bytes = 4,
+export enum MIRPot {
+  Reserves = 0,
+  Treasury = 1,
 }
 /**
+* Used to choosed the schema for a script JSON string
 */
-export enum MIRKind {
-  ToOtherPot = 0,
-  ToStakeCredentials = 1,
-}
-/**
-*/
-export enum CredKind {
-  Key = 0,
-  Script = 1,
-}
-/**
-* Each new language uses a different namespace for hashing its script
-* This is because you could have a language where the same bytes have different semantics
-* So this avoids scripts in different languages mapping to the same hash
-* Note that the enum value here is different than the enum value for deciding the cost model of a script
-*/
-export enum ScriptHashNamespace {
-  NativeScript = 0,
-  PlutusScript = 1,
-  PlutusScriptV2 = 2,
-  PlutusScriptV3 = 3,
-}
-/**
-*/
-export enum RedeemerTagKind {
-  Spend = 0,
-  Mint = 1,
-  Cert = 2,
-  Reward = 3,
-  Vote = 4,
-  VotingProposal = 5,
-}
-/**
-*/
-export enum DRepKind {
-  KeyHash = 0,
-  ScriptHash = 1,
-  AlwaysAbstain = 2,
-  AlwaysNoConfidence = 3,
+export enum ScriptSchema {
+  Wallet = 0,
+  Node = 1,
 }
 /**
 */
@@ -372,20 +305,87 @@ export enum NativeScriptKind {
 }
 /**
 */
-export enum NetworkIdKind {
-  Testnet = 0,
-  Mainnet = 1,
+export enum CborContainerType {
+  Array = 0,
+  Map = 1,
 }
 /**
 */
-export enum GovernanceActionKind {
-  ParameterChangeAction = 0,
-  HardForkInitiationAction = 1,
-  TreasuryWithdrawalsAction = 2,
-  NoConfidenceAction = 3,
-  UpdateCommitteeAction = 4,
-  NewConstitutionAction = 5,
-  InfoAction = 6,
+export enum VoteKind {
+  No = 0,
+  Yes = 1,
+  Abstain = 2,
+}
+/**
+*/
+export enum VoterKind {
+  ConstitutionalCommitteeHotKeyHash = 0,
+  ConstitutionalCommitteeHotScriptHash = 1,
+  DRepKeyHash = 2,
+  DRepScriptHash = 3,
+  StakingPoolKeyHash = 4,
+}
+/**
+*/
+export enum PlutusDataKind {
+  ConstrPlutusData = 0,
+  Map = 1,
+  List = 2,
+  Integer = 3,
+  Bytes = 4,
+}
+/**
+*/
+export enum RelayKind {
+  SingleHostAddr = 0,
+  SingleHostName = 1,
+  MultiHostName = 2,
+}
+/**
+*/
+export enum CertificateKind {
+  StakeRegistration = 0,
+  StakeDeregistration = 1,
+  StakeDelegation = 2,
+  PoolRegistration = 3,
+  PoolRetirement = 4,
+  GenesisKeyDelegation = 5,
+  MoveInstantaneousRewardsCert = 6,
+  CommitteeHotAuth = 7,
+  CommitteeColdResign = 8,
+  DrepDeregistration = 9,
+  DrepRegistration = 10,
+  DrepUpdate = 11,
+  StakeAndVoteDelegation = 12,
+  StakeRegistrationAndDelegation = 13,
+  StakeVoteRegistrationAndDelegation = 14,
+  VoteDelegation = 15,
+  VoteRegistrationAndDelegation = 16,
+}
+/**
+*/
+export enum RedeemerTagKind {
+  Spend = 0,
+  Mint = 1,
+  Cert = 2,
+  Reward = 3,
+  Vote = 4,
+  VotingProposal = 5,
+}
+/**
+*/
+export enum CredKind {
+  Key = 0,
+  Script = 1,
+}
+/**
+*/
+export enum TransactionMetadatumKind {
+  MetadataMap = 0,
+  MetadataList = 1,
+  Int = 2,
+  Bytes = 3,
+  Text = 4,
 }
 /**
 */
@@ -1249,6 +1249,11 @@ export class Block {
 * @returns {Block}
 */
   static new(header: Header, transaction_bodies: TransactionBodies, transaction_witness_sets: TransactionWitnessSets, auxiliary_data_set: AuxiliaryDataSet, invalid_transactions: Uint32Array): Block;
+/**
+* @param {Uint8Array} data
+* @returns {Block}
+*/
+  static from_wrapped_bytes(data: Uint8Array): Block;
 }
 /**
 */
@@ -2561,6 +2566,10 @@ export class DrepRegistration {
 * @returns {DrepRegistration}
 */
   static new_with_anchor(voting_credential: Credential, coin: BigNum, anchor: Anchor): DrepRegistration;
+/**
+* @returns {boolean}
+*/
+  has_script_credentials(): boolean;
 }
 /**
 */
