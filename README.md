@@ -14,13 +14,14 @@ This is a *mock* wallet, based on [Nami](https://github.com/berry-pool/nami).
 | [1.6.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.6.0) | [Here](./CHANGELOG.md#160) | [1.6.0+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
 | [1.7.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.7.0) | [Here](./CHANGELOG.md#170) | [1.7.0+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
 | [1.8.0](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.8.0) | [Here](./CHANGELOG.md#180) | [1.8.0+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
+| [1.8.1](https://github.com/Ryun1/cip95-demos-wallet/releases/tag/1.8.1) | [Here](./CHANGELOG.md#181) | [1.8.0+](https://github.com/Ryun1/cip95-cardano-wallet-connector/tags) |
 
 ## CIP-95/Conway Features Supported Notes
 
-### 1.8.0
-- CSL 12 alpha 19
+### 1.8.1
+- CSL 12 alpha 29
 
-### 1.8.1 (In progress)
+### 1.8.2 (In progress)
 - `.cip95.signData()`
 
 ## To Develop
