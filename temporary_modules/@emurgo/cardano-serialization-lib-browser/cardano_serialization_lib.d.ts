@@ -1,6 +1,85 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+* @param {string} json
+* @param {PlutusDatumSchema} schema
+* @returns {PlutusData}
+*/
+export function encode_json_str_to_plutus_datum(json: string, schema: PlutusDatumSchema): PlutusData;
+/**
+* @param {PlutusData} datum
+* @param {PlutusDatumSchema} schema
+* @returns {string}
+*/
+export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: PlutusDatumSchema): string;
+/**
+* @param {Uint8Array} bytes
+* @returns {TransactionMetadatum}
+*/
+export function encode_arbitrary_bytes_as_metadatum(bytes: Uint8Array): TransactionMetadatum;
+/**
+* @param {TransactionMetadatum} metadata
+* @returns {Uint8Array}
+*/
+export function decode_arbitrary_bytes_from_metadatum(metadata: TransactionMetadatum): Uint8Array;
+/**
+* @param {string} json
+* @param {MetadataJsonSchema} schema
+* @returns {TransactionMetadatum}
+*/
+export function encode_json_str_to_metadatum(json: string, schema: MetadataJsonSchema): TransactionMetadatum;
+/**
+* @param {TransactionMetadatum} metadatum
+* @param {MetadataJsonSchema} schema
+* @returns {string}
+*/
+export function decode_metadatum_to_json_str(metadatum: TransactionMetadatum, schema: MetadataJsonSchema): string;
+/**
+* @param {Address} address
+* @param {TransactionUnspentOutputs} utxos
+* @param {TransactionBuilderConfig} config
+* @returns {TransactionBatchList}
+*/
+export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
+/**
+* @param {string} password
+* @param {string} salt
+* @param {string} nonce
+* @param {string} data
+* @returns {string}
+*/
+export function encrypt_with_password(password: string, salt: string, nonce: string, data: string): string;
+/**
+* @param {string} password
+* @param {string} data
+* @returns {string}
+*/
+export function decrypt_with_password(password: string, data: string): string;
+/**
+* @param {Transaction} tx
+* @param {LinearFee} linear_fee
+* @returns {BigNum}
+*/
+export function min_fee(tx: Transaction, linear_fee: LinearFee): BigNum;
+/**
+* @param {ExUnits} ex_units
+* @param {ExUnitPrices} ex_unit_prices
+* @returns {BigNum}
+*/
+export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: ExUnitPrices): BigNum;
+/**
+* @param {Transaction} tx
+* @param {ExUnitPrices} ex_unit_prices
+* @returns {BigNum}
+*/
+export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
+/**
+* @param {number} total_ref_scripts_size
+* @param {UnitInterval} ref_script_coins_per_byte
+* @returns {BigNum}
+*/
+export function min_ref_script_fee(total_ref_scripts_size: number, ref_script_coins_per_byte: UnitInterval): BigNum;
+/**
 * @param {TransactionHash} tx_body_hash
 * @param {ByronAddress} addr
 * @param {LegacyDaedalusPrivateKey} key
@@ -79,91 +158,18 @@ export function min_ada_for_output(output: TransactionOutput, data_cost: DataCos
 */
 export function encode_json_str_to_native_script(json: string, self_xpub: string, schema: ScriptSchema): NativeScript;
 /**
-* @param {Address} address
-* @param {TransactionUnspentOutputs} utxos
-* @param {TransactionBuilderConfig} config
-* @returns {TransactionBatchList}
 */
-export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
-/**
-* @param {string} password
-* @param {string} salt
-* @param {string} nonce
-* @param {string} data
-* @returns {string}
-*/
-export function encrypt_with_password(password: string, salt: string, nonce: string, data: string): string;
-/**
-* @param {string} password
-* @param {string} data
-* @returns {string}
-*/
-export function decrypt_with_password(password: string, data: string): string;
-/**
-* @param {Uint8Array} bytes
-* @returns {TransactionMetadatum}
-*/
-export function encode_arbitrary_bytes_as_metadatum(bytes: Uint8Array): TransactionMetadatum;
-/**
-* @param {TransactionMetadatum} metadata
-* @returns {Uint8Array}
-*/
-export function decode_arbitrary_bytes_from_metadatum(metadata: TransactionMetadatum): Uint8Array;
-/**
-* @param {string} json
-* @param {MetadataJsonSchema} schema
-* @returns {TransactionMetadatum}
-*/
-export function encode_json_str_to_metadatum(json: string, schema: MetadataJsonSchema): TransactionMetadatum;
-/**
-* @param {TransactionMetadatum} metadatum
-* @param {MetadataJsonSchema} schema
-* @returns {string}
-*/
-export function decode_metadatum_to_json_str(metadatum: TransactionMetadatum, schema: MetadataJsonSchema): string;
-/**
-* @param {Transaction} tx
-* @param {LinearFee} linear_fee
-* @returns {BigNum}
-*/
-export function min_fee(tx: Transaction, linear_fee: LinearFee): BigNum;
-/**
-* @param {ExUnits} ex_units
-* @param {ExUnitPrices} ex_unit_prices
-* @returns {BigNum}
-*/
-export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: ExUnitPrices): BigNum;
-/**
-* @param {Transaction} tx
-* @param {ExUnitPrices} ex_unit_prices
-* @returns {BigNum}
-*/
-export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
-/**
-* @param {string} json
-* @param {PlutusDatumSchema} schema
-* @returns {PlutusData}
-*/
-export function encode_json_str_to_plutus_datum(json: string, schema: PlutusDatumSchema): PlutusData;
-/**
-* @param {PlutusData} datum
-* @param {PlutusDatumSchema} schema
-* @returns {string}
-*/
-export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: PlutusDatumSchema): string;
-/**
-*/
-export enum VoteKind {
-  No = 0,
-  Yes = 1,
-  Abstain = 2,
+export enum NetworkIdKind {
+  Testnet = 0,
+  Mainnet = 1,
 }
 /**
-* Used to choosed the schema for a script JSON string
 */
-export enum ScriptSchema {
-  Wallet = 0,
-  Node = 1,
+export enum DRepKind {
+  KeyHash = 0,
+  ScriptHash = 1,
+  AlwaysAbstain = 2,
+  AlwaysNoConfidence = 3,
 }
 /**
 */
@@ -173,6 +179,12 @@ export enum VoterKind {
   DRepKeyHash = 2,
   DRepScriptHash = 3,
   StakingPoolKeyHash = 4,
+}
+/**
+*/
+export enum CredKind {
+  Key = 0,
+  Script = 1,
 }
 /**
 * JSON <-> PlutusData conversion schemas.
@@ -227,67 +239,16 @@ export enum PlutusDatumSchema {
   DetailedSchema = 1,
 }
 /**
+* Each new language uses a different namespace for hashing its script
+* This is because you could have a language where the same bytes have different semantics
+* So this avoids scripts in different languages mapping to the same hash
+* Note that the enum value here is different than the enum value for deciding the cost model of a script
 */
-export enum CertificateKind {
-  StakeRegistration = 0,
-  StakeDeregistration = 1,
-  StakeDelegation = 2,
-  PoolRegistration = 3,
-  PoolRetirement = 4,
-  GenesisKeyDelegation = 5,
-  MoveInstantaneousRewardsCert = 6,
-  CommitteeHotAuth = 7,
-  CommitteeColdResign = 8,
-  DrepDeregistration = 9,
-  DrepRegistration = 10,
-  DrepUpdate = 11,
-  StakeAndVoteDelegation = 12,
-  StakeRegistrationAndDelegation = 13,
-  StakeVoteRegistrationAndDelegation = 14,
-  VoteDelegation = 15,
-  VoteRegistrationAndDelegation = 16,
-}
-/**
-*/
-export enum RelayKind {
-  SingleHostAddr = 0,
-  SingleHostName = 1,
-  MultiHostName = 2,
-}
-/**
-*/
-export enum MetadataJsonSchema {
-  NoConversions = 0,
-  BasicConversions = 1,
-  DetailedSchema = 2,
-}
-/**
-*/
-export enum TransactionMetadatumKind {
-  MetadataMap = 0,
-  MetadataList = 1,
-  Int = 2,
-  Bytes = 3,
-  Text = 4,
-}
-/**
-*/
-export enum LanguageKind {
-  PlutusV1 = 0,
-  PlutusV2 = 1,
-  PlutusV3 = 2,
-}
-/**
-*/
-export enum MIRPot {
-  Reserves = 0,
-  Treasury = 1,
-}
-/**
-*/
-export enum CborContainerType {
-  Array = 0,
-  Map = 1,
+export enum ScriptHashNamespace {
+  NativeScript = 0,
+  PlutusScript = 1,
+  PlutusScriptV2 = 2,
+  PlutusScriptV3 = 3,
 }
 /**
 */
@@ -310,13 +271,11 @@ export enum CoinSelectionStrategyCIP2 {
   RandomImproveMultiAsset = 3,
 }
 /**
+* Used to choosed the schema for a script JSON string
 */
-export enum PlutusDataKind {
-  ConstrPlutusData = 0,
-  Map = 1,
-  List = 2,
-  Integer = 3,
-  Bytes = 4,
+export enum ScriptSchema {
+  Wallet = 0,
+  Node = 1,
 }
 /**
 */
@@ -326,21 +285,9 @@ export enum MIRKind {
 }
 /**
 */
-export enum CredKind {
-  Key = 0,
-  Script = 1,
-}
-/**
-* Each new language uses a different namespace for hashing its script
-* This is because you could have a language where the same bytes have different semantics
-* So this avoids scripts in different languages mapping to the same hash
-* Note that the enum value here is different than the enum value for deciding the cost model of a script
-*/
-export enum ScriptHashNamespace {
-  NativeScript = 0,
-  PlutusScript = 1,
-  PlutusScriptV2 = 2,
-  PlutusScriptV3 = 3,
+export enum MIRPot {
+  Reserves = 0,
+  Treasury = 1,
 }
 /**
 */
@@ -354,11 +301,19 @@ export enum RedeemerTagKind {
 }
 /**
 */
-export enum DRepKind {
-  KeyHash = 0,
-  ScriptHash = 1,
-  AlwaysAbstain = 2,
-  AlwaysNoConfidence = 3,
+export enum TransactionMetadatumKind {
+  MetadataMap = 0,
+  MetadataList = 1,
+  Int = 2,
+  Bytes = 3,
+  Text = 4,
+}
+/**
+*/
+export enum MetadataJsonSchema {
+  NoConversions = 0,
+  BasicConversions = 1,
+  DetailedSchema = 2,
 }
 /**
 */
@@ -372,9 +327,70 @@ export enum NativeScriptKind {
 }
 /**
 */
-export enum NetworkIdKind {
-  Testnet = 0,
-  Mainnet = 1,
+export enum LanguageKind {
+  PlutusV1 = 0,
+  PlutusV2 = 1,
+  PlutusV3 = 2,
+}
+/**
+*/
+export enum AddressKind {
+  Base = 0,
+  Pointer = 1,
+  Enterprise = 2,
+  Reward = 3,
+  Byron = 4,
+  Malformed = 5,
+}
+/**
+*/
+export enum CertificateKind {
+  StakeRegistration = 0,
+  StakeDeregistration = 1,
+  StakeDelegation = 2,
+  PoolRegistration = 3,
+  PoolRetirement = 4,
+  GenesisKeyDelegation = 5,
+  MoveInstantaneousRewardsCert = 6,
+  CommitteeHotAuth = 7,
+  CommitteeColdResign = 8,
+  DrepDeregistration = 9,
+  DrepRegistration = 10,
+  DrepUpdate = 11,
+  StakeAndVoteDelegation = 12,
+  StakeRegistrationAndDelegation = 13,
+  StakeVoteRegistrationAndDelegation = 14,
+  VoteDelegation = 15,
+  VoteRegistrationAndDelegation = 16,
+}
+/**
+*/
+export enum PlutusDataKind {
+  ConstrPlutusData = 0,
+  Map = 1,
+  List = 2,
+  Integer = 3,
+  Bytes = 4,
+}
+/**
+*/
+export enum CborContainerType {
+  Array = 0,
+  Map = 1,
+}
+/**
+*/
+export enum VoteKind {
+  No = 0,
+  Yes = 1,
+  Abstain = 2,
+}
+/**
+*/
+export enum RelayKind {
+  SingleHostAddr = 0,
+  SingleHostName = 1,
+  MultiHostName = 2,
 }
 /**
 */
@@ -409,6 +425,18 @@ export class Address {
 * @returns {Address}
 */
   static from_json(json: string): Address;
+/**
+* @returns {AddressKind}
+*/
+  kind(): AddressKind;
+/**
+* @returns {Credential | undefined}
+*/
+  payment_cred(): Credential | undefined;
+/**
+* @returns {boolean}
+*/
+  is_malformed(): boolean;
 /**
 * @returns {string}
 */
@@ -1249,6 +1277,11 @@ export class Block {
 * @returns {Block}
 */
   static new(header: Header, transaction_bodies: TransactionBodies, transaction_witness_sets: TransactionWitnessSets, auxiliary_data_set: AuxiliaryDataSet, invalid_transactions: Uint32Array): Block;
+/**
+* @param {Uint8Array} data
+* @returns {Block}
+*/
+  static from_wrapped_bytes(data: Uint8Array): Block;
 }
 /**
 */
@@ -1726,6 +1759,31 @@ export class CertificatesBuilder {
 * @returns {Certificates}
 */
   build(): Certificates;
+}
+/**
+*/
+export class ChangeConfig {
+  free(): void;
+/**
+* @param {Address} address
+* @returns {ChangeConfig}
+*/
+  static new(address: Address): ChangeConfig;
+/**
+* @param {Address} address
+* @returns {ChangeConfig}
+*/
+  change_address(address: Address): ChangeConfig;
+/**
+* @param {OutputDatum} plutus_data
+* @returns {ChangeConfig}
+*/
+  change_plutus_data(plutus_data: OutputDatum): ChangeConfig;
+/**
+* @param {ScriptRef} script_ref
+* @returns {ChangeConfig}
+*/
+  change_script_ref(script_ref: ScriptRef): ChangeConfig;
 }
 /**
 */
@@ -2561,6 +2619,10 @@ export class DrepRegistration {
 * @returns {DrepRegistration}
 */
   static new_with_anchor(voting_credential: Credential, coin: BigNum, anchor: Anchor): DrepRegistration;
+/**
+* @returns {boolean}
+*/
+  has_script_credentials(): boolean;
 }
 /**
 */
@@ -4179,6 +4241,24 @@ export class MIRToStakeCredentials {
 }
 /**
 */
+export class MalformedAddress {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  original_bytes(): Uint8Array;
+/**
+* @returns {Address}
+*/
+  to_address(): Address;
+/**
+* @param {Address} addr
+* @returns {MalformedAddress | undefined}
+*/
+  static from_address(addr: Address): MalformedAddress | undefined;
+}
+/**
+*/
 export class MetadataList {
   free(): void;
 /**
@@ -4438,7 +4518,7 @@ export class MintBuilder {
 /**
 * @returns {Redeemers}
 */
-  get_redeeemers(): Redeemers;
+  get_redeemers(): Redeemers;
 /**
 * @returns {boolean}
 */
@@ -4468,6 +4548,36 @@ export class MintWitness {
 */
 export class MintsAssets {
   free(): void;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {MintsAssetsJSON}
+*/
+  to_js_value(): MintsAssetsJSON;
+/**
+* @param {string} json
+* @returns {MintsAssets}
+*/
+  static from_json(json: string): MintsAssets;
+/**
+* @returns {MintsAssets}
+*/
+  static new(): MintsAssets;
+/**
+* @param {MintAssets} mint_assets
+*/
+  add(mint_assets: MintAssets): void;
+/**
+* @param {number} index
+* @returns {MintAssets | undefined}
+*/
+  get(index: number): MintAssets | undefined;
+/**
+* @returns {number}
+*/
+  len(): number;
 }
 /**
 */
@@ -4827,10 +4937,13 @@ export class NativeScriptSource {
 /**
 * @param {ScriptHash} script_hash
 * @param {TransactionInput} input
-* @param {Ed25519KeyHashes} required_signers
 * @returns {NativeScriptSource}
 */
-  static new_ref_input(script_hash: ScriptHash, input: TransactionInput, required_signers: Ed25519KeyHashes): NativeScriptSource;
+  static new_ref_input(script_hash: ScriptHash, input: TransactionInput): NativeScriptSource;
+/**
+* @param {Ed25519KeyHashes} key_hashes
+*/
+  set_required_signers(key_hashes: Ed25519KeyHashes): void;
 }
 /**
 */
@@ -5581,9 +5694,18 @@ export class PlutusScriptSource {
 * @param {ScriptHash} script_hash
 * @param {TransactionInput} input
 * @param {Language} lang_ver
+* @param {number} script_size
 * @returns {PlutusScriptSource}
 */
-  static new_ref_input(script_hash: ScriptHash, input: TransactionInput, lang_ver: Language): PlutusScriptSource;
+  static new_ref_input(script_hash: ScriptHash, input: TransactionInput, lang_ver: Language, script_size: number): PlutusScriptSource;
+/**
+* @param {Ed25519KeyHashes} key_hashes
+*/
+  set_required_signers(key_hashes: Ed25519KeyHashes): void;
+/**
+* @returns {number | undefined}
+*/
+  get_ref_script_size(): number | undefined;
 }
 /**
 */
@@ -6081,9 +6203,10 @@ export class PoolVotingThresholds {
 * @param {UnitInterval} committee_normal
 * @param {UnitInterval} committee_no_confidence
 * @param {UnitInterval} hard_fork_initiation
+* @param {UnitInterval} security_relevant_threshold
 * @returns {PoolVotingThresholds}
 */
-  static new(motion_no_confidence: UnitInterval, committee_normal: UnitInterval, committee_no_confidence: UnitInterval, hard_fork_initiation: UnitInterval): PoolVotingThresholds;
+  static new(motion_no_confidence: UnitInterval, committee_normal: UnitInterval, committee_no_confidence: UnitInterval, hard_fork_initiation: UnitInterval, security_relevant_threshold: UnitInterval): PoolVotingThresholds;
 /**
 * @returns {UnitInterval}
 */
@@ -6511,6 +6634,14 @@ export class ProtocolParamUpdate {
 * @returns {number | undefined}
 */
   drep_inactivity_period(): number | undefined;
+/**
+* @param {UnitInterval} ref_script_coins_per_byte
+*/
+  set_ref_script_coins_per_byte(ref_script_coins_per_byte: UnitInterval): void;
+/**
+* @returns {UnitInterval | undefined}
+*/
+  ref_script_coins_per_byte(): UnitInterval | undefined;
 /**
 * @returns {ProtocolParamUpdate}
 */
@@ -8388,6 +8519,9 @@ export class TransactionBuilder {
 */
   set_collateral_return(collateral_return: TransactionOutput): void;
 /**
+*/
+  remove_collateral_return(): void;
+/**
 * This function will set the collateral-return value and then auto-calculate and assign
 * the total collateral coin value. Will raise an error in case no collateral inputs are set
 * or in case the total collateral value will have any assets in it except coin.
@@ -8398,6 +8532,9 @@ export class TransactionBuilder {
 * @param {BigNum} total_collateral
 */
   set_total_collateral(total_collateral: BigNum): void;
+/**
+*/
+  remove_total_collateral(): void;
 /**
 * This function will set the total-collateral coin and then auto-calculate and assign
 * the collateral return value. Will raise an error in case no collateral inputs are set.
@@ -8410,6 +8547,11 @@ export class TransactionBuilder {
 * @param {TransactionInput} reference_input
 */
   add_reference_input(reference_input: TransactionInput): void;
+/**
+* @param {TransactionInput} reference_input
+* @param {number} script_size
+*/
+  add_script_reference_input(reference_input: TransactionInput, script_size: number): void;
 /**
 * We have to know what kind of inputs these are to know what kind of mock witnesses to create since
 * 1) mock witnesses have different lengths depending on the type which changes the expecting fee
@@ -8449,6 +8591,21 @@ export class TransactionBuilder {
 * @param {Value} amount
 */
   add_regular_input(address: Address, input: TransactionInput, amount: Value): void;
+/**
+* @param {TransactionUnspentOutputs} inputs
+* @param {CoinSelectionStrategyCIP2} strategy
+* @param {ChangeConfig} change_config
+* @returns {boolean}
+*/
+  add_inputs_from_and_change(inputs: TransactionUnspentOutputs, strategy: CoinSelectionStrategyCIP2, change_config: ChangeConfig): boolean;
+/**
+* @param {TransactionUnspentOutputs} inputs
+* @param {CoinSelectionStrategyCIP2} strategy
+* @param {ChangeConfig} change_config
+* @param {bigint} collateral_percentage
+* @returns {boolean}
+*/
+  add_inputs_from_and_change_with_collateral_return(inputs: TransactionUnspentOutputs, strategy: CoinSelectionStrategyCIP2, change_config: ChangeConfig, collateral_percentage: bigint): boolean;
 /**
 * Returns a copy of the current script input witness scripts in the builder
 * @returns {NativeScripts | undefined}
@@ -8494,6 +8651,9 @@ export class TransactionBuilder {
 */
   set_ttl_bignum(ttl: BigNum): void;
 /**
+*/
+  remove_ttl(): void;
+/**
 * !!! DEPRECATED !!!
 * Uses outdated slot number format.
 * @param {number} validity_start_interval
@@ -8504,12 +8664,18 @@ export class TransactionBuilder {
 */
   set_validity_start_interval_bignum(validity_start_interval: BigNum): void;
 /**
+*/
+  remove_validity_start_interval(): void;
+/**
 * !!! DEPRECATED !!!
 * Can emit error if add a cert with script credential.
 * Use set_certs_builder instead.
 * @param {Certificates} certs
 */
   set_certs(certs: Certificates): void;
+/**
+*/
+  remove_certs(): void;
 /**
 * @param {CertificatesBuilder} certs
 */
@@ -8534,6 +8700,9 @@ export class TransactionBuilder {
 */
   set_voting_proposal_builder(voting_proposal_builder: VotingProposalBuilder): void;
 /**
+*/
+  remove_withdrawals(): void;
+/**
 * @returns {AuxiliaryData | undefined}
 */
   get_auxiliary_data(): AuxiliaryData | undefined;
@@ -8543,6 +8712,9 @@ export class TransactionBuilder {
 * @param {AuxiliaryData} auxiliary_data
 */
   set_auxiliary_data(auxiliary_data: AuxiliaryData): void;
+/**
+*/
+  remove_auxiliary_data(): void;
 /**
 * Set metadata using a GeneralTransactionMetadata object
 * It will be set to the existing or new auxiliary data in this builder
@@ -8575,6 +8747,9 @@ export class TransactionBuilder {
 * @param {MintBuilder} mint_builder
 */
   set_mint_builder(mint_builder: MintBuilder): void;
+/**
+*/
+  remove_mint_builder(): void;
 /**
 * @returns {MintBuilder | undefined}
 */
@@ -8844,6 +9019,11 @@ export class TransactionBuilderConfigBuilder {
 * @returns {TransactionBuilderConfigBuilder}
 */
   max_tx_size(max_tx_size: number): TransactionBuilderConfigBuilder;
+/**
+* @param {UnitInterval} ref_script_coins_per_byte
+* @returns {TransactionBuilderConfigBuilder}
+*/
+  ref_script_coins_per_byte(ref_script_coins_per_byte: UnitInterval): TransactionBuilderConfigBuilder;
 /**
 * @param {boolean} prefer_pure_change
 * @returns {TransactionBuilderConfigBuilder}
@@ -11230,7 +11410,6 @@ export type InfoActionJSON = [];
 export type VotingProposalsJSON = VotingProposalJSON[];
 export type TransactionBodiesJSON = TransactionBodyJSON[];
 export type RedeemerTagJSON = "Spend" | "Mint" | "Cert" | "Reward" | "Vote" | "VotingProposal";
-export type RedeemersJSON = RedeemerJSON[];
 export type TransactionWitnessSetsJSON = TransactionWitnessSetJSON[];
 
 export interface BlockJSON {
@@ -11467,6 +11646,7 @@ export interface ProtocolParamUpdateJSON {
   pool_pledge_influence?: UnitIntervalJSON | null;
   pool_voting_thresholds?: PoolVotingThresholdsJSON | null;
   protocol_version?: ProtocolVersionJSON | null;
+  ref_script_coins_per_byte?: UnitIntervalJSON | null;
   treasury_growth_rate?: UnitIntervalJSON | null;
 }
 export interface CostmdlsJSON {
@@ -11539,6 +11719,7 @@ export interface PoolVotingThresholdsJSON {
   committee_normal: UnitIntervalJSON;
   hard_fork_initiation: UnitIntervalJSON;
   motion_no_confidence: UnitIntervalJSON;
+  security_relevant_threshold: UnitIntervalJSON;
 }
 export interface VoterVotesJSON {
   voter: VoterJSON;
@@ -11607,7 +11788,7 @@ export interface TransactionWitnessSetJSON {
   native_scripts?: NativeScriptsJSON | null;
   plutus_data?: PlutusListJSON | null;
   plutus_scripts?: PlutusScriptsJSON | null;
-  redeemers?: RedeemersJSON | null;
+  redeemers?: RedeemerJSON[] | null;
   vkeys?: VkeywitnessJSON[] | null;
 }
 export interface BootstrapWitnessJSON {
@@ -11740,6 +11921,8 @@ export type LanguageKindJSON = "PlutusV1" | "PlutusV2" | "PlutusV3";
 export type LanguagesJSON = LanguageJSON[];
 export type MIRToStakeCredentialsJSON = StakeToCoinJSON[];
 
+export type MintsAssetsJSON = MintAssetsJSON[];
+
 export type NetworkIdKindJSON = "Testnet" | "Mainnet";
 export type PlutusScriptJSON = string;
 export type PoolMetadataHashJSON = string;
@@ -11748,6 +11931,8 @@ export interface ProposedProtocolParameterUpdatesJSON {
 }
 export type PublicKeyJSON = string;
 export type RedeemerTagKindJSON = "Spend" | "Mint" | "Cert" | "Reward" | "Vote" | "VotingProposal";
+export type RedeemersJSON = RedeemerJSON[];
+
 export type RelayEnumJSON =
   | {
       SingleHostAddr: SingleHostAddrJSON;
