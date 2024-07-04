@@ -1958,8 +1958,9 @@ export const createWallet = async (name, seedPhrase, password) => {
   const checkStore = await getStorage(STORAGE.encryptedKey);
   if (checkStore) throw new Error(ERROR.storeNotEmpty);
   await setStorage({ [STORAGE.encryptedKey]: encryptedRootKey });
+  // default to sanchonet
   await setStorage({
-    [STORAGE.network]: { id: NETWORK_ID.mainnet, node: NODE.mainnet },
+    [STORAGE.network]: { id: NETWORK_ID.sancho, node: NODE.sancho },
   });
 
   await setStorage({
