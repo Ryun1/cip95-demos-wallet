@@ -18,12 +18,10 @@ This is a *mock* wallet, based on [Nami](https://github.com/berry-pool/nami).
 
 ## CIP-95/Conway Features Supported Notes
 
-### 1.8.2
-- CSL 12 beta 2
-- Default new wallets to SanchoNet
-- Fixed link to sancho cexplorer
+### 1.8.3
+- 
 
-### 1.8.3 (In progress)
+### 1.8.4 (In progress)
 - `.cip95.signData()`
 
 ## To Develop
