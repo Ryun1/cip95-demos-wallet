@@ -13,6 +13,27 @@ export function encode_json_str_to_plutus_datum(json: string, schema: PlutusDatu
 */
 export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: PlutusDatumSchema): string;
 /**
+* @param {string} password
+* @param {string} salt
+* @param {string} nonce
+* @param {string} data
+* @returns {string}
+*/
+export function encrypt_with_password(password: string, salt: string, nonce: string, data: string): string;
+/**
+* @param {string} password
+* @param {string} data
+* @returns {string}
+*/
+export function decrypt_with_password(password: string, data: string): string;
+/**
+* @param {Address} address
+* @param {TransactionUnspentOutputs} utxos
+* @param {TransactionBuilderConfig} config
+* @returns {TransactionBatchList}
+*/
+export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
+/**
 * @param {Uint8Array} bytes
 * @returns {TransactionMetadatum}
 */
@@ -34,51 +55,6 @@ export function encode_json_str_to_metadatum(json: string, schema: MetadataJsonS
 * @returns {string}
 */
 export function decode_metadatum_to_json_str(metadatum: TransactionMetadatum, schema: MetadataJsonSchema): string;
-/**
-* @param {Address} address
-* @param {TransactionUnspentOutputs} utxos
-* @param {TransactionBuilderConfig} config
-* @returns {TransactionBatchList}
-*/
-export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
-/**
-* @param {string} password
-* @param {string} salt
-* @param {string} nonce
-* @param {string} data
-* @returns {string}
-*/
-export function encrypt_with_password(password: string, salt: string, nonce: string, data: string): string;
-/**
-* @param {string} password
-* @param {string} data
-* @returns {string}
-*/
-export function decrypt_with_password(password: string, data: string): string;
-/**
-* @param {Transaction} tx
-* @param {LinearFee} linear_fee
-* @returns {BigNum}
-*/
-export function min_fee(tx: Transaction, linear_fee: LinearFee): BigNum;
-/**
-* @param {ExUnits} ex_units
-* @param {ExUnitPrices} ex_unit_prices
-* @returns {BigNum}
-*/
-export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: ExUnitPrices): BigNum;
-/**
-* @param {Transaction} tx
-* @param {ExUnitPrices} ex_unit_prices
-* @returns {BigNum}
-*/
-export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
-/**
-* @param {number} total_ref_scripts_size
-* @param {UnitInterval} ref_script_coins_per_byte
-* @returns {BigNum}
-*/
-export function min_ref_script_fee(total_ref_scripts_size: number, ref_script_coins_per_byte: UnitInterval): BigNum;
 /**
 * @param {TransactionHash} tx_body_hash
 * @param {ByronAddress} addr
@@ -158,33 +134,34 @@ export function min_ada_for_output(output: TransactionOutput, data_cost: DataCos
 */
 export function encode_json_str_to_native_script(json: string, self_xpub: string, schema: ScriptSchema): NativeScript;
 /**
+* @param {Transaction} tx
+* @param {LinearFee} linear_fee
+* @returns {BigNum}
 */
-export enum NetworkIdKind {
-  Testnet = 0,
-  Mainnet = 1,
-}
+export function min_fee(tx: Transaction, linear_fee: LinearFee): BigNum;
+/**
+* @param {ExUnits} ex_units
+* @param {ExUnitPrices} ex_unit_prices
+* @returns {BigNum}
+*/
+export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: ExUnitPrices): BigNum;
+/**
+* @param {Transaction} tx
+* @param {ExUnitPrices} ex_unit_prices
+* @returns {BigNum}
+*/
+export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
+/**
+* @param {number} total_ref_scripts_size
+* @param {UnitInterval} ref_script_coins_per_byte
+* @returns {BigNum}
+*/
+export function min_ref_script_fee(total_ref_scripts_size: number, ref_script_coins_per_byte: UnitInterval): BigNum;
 /**
 */
-export enum DRepKind {
-  KeyHash = 0,
-  ScriptHash = 1,
-  AlwaysAbstain = 2,
-  AlwaysNoConfidence = 3,
-}
-/**
-*/
-export enum VoterKind {
-  ConstitutionalCommitteeHotKeyHash = 0,
-  ConstitutionalCommitteeHotScriptHash = 1,
-  DRepKeyHash = 2,
-  DRepScriptHash = 3,
-  StakingPoolKeyHash = 4,
-}
-/**
-*/
-export enum CredKind {
-  Key = 0,
-  Script = 1,
+export enum MIRPot {
+  Reserves = 0,
+  Treasury = 1,
 }
 /**
 * JSON <-> PlutusData conversion schemas.
@@ -239,6 +216,41 @@ export enum PlutusDatumSchema {
   DetailedSchema = 1,
 }
 /**
+*/
+export enum CborContainerType {
+  Array = 0,
+  Map = 1,
+}
+/**
+*/
+export enum CredKind {
+  Key = 0,
+  Script = 1,
+}
+/**
+*/
+export enum NetworkIdKind {
+  Testnet = 0,
+  Mainnet = 1,
+}
+/**
+*/
+export enum MIRKind {
+  ToOtherPot = 0,
+  ToStakeCredentials = 1,
+}
+/**
+*/
+export enum GovernanceActionKind {
+  ParameterChangeAction = 0,
+  HardForkInitiationAction = 1,
+  TreasuryWithdrawalsAction = 2,
+  NoConfidenceAction = 3,
+  UpdateCommitteeAction = 4,
+  NewConstitutionAction = 5,
+  InfoAction = 6,
+}
+/**
 * Each new language uses a different namespace for hashing its script
 * This is because you could have a language where the same bytes have different semantics
 * So this avoids scripts in different languages mapping to the same hash
@@ -249,6 +261,74 @@ export enum ScriptHashNamespace {
   PlutusScript = 1,
   PlutusScriptV2 = 2,
   PlutusScriptV3 = 3,
+}
+/**
+*/
+export enum RedeemerTagKind {
+  Spend = 0,
+  Mint = 1,
+  Cert = 2,
+  Reward = 3,
+  Vote = 4,
+  VotingProposal = 5,
+}
+/**
+*/
+export enum PlutusDataKind {
+  ConstrPlutusData = 0,
+  Map = 1,
+  List = 2,
+  Integer = 3,
+  Bytes = 4,
+}
+/**
+*/
+export enum RelayKind {
+  SingleHostAddr = 0,
+  SingleHostName = 1,
+  MultiHostName = 2,
+}
+/**
+*/
+export enum LanguageKind {
+  PlutusV1 = 0,
+  PlutusV2 = 1,
+  PlutusV3 = 2,
+}
+/**
+*/
+export enum VoterKind {
+  ConstitutionalCommitteeHotKeyHash = 0,
+  ConstitutionalCommitteeHotScriptHash = 1,
+  DRepKeyHash = 2,
+  DRepScriptHash = 3,
+  StakingPoolKeyHash = 4,
+}
+/**
+*/
+export enum NativeScriptKind {
+  ScriptPubkey = 0,
+  ScriptAll = 1,
+  ScriptAny = 2,
+  ScriptNOfK = 3,
+  TimelockStart = 4,
+  TimelockExpiry = 5,
+}
+/**
+* Used to choosed the schema for a script JSON string
+*/
+export enum ScriptSchema {
+  Wallet = 0,
+  Node = 1,
+}
+/**
+*/
+export enum TransactionMetadatumKind {
+  MetadataMap = 0,
+  MetadataList = 1,
+  Int = 2,
+  Bytes = 3,
+  Text = 4,
 }
 /**
 */
@@ -271,44 +351,6 @@ export enum CoinSelectionStrategyCIP2 {
   RandomImproveMultiAsset = 3,
 }
 /**
-* Used to choosed the schema for a script JSON string
-*/
-export enum ScriptSchema {
-  Wallet = 0,
-  Node = 1,
-}
-/**
-*/
-export enum MIRKind {
-  ToOtherPot = 0,
-  ToStakeCredentials = 1,
-}
-/**
-*/
-export enum MIRPot {
-  Reserves = 0,
-  Treasury = 1,
-}
-/**
-*/
-export enum RedeemerTagKind {
-  Spend = 0,
-  Mint = 1,
-  Cert = 2,
-  Reward = 3,
-  Vote = 4,
-  VotingProposal = 5,
-}
-/**
-*/
-export enum TransactionMetadatumKind {
-  MetadataMap = 0,
-  MetadataList = 1,
-  Int = 2,
-  Bytes = 3,
-  Text = 4,
-}
-/**
 */
 export enum MetadataJsonSchema {
   NoConversions = 0,
@@ -317,30 +359,22 @@ export enum MetadataJsonSchema {
 }
 /**
 */
-export enum NativeScriptKind {
-  ScriptPubkey = 0,
-  ScriptAll = 1,
-  ScriptAny = 2,
-  ScriptNOfK = 3,
-  TimelockStart = 4,
-  TimelockExpiry = 5,
+export enum VoteKind {
+  No = 0,
+  Yes = 1,
+  Abstain = 2,
 }
 /**
 */
-export enum LanguageKind {
-  PlutusV1 = 0,
-  PlutusV2 = 1,
-  PlutusV3 = 2,
-}
-/**
-*/
-export enum AddressKind {
-  Base = 0,
-  Pointer = 1,
-  Enterprise = 2,
-  Reward = 3,
-  Byron = 4,
-  Malformed = 5,
+export enum BlockEra {
+  Byron = 0,
+  Shelley = 1,
+  Allegra = 2,
+  Mary = 3,
+  Alonzo = 4,
+  Babbage = 5,
+  Conway = 6,
+  Unknown = 7,
 }
 /**
 */
@@ -365,43 +399,21 @@ export enum CertificateKind {
 }
 /**
 */
-export enum PlutusDataKind {
-  ConstrPlutusData = 0,
-  Map = 1,
-  List = 2,
-  Integer = 3,
-  Bytes = 4,
+export enum AddressKind {
+  Base = 0,
+  Pointer = 1,
+  Enterprise = 2,
+  Reward = 3,
+  Byron = 4,
+  Malformed = 5,
 }
 /**
 */
-export enum CborContainerType {
-  Array = 0,
-  Map = 1,
-}
-/**
-*/
-export enum VoteKind {
-  No = 0,
-  Yes = 1,
-  Abstain = 2,
-}
-/**
-*/
-export enum RelayKind {
-  SingleHostAddr = 0,
-  SingleHostName = 1,
-  MultiHostName = 2,
-}
-/**
-*/
-export enum GovernanceActionKind {
-  ParameterChangeAction = 0,
-  HardForkInitiationAction = 1,
-  TreasuryWithdrawalsAction = 2,
-  NoConfidenceAction = 3,
-  UpdateCommitteeAction = 4,
-  NewConstitutionAction = 5,
-  InfoAction = 6,
+export enum DRepKind {
+  KeyHash = 0,
+  ScriptHash = 1,
+  AlwaysAbstain = 2,
+  AlwaysNoConfidence = 3,
 }
 /**
 */
@@ -866,6 +878,10 @@ export class BaseAddress {
 * @returns {BaseAddress | undefined}
 */
   static from_address(addr: Address): BaseAddress | undefined;
+/**
+* @returns {number}
+*/
+  network_id(): number;
 }
 /**
 */
@@ -1277,11 +1293,6 @@ export class Block {
 * @returns {Block}
 */
   static new(header: Header, transaction_bodies: TransactionBodies, transaction_witness_sets: TransactionWitnessSets, auxiliary_data_set: AuxiliaryDataSet, invalid_transactions: Uint32Array): Block;
-/**
-* @param {Uint8Array} data
-* @returns {Block}
-*/
-  static from_wrapped_bytes(data: Uint8Array): Block;
 }
 /**
 */
@@ -1381,6 +1392,37 @@ export class BootstrapWitness {
 export class BootstrapWitnesses {
   free(): void;
 /**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {BootstrapWitnesses}
+*/
+  static from_bytes(bytes: Uint8Array): BootstrapWitnesses;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {BootstrapWitnesses}
+*/
+  static from_hex(hex_str: string): BootstrapWitnesses;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {BootstrapWitnessesJSON}
+*/
+  to_js_value(): BootstrapWitnessesJSON;
+/**
+* @param {string} json
+* @returns {BootstrapWitnesses}
+*/
+  static from_json(json: string): BootstrapWitnesses;
+/**
 * @returns {BootstrapWitnesses}
 */
   static new(): BootstrapWitnesses;
@@ -1394,9 +1436,12 @@ export class BootstrapWitnesses {
 */
   get(index: number): BootstrapWitness;
 /**
+* Add a new `BootstrapWitness` to the set.
+* Returns `true` if the element was not already present in the set.
 * @param {BootstrapWitness} elem
+* @returns {boolean}
 */
-  add(elem: BootstrapWitness): void;
+  add(elem: BootstrapWitness): boolean;
 }
 /**
 */
@@ -1701,9 +1746,12 @@ export class Certificates {
 */
   get(index: number): Certificate;
 /**
+* Add a new `Certificate` to the set.
+* Returns `true` if the element was not already present in the set.
 * @param {Certificate} elem
+* @returns {boolean}
 */
-  add(elem: Certificate): void;
+  add(elem: Certificate): boolean;
 }
 /**
 */
@@ -2283,9 +2331,12 @@ export class Credentials {
 */
   get(index: number): Credential;
 /**
+* Add a new `Credential` to the set.
+* Returns `true` if the element was not already present in the set.
 * @param {Credential} elem
+* @returns {boolean}
 */
-  add(elem: Credential): void;
+  add(elem: Credential): boolean;
 }
 /**
 */
@@ -2733,10 +2784,6 @@ export class DrepVotingThresholds {
 */
   static new(motion_no_confidence: UnitInterval, committee_normal: UnitInterval, committee_no_confidence: UnitInterval, update_constitution: UnitInterval, hard_fork_initiation: UnitInterval, pp_network_group: UnitInterval, pp_economic_group: UnitInterval, pp_technical_group: UnitInterval, pp_governance_group: UnitInterval, treasury_withdrawal: UnitInterval): DrepVotingThresholds;
 /**
-* @returns {DrepVotingThresholds}
-*/
-  static new_default(): DrepVotingThresholds;
-/**
 * @param {UnitInterval} motion_no_confidence
 */
   set_motion_no_confidence(motion_no_confidence: UnitInterval): void;
@@ -2899,9 +2946,12 @@ export class Ed25519KeyHashes {
 */
   get(index: number): Ed25519KeyHash;
 /**
+* Add a new `Ed25519KeyHash` to the set.
+* Returns `true` if the element was not already present in the set.
 * @param {Ed25519KeyHash} elem
+* @returns {boolean}
 */
-  add(elem: Ed25519KeyHash): void;
+  add(elem: Ed25519KeyHash): boolean;
 /**
 * @param {Ed25519KeyHash} elem
 * @returns {boolean}
@@ -2967,6 +3017,10 @@ export class EnterpriseAddress {
 * @returns {EnterpriseAddress | undefined}
 */
   static from_address(addr: Address): EnterpriseAddress | undefined;
+/**
+* @returns {number}
+*/
+  network_id(): number;
 }
 /**
 */
@@ -4533,10 +4587,10 @@ export class MintBuilder {
 export class MintWitness {
   free(): void;
 /**
-* @param {NativeScript} native_script
+* @param {NativeScriptSource} native_script
 * @returns {MintWitness}
 */
-  static new_native_script(native_script: NativeScript): MintWitness;
+  static new_native_script(native_script: NativeScriptSource): MintWitness;
 /**
 * @param {PlutusScriptSource} plutus_script
 * @param {Redeemer} redeemer
@@ -5556,24 +5610,49 @@ export class PlutusMap {
 */
   static new(): PlutusMap;
 /**
+* Return count ok different keys in the map.
 * @returns {number}
 */
   len(): number;
 /**
+* Returns the previous value associated with the key, if any.
+* Replace the values associated with the key.
 * @param {PlutusData} key
-* @param {PlutusData} value
-* @returns {PlutusData | undefined}
+* @param {PlutusMapValues} values
+* @returns {PlutusMapValues | undefined}
 */
-  insert(key: PlutusData, value: PlutusData): PlutusData | undefined;
+  insert(key: PlutusData, values: PlutusMapValues): PlutusMapValues | undefined;
 /**
 * @param {PlutusData} key
-* @returns {PlutusData | undefined}
+* @returns {PlutusMapValues | undefined}
 */
-  get(key: PlutusData): PlutusData | undefined;
+  get(key: PlutusData): PlutusMapValues | undefined;
 /**
 * @returns {PlutusList}
 */
   keys(): PlutusList;
+}
+/**
+*/
+export class PlutusMapValues {
+  free(): void;
+/**
+* @returns {PlutusMapValues}
+*/
+  static new(): PlutusMapValues;
+/**
+* @returns {number}
+*/
+  len(): number;
+/**
+* @param {number} index
+* @returns {PlutusData | undefined}
+*/
+  get(index: number): PlutusData | undefined;
+/**
+* @param {PlutusData} elem
+*/
+  add(elem: PlutusData): void;
 }
 /**
 */
@@ -5899,6 +5978,10 @@ export class PointerAddress {
 * @returns {PointerAddress | undefined}
 */
   static from_address(addr: Address): PointerAddress | undefined;
+/**
+* @returns {number}
+*/
+  network_id(): number;
 }
 /**
 */
@@ -6223,6 +6306,10 @@ export class PoolVotingThresholds {
 * @returns {UnitInterval}
 */
   hard_fork_initiation(): UnitInterval;
+/**
+* @returns {UnitInterval}
+*/
+  security_relevant_threshold(): UnitInterval;
 }
 /**
 */
@@ -7090,6 +7177,10 @@ export class RewardAddress {
 * @returns {RewardAddress | undefined}
 */
   static from_address(addr: Address): RewardAddress | undefined;
+/**
+* @returns {number}
+*/
+  network_id(): number;
 }
 /**
 */
@@ -7509,6 +7600,13 @@ export class ScriptRef {
 * @returns {PlutusScript | undefined}
 */
   plutus_script(): PlutusScript | undefined;
+/**
+* Return bytes array of script ref struct but without wrapping into CBOR array under the tag
+* to_bytes returns "#6.24(bytes .cbor script)" from CDDL
+* to_unwrapped_bytes return "script" from CDDL
+* @returns {Uint8Array}
+*/
+  to_unwrapped_bytes(): Uint8Array;
 }
 /**
 */
@@ -8602,10 +8700,9 @@ export class TransactionBuilder {
 * @param {TransactionUnspentOutputs} inputs
 * @param {CoinSelectionStrategyCIP2} strategy
 * @param {ChangeConfig} change_config
-* @param {bigint} collateral_percentage
-* @returns {boolean}
+* @param {BigNum} collateral_percentage
 */
-  add_inputs_from_and_change_with_collateral_return(inputs: TransactionUnspentOutputs, strategy: CoinSelectionStrategyCIP2, change_config: ChangeConfig, collateral_percentage: bigint): boolean;
+  add_inputs_from_and_change_with_collateral_return(inputs: TransactionUnspentOutputs, strategy: CoinSelectionStrategyCIP2, change_config: ChangeConfig, collateral_percentage: BigNum): void;
 /**
 * Returns a copy of the current script input witness scripts in the builder
 * @returns {NativeScripts | undefined}
@@ -9166,9 +9263,13 @@ export class TransactionInputs {
 */
   get(index: number): TransactionInput;
 /**
+* Add a new `TransactionInput` to the set.
+* Returns `true` if the element was not already present in the set.
+* Note that the `TransactionInput` is added to the set only if it is not already present.
 * @param {TransactionInput} elem
+* @returns {boolean}
 */
-  add(elem: TransactionInput): void;
+  add(elem: TransactionInput): boolean;
 /**
 * @returns {TransactionInputs | undefined}
 */
@@ -9855,11 +9956,11 @@ export class TxInputsBuilder {
   add_key_input(hash: Ed25519KeyHash, input: TransactionInput, amount: Value): void;
 /**
 * This method will add the input to the builder and also register the required native script witness
-* @param {NativeScript} script
+* @param {NativeScriptSource} script
 * @param {TransactionInput} input
 * @param {Value} amount
 */
-  add_native_script_input(script: NativeScript, input: TransactionInput, amount: Value): void;
+  add_native_script_input(script: NativeScriptSource, input: TransactionInput, amount: Value): void;
 /**
 * This method will add the input to the builder and also register the required plutus witness
 * @param {PlutusWitness} witness
@@ -9868,11 +9969,11 @@ export class TxInputsBuilder {
 */
   add_plutus_script_input(witness: PlutusWitness, input: TransactionInput, amount: Value): void;
 /**
-* @param {ByronAddress} hash
+* @param {ByronAddress} address
 * @param {TransactionInput} input
 * @param {Value} amount
 */
-  add_bootstrap_input(hash: ByronAddress, input: TransactionInput, amount: Value): void;
+  add_bootstrap_input(address: ByronAddress, input: TransactionInput, amount: Value): void;
 /**
 * Adds non script input, in case of script or reward address input it will return an error
 * @param {Address} address
@@ -10341,6 +10442,56 @@ export class Value {
 }
 /**
 */
+export class VersionedBlock {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {VersionedBlock}
+*/
+  static from_bytes(bytes: Uint8Array): VersionedBlock;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {VersionedBlock}
+*/
+  static from_hex(hex_str: string): VersionedBlock;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {VersionedBlockJSON}
+*/
+  to_js_value(): VersionedBlockJSON;
+/**
+* @param {string} json
+* @returns {VersionedBlock}
+*/
+  static from_json(json: string): VersionedBlock;
+/**
+* @param {Block} block
+* @param {number} era_code
+* @returns {VersionedBlock}
+*/
+  static new(block: Block, era_code: number): VersionedBlock;
+/**
+* @returns {Block}
+*/
+  block(): Block;
+/**
+* @returns {BlockEra}
+*/
+  era(): BlockEra;
+}
+/**
+*/
 export class Vkey {
   free(): void;
 /**
@@ -10505,9 +10656,12 @@ export class Vkeywitnesses {
 */
   get(index: number): Vkeywitness;
 /**
+* Add a new `Vkeywitness` to the set.
+* Returns `true` if the element was not already present in the set.
 * @param {Vkeywitness} elem
+* @returns {boolean}
 */
-  add(elem: Vkeywitness): void;
+  add(elem: Vkeywitness): boolean;
 }
 /**
 */
@@ -11040,9 +11194,12 @@ export class VotingProposals {
 */
   get(index: number): VotingProposal;
 /**
+* Add a proposal to the set of proposals
+* Returns true if the proposal was added, false if it was already present
 * @param {VotingProposal} proposal
+* @returns {boolean}
 */
-  add(proposal: VotingProposal): void;
+  add(proposal: VotingProposal): boolean;
 }
 /**
 */
@@ -11349,8 +11506,6 @@ export type DRepJSON =
   | {
       ScriptHash: string;
     };
-export type CertificatesJSON = CertificateJSON[];
-export type TransactionInputsJSON = TransactionInputJSON[];
 export type DataOptionJSON =
   | {
       DataHash: string;
@@ -11407,7 +11562,6 @@ export type GovernanceActionJSON =
  * @maxItems 0
  */
 export type InfoActionJSON = [];
-export type VotingProposalsJSON = VotingProposalJSON[];
 export type TransactionBodiesJSON = TransactionBodyJSON[];
 export type RedeemerTagJSON = "Spend" | "Mint" | "Cert" | "Reward" | "Vote" | "VotingProposal";
 export type TransactionWitnessSetsJSON = TransactionWitnessSetJSON[];
@@ -11453,17 +11607,17 @@ export interface ProtocolVersionJSON {
 }
 export interface TransactionBodyJSON {
   auxiliary_data_hash?: string | null;
-  certs?: CertificatesJSON | null;
-  collateral?: TransactionInputsJSON | null;
+  certs?: CertificateJSON[] | null;
+  collateral?: TransactionInputJSON[] | null;
   collateral_return?: TransactionOutputJSON | null;
   current_treasury_value?: string | null;
   donation?: string | null;
   fee: string;
-  inputs: TransactionInputsJSON;
+  inputs: TransactionInputJSON[];
   mint?: MintJSON | null;
   network_id?: NetworkIdJSON | null;
   outputs: TransactionOutputsJSON;
-  reference_inputs?: TransactionInputsJSON | null;
+  reference_inputs?: TransactionInputJSON[] | null;
   required_signers?: string[] | null;
   script_data_hash?: string | null;
   total_collateral?: string | null;
@@ -11471,7 +11625,7 @@ export interface TransactionBodyJSON {
   update?: UpdateJSON | null;
   validity_start_interval?: string | null;
   voting_procedures?: VoterVotesJSON[] | null;
-  voting_proposals?: VotingProposalsJSON | null;
+  voting_proposals?: VotingProposalJSON[] | null;
   withdrawals?: {
     [k: string]: string;
   } | null;
@@ -11866,6 +12020,8 @@ export type CertificateEnumJSON =
   | {
       VoteRegistrationAndDelegation: VoteRegistrationAndDelegationJSON;
     };
+export type CertificatesJSON = CertificateJSON[];
+
 export type CredentialJSON = CredTypeJSON;
 export type CredentialsJSON = CredTypeJSON[];
 export type DRepEnumJSON =
@@ -11966,6 +12122,8 @@ export interface TransactionJSON {
   witness_set: TransactionWitnessSetJSON;
 }
 export type TransactionHashJSON = string;
+export type TransactionInputsJSON = TransactionInputJSON[];
+
 export type TransactionMetadatumJSON = string;
 export interface TransactionUnspentOutputJSON {
   input: TransactionInputJSON;
@@ -11975,6 +12133,10 @@ export type TransactionUnspentOutputsJSON = TransactionUnspentOutputJSON[];
 
 export type VRFKeyHashJSON = string;
 export type VRFVKeyJSON = string;
+export interface VersionedBlockJSON {
+  block: BlockJSON;
+  era_code: number;
+}
 export type VkeywitnessesJSON = VkeywitnessJSON[];
 
 export type VoterEnumJSON =
@@ -11989,6 +12151,8 @@ export type VoterEnumJSON =
     };
 export type VotersJSON = VoterJSON[];
 export type VotingProceduresJSON = VoterVotesJSON[];
+
+export type VotingProposalsJSON = VotingProposalJSON[];
 
 export interface WithdrawalsJSON {
   [k: string]: string;

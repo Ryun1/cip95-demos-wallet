@@ -1,6 +1,14 @@
 # Tags
 
 ### 1.8.0
+- CSL 12 beta 2
+- Default new wallets to SanchoNet
+- Fixed link to sancho cexplorer
+
+### 1.8.1
+- CSL 12 alpha 29
+
+### 1.8.0
 - CSL 12 alpha 19
   
 ### 1.7.0
