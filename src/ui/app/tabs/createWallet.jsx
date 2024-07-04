@@ -649,7 +649,7 @@ const MakeAccount = (props) => {
         </InputGroup>
         {state.regularPassword === false && (
           <Text fontSize={'xs'} color="red.300">
-            Password must be at least 8 characters long
+            Password can be as short as you like!
           </Text>
         )}
         <Spacer height="2" />
